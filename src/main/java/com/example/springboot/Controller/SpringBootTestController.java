@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
+/**
+ * test
+ */
 @RestController
 @RequestMapping("test")
 public class SpringBootTestController {
