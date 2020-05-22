@@ -21,6 +21,11 @@ public class ThymeleafController {
         map.addAttribute("name", "thymeleaf-imooc");
         return "thymeleaf/index";
     }
+
+	@RequestMapping("/bootstrap")
+	public String showBootStrap() {
+		return "thymeleaf/bootstrap";
+	}
 	
 	@RequestMapping("center")
     public String center() {
@@ -77,4 +82,6 @@ public class ThymeleafController {
 		
         return "redirect:/th/test";
     }
+
+
 }
