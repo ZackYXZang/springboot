@@ -21,4 +21,6 @@ public interface SysUserMapper {
     List<SysUser> selectAll();
 
     SysUser findUserById(String id);
+
+    SysUser findByUsername(String name);
 }
