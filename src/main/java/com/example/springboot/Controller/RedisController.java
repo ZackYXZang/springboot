@@ -1,7 +1,6 @@
 package com.example.springboot.Controller;
 
 import com.example.springboot.pojo.IMoocJSONResult;
-import com.example.springboot.pojo.SysUser;
 import com.example.springboot.pojo.User;
 import com.example.springboot.utils.JsonUtils;
 import com.example.springboot.utils.RedisOperator;
@@ -23,12 +22,12 @@ public class RedisController {
 	
 	@Autowired
 	private RedisOperator redis;
-	
+	/*
 	@RequestMapping("/test")
 	public IMoocJSONResult test() {
-		
+
 		strRedis.opsForValue().set("imooc-cache", "hello 慕课网~~~~~~");
-		
+
 		SysUser user = new SysUser();
 		user.setId("100111");
 		user.setUsername("imooc");
@@ -36,37 +35,20 @@ public class RedisController {
 		user.setIsDelete(0);
 		user.setRegistTime(new Date());
 		strRedis.opsForValue().set("json:user", JsonUtils.objectToJson(user));
-		
+
 		SysUser jsonUser = JsonUtils.jsonToPojo(strRedis.opsForValue().get("json:user"), SysUser.class);
-		
+
 		return IMoocJSONResult.ok(jsonUser);
-	}
+	}*/
 	
 	@RequestMapping("/getJsonList")
 	public IMoocJSONResult getJsonList() {
 		
-		User user = new User();
-		user.setAge(18);
-		user.setName("慕课网");
-		user.setPassword("123456");
-		user.setBirthday(new Date());
-		
-		User u1 = new User();
-		u1.setAge(19);
-		u1.setName("imooc");
-		u1.setPassword("123456");
-		u1.setBirthday(new Date());
-		
-		User u2 = new User();
-		u2.setAge(17);
-		u2.setName("hello imooc");
-		u2.setPassword("123456");
-		u2.setBirthday(new Date());
+
+
 		
 		List<User> userList = new ArrayList<>();
-		userList.add(user);
-		userList.add(u1);
-		userList.add(u2);
+
 		
 		redis.set("json:info:userlist", JsonUtils.objectToJson(userList), 2000);
 		

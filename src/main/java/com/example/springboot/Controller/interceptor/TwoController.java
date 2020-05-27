@@ -30,25 +30,15 @@ public class TwoController {
     public String test(ModelMap map) {
 		
 		User user = new User();
-		user.setAge(18);
-		user.setName("manager");
-		user.setPassword("123456");
-		user.setBirthday(new Date());
+
 		
 		map.addAttribute("user", user);
 		
 		
 		User u1 = new User();
-		u1.setAge(19);
-		u1.setName("itzixi");
-		u1.setPassword("123456");
-		u1.setBirthday(new Date());
-		
+
 		User u2 = new User();
-		u2.setAge(17);
-		u2.setName("LeeCX");
-		u2.setPassword("123456");
-		u2.setBirthday(new Date());
+
 		
 		List<User> userList = new ArrayList<>();
 		userList.add(user);
@@ -62,7 +52,7 @@ public class TwoController {
 	
 	@PostMapping("postform")
     public String postform(User user) {
-		System.out.println(user.getName());
+
         return "redirect:/th/test";
     }
 }
