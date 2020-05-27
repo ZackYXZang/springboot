@@ -19,4 +19,6 @@ public interface SysUserMapper {
      * @mbggenerated
      */
     List<SysUser> selectAll();
+
+    SysUser findUserById(String id);
 }
