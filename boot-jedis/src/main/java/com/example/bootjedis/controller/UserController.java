@@ -6,4 +6,5 @@ package com.example.bootjedis.controller;
  * @desc
  **/
 public class UserController {
+
 }
