@@ -56,6 +56,7 @@ public class UserServiceImpl implements UserService {
         map.put("id", user.getId());
         map.put("name", user.getName());
         map.put("age", user.getAge() + "");
+        jedis.hmset(id, map);
       }
     }catch (Exception e) {
       e.printStackTrace();

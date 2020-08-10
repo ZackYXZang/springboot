@@ -18,12 +18,21 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 public class RedisConfig {
 
+  /**
+   * 覆盖了RedisAutoConfiguration里面的redisTemplate方法
+   * @param redisConnectionFactory
+   * @return
+   */
   @Bean
   public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory)
   {
     RedisTemplate<String, Object> template = new RedisTemplate<String, Object>();
     template.setConnectionFactory(redisConnectionFactory);
 
+    //如果不加下面这些配置，直接返回template
+    //那么正常保存数据到redis时，redisTemplate会进行序列化，
+    //默认使用到是JdkSerializationRedisSerializer进行数据序列化
+    //所有到Key和value还有hashKey和hashValue到原始字符前，都加了一串字符
     Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<Object>(Object.class);
     ObjectMapper om = new ObjectMapper();
     om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
@@ -34,7 +43,6 @@ public class RedisConfig {
 
     //在使用注解@Bean返回RedisTemplate的时候，同时配置hashKey和hashValue的序列化方法
     //key采用String的序列化方式
-    //在key和value前面默认有字符串
     template.setKeySerializer(stringRedisSerializer);
     //value采用序列化方式采用jackson
     template.setValueSerializer(jackson2JsonRedisSerializer);
