@@ -28,6 +28,8 @@ public class UserServiceImpl implements UserService {
   @Override
   public String getString(String key) {
     Jedis jedis = jedisPool.getResource();
+//    jedis.zscore();
+//    jedis.sismember();
     String value = null;
     if (jedis.exists(key)) {
       value = jedis.get(key);
