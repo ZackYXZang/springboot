@@ -4,7 +4,7 @@ server:
 spring:
   redis:
     port: 6379
-    password: meiyisi123
+    password: zhongtai@_Ra1i
     host: 127.0.0.1
     jedis:
       pool:

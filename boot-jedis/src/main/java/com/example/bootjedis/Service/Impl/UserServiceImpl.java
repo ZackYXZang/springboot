@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.Pipeline;
+import redis.clients.jedis.Response;
 
 /**
  * @author yuxiangzang
@@ -27,16 +29,17 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public String getString(String key) {
-    Jedis jedis = jedisPool.getResource();
-//    jedis.zscore();
-//    jedis.sismember();
-    String value = null;
-    if (jedis.exists(key)) {
-      value = jedis.get(key);
+    try(Jedis jedis = jedisPool.getResource();
+        Pipeline pipeline = jedis.pipelined()) {
+       Response<Double> zscore = pipeline.zscore("a", "a");
+      pipeline.sync();
+       Double aDouble = zscore.get();
+      System.out.println(aDouble == null ? 1 : 2);
+      System.out.println(zscore == null ? 3 : 4);
     }
 
-    jedis.close();
-    return value;
+
+    return "value";
   }
 
   @Override
