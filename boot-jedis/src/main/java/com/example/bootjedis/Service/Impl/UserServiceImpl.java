@@ -2,6 +2,7 @@ package com.example.bootjedis.Service.Impl;
 
 import com.example.bootjedis.Service.UserService;
 import com.example.bootjedis.pojo.User;
+import com.example.bootjedis.utils.TimeUtil;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.java.Log;
@@ -29,14 +30,30 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public String getString(String key) {
+    TimeUtil timer = new TimeUtil();
     try(Jedis jedis = jedisPool.getResource();
         Pipeline pipeline = jedis.pipelined()) {
-       Response<Double> zscore = pipeline.zscore("a", "a");
+      for (int i = 0; i < 10000; i++) {
+
+        Response<Double> zscore = pipeline.zscore("a", "a");
+        Response<Double> zscore1 = pipeline.zscore("b", "b");
+        pipeline.sync();
+        Double aDouble = zscore.get();
+        Double aDouble1 = zscore1.get();
+      }
       pipeline.sync();
-       Double aDouble = zscore.get();
-      System.out.println(aDouble == null ? 1 : 2);
-      System.out.println(zscore == null ? 3 : 4);
     }
+    System.out.println("timer: " + timer.getTimeAndReset());
+
+    TimeUtil timer1 = new TimeUtil();
+    try (Jedis jedis = jedisPool.getResource()){
+      for (int i = 0; i < 10000; i++) {
+        Double zscore = jedis.zscore("a", "a");
+        Double zscore1 = jedis.zscore("b", "b");
+      }
+    }
+    System.out.println("timer1: " + timer1.getTimeAndReset());
+
 
 
     return "value";
