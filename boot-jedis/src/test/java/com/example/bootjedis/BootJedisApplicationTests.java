@@ -1,6 +1,8 @@
 package com.example.bootjedis;
 
 import com.example.bootjedis.config.JedisConfig;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,9 +18,9 @@ class BootJedisApplicationTests {
 
     @Test
     void contextLoads() {
-        Jedis jedis = jedisPool.getResource();
-        Double zscore = jedis.zscore("a", "a");
-        System.out.println(zscore);
+        List<String> list = new ArrayList<>();
+        list.add("1");
+        System.out.println(list.get(1));
     }
 
 }
