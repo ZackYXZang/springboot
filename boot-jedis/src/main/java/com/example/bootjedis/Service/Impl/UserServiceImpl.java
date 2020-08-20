@@ -3,12 +3,14 @@ package com.example.bootjedis.Service.Impl;
 import com.example.bootjedis.Service.UserService;
 import com.example.bootjedis.pojo.User;
 import com.example.bootjedis.utils.TimeUtil;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.java.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -31,32 +33,23 @@ public class UserServiceImpl implements UserService {
   @Override
   public String getString(String key) {
     TimeUtil timer = new TimeUtil();
-    try(Jedis jedis = jedisPool.getResource();
-        Pipeline pipeline = jedis.pipelined()) {
-      for (int i = 0; i < 10000; i++) {
-
-        Response<Double> zscore = pipeline.zscore("a", "a");
-        Response<Double> zscore1 = pipeline.zscore("b", "b");
-        pipeline.sync();
-        Double aDouble = zscore.get();
-        Double aDouble1 = zscore1.get();
-      }
-      pipeline.sync();
+    try(Jedis jedis = jedisPool.getResource()) {
+      String value1 = jedis.hget("map:info:v1:1", "likework_37_1");
+      System.out.println(value1);
+      test1(jedis);
     }
+
     System.out.println("timer: " + timer.getTimeAndReset());
 
-    TimeUtil timer1 = new TimeUtil();
-    try (Jedis jedis = jedisPool.getResource()){
-      for (int i = 0; i < 10000; i++) {
-        Double zscore = jedis.zscore("a", "a");
-        Double zscore1 = jedis.zscore("b", "b");
-      }
-    }
-    System.out.println("timer1: " + timer1.getTimeAndReset());
-
-
-
     return "value";
+  }
+
+  private void test1 (Jedis jedis) {
+    TimeUtil timer1 = new TimeUtil();
+    String value2 = jedis
+        .hget("map:info:v1:1", "song_pay_gift_7day_earned_goldcoin");
+    System.out.println(value2);
+    System.out.println("timer1: " + timer1.getTimeAndReset());
   }
 
   @Override
@@ -85,5 +78,11 @@ public class UserServiceImpl implements UserService {
     }
 
     return user;
+  }
+
+  @Override
+  @Scheduled(cron = "0 10 17 * * ?")
+  public void test() {
+    System.out.println(new Date());
   }
 }

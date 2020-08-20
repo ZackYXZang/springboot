@@ -26,10 +26,8 @@ public class UserController {
   }
   @RequestMapping(value = "/test1", produces = "application/json;charset=UTF-8", method =
       RequestMethod.POST)
-  public String getString1(@RequestBody ChatInputParam req) {
-    if (req.getUserid() == null || req.getNum() < 1 || (req.getGender() != 0 && req.getGender() != 1)) {
-      return "chatRecommend parameters error...";
-    }
+  public String getString1() {
+
     String res = userService.getString("a");
     return res;
   }

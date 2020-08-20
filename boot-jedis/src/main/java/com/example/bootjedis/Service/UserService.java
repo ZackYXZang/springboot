@@ -27,4 +27,5 @@ public interface UserService {
    */
   User selectById(String id);
 
+  void test();
 }
