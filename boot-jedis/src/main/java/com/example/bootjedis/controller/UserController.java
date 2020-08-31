@@ -1,7 +1,10 @@
 package com.example.bootjedis.controller;
 
 import com.example.bootjedis.Service.UserService;
+import com.example.bootjedis.mapper.ChannelDataMapper;
+import com.example.bootjedis.pojo.ChannelData;
 import com.example.bootjedis.pojo.ChatInputParam;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +22,9 @@ public class UserController {
   @Autowired
   private UserService userService;
 
+  @Autowired
+  private ChannelDataMapper channelDataMapper;
+
   @RequestMapping("/test")
   public String getString() {
     String res = userService.getString("a");
@@ -28,7 +34,11 @@ public class UserController {
       RequestMethod.POST)
   public String getString1() {
 
-    String res = userService.getString("a");
-    return res;
+    List<ChannelData> channelData = channelDataMapper
+        .selectAll("唱吧", null, null, "admin", 1, 30);
+
+    return null;
   }
+
+
 }
