@@ -13,7 +13,7 @@ spring:
         min-idle: 2     #最小空闲数
     timeout: 2000   #连接超时
   datasource:
-    url: jdbc:mysql://localhost:3306/cndata?useunicode=true&characterEncoding=utf8
+    url: jdbc:mysql://localhost:3306/cndata?useunicode=true&characterEncoding=utf8&serverTimezone=CTT
     username: root
     password: meiyisi123
     driver-class-name: com.mysql.jdbc.Driver

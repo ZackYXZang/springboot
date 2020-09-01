@@ -1,5 +1,7 @@
 package com.example.bootjedis.pojo;
 
+import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.metadata.BaseRowModel;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;

@@ -78,16 +78,16 @@
     from channel_data
     where 1 = 1
     <if test="product != null and product != ''">
-      product = #{product}
+      and product = #{product}
     </if>
     <if test="channel != null and channel != ''">
-      channel = #{channel}
+      and channel = #{channel}
     </if>
     <if test="popularizeDate != null and popularizeDate != ''">
-      popularize_date = #{popularizeDate}
+      and popularize_date = #{popularizeDate}
     </if>
     <if test="userName != null and userName != ''">
-      creator = #{userName}
+      and creator = #{userName}
     </if>
     limit ${(pageNum-1)*size},#{size};
   </select>

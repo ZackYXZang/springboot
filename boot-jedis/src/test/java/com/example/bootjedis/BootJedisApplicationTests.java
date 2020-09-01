@@ -35,30 +35,7 @@ class BootJedisApplicationTests {
   @Test
   void contextLoads() {
 
-//    java.sql.Date date=new java.sql.Date(System.currentTimeMillis());
-//    System.out.println(date);
-//    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-//    String dt = format.format(new Date());
-//    Date date1 = new Date();
-//    java.sql.Date date = new java.sql.Date();
-//    date.toLocalDate();
-//    System.out.println(dt);
 
-//   List<String> list = new ArrayList<>();
-//   list.add("249330");
-//   String string = JSONObject.toJSONString(list);
-//
-//    List<String> strings = JSONArray.parseArray(string, String.class);
-//    System.out.println(strings);
-//
-//    if (!strings.contains("249330")) {
-//      System.out.println("249330 未被封禁过");
-//    }
-
-    boolean zang = isNumeric("*#");
-    boolean num = isNumeric("1324");
-    System.out.println(zang);
-    System.out.println(num);
   }
 
   public boolean isNumeric(String str){
