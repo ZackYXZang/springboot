@@ -1,13 +1,11 @@
 package com.example.bootjedis.Service.Impl;
 
-import com.dianping.cat.Cat;
 import com.example.bootjedis.Service.UserService;
 import com.example.bootjedis.pojo.User;
 import com.example.bootjedis.utils.TimeUtil;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,36 +20,30 @@ import redis.clients.jedis.JedisPool;
  * @create 2020-07-03-7:14 下午
  * @desc 测试jedis接口实现类
  **/
-@Primary
-@Service
-public class UserServiceImpl {
 
-  private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+@Service
+public class UserServiceImplCopy implements UserService {
+
+  private Logger logger = LoggerFactory.getLogger(UserServiceImplCopy.class);
 
   @Autowired
   private JedisPool jedisPool;
 
-  int count = 2;
-//  @Scheduled(initialDelay = 0, fixedDelay = 5 * 1000)
-  public int scheduledChatMatchData() {
-    int num = count;
-    num = num + 1;
-    count = num;
-    System.out.println(num);
-    Cat.logMetricForCount("scheduledChatMatchData", count);
-    return count;
-  }
-
+  @Override
   public String getString(String key) {
     TimeUtil timer = new TimeUtil();
-
+    try(Jedis jedis = jedisPool.getResource()) {
+      String value1 = jedis.hget("map:info:v1:1", "likework_37_1");
+      System.out.println(value1);
+      test1(jedis);
+    }
 
     System.out.println("timer: " + timer.getTimeAndReset());
 
     return "value";
   }
 
-  private void test1(Jedis jedis) {
+  private void test1 (Jedis jedis) {
     TimeUtil timer1 = new TimeUtil();
     String value2 = jedis
         .hget("map:info:v1:1", "song_pay_gift_7day_earned_goldcoin");
@@ -59,10 +51,11 @@ public class UserServiceImpl {
     System.out.println("timer1: " + timer1.getTimeAndReset());
   }
 
+  @Override
   public User selectById(String id) {
     User user = new User();
-    try (Jedis jedis = jedisPool.getResource()) {
-      if (jedis.exists(id)) {
+    try (Jedis jedis = jedisPool.getResource()){
+      if(jedis.exists(id)) {
         logger.info("从redis中取值");
         Map<String, String> map = jedis.hgetAll(id);
         user.setId(map.get("id"));
@@ -79,14 +72,15 @@ public class UserServiceImpl {
         map.put("age", user.getAge() + "");
         jedis.hmset(id, map);
       }
-    } catch (Exception e) {
+    }catch (Exception e) {
       e.printStackTrace();
     }
 
     return user;
   }
 
+  @Override
   public void test() {
-    System.out.println("test");
+    System.out.println("copy");
   }
 }

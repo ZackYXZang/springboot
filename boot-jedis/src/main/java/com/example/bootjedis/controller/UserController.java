@@ -37,9 +37,10 @@ public class UserController {
   @Autowired
   private ChannelDataMapper channelDataMapper;
 
-  @RequestMapping("/test")
+  @RequestMapping(value = "/test", produces = "application/x-www-form-urlencoded;charset=UTF-8", method =
+      RequestMethod.POST)
   public String getString() {
-    String res = userService.getString("a");
+    String res = userService.getString(null);
     return res;
   }
   @RequestMapping(value = "/test1", produces = "application/json;charset=UTF-8", method =

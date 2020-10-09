@@ -1,4 +1,4 @@
-package controller;
+package com.example.leetcode.controller;
 
 import com.example.leetcode.service.ArrayServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +16,12 @@ public class ArrayController {
 
   @Autowired
   private ArrayServiceImpl arrayService;
-  @RequestMapping(value = "/accompany_rec", produces = "application/json;charset=UTF-8", method = {
+  @RequestMapping(value = "/test", produces = "application/json;charset=UTF-8", method = {
       RequestMethod.GET, RequestMethod.POST})
   public String test() {
+    int target = 7;
+    int array[][] = new int[][] {{1,2,8,9},{2,4,9,12},{4,7,10,13},{6,8,11,15}};
+    boolean flag = arrayService.find(target, array);
     return null;
   }
 }
