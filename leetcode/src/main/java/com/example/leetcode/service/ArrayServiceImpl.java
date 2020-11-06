@@ -252,83 +252,99 @@ public class ArrayServiceImpl {
    * 在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。
    * 输入一个数组,求出这个数组中的逆序对的总数P。并将P对1000000007取模的结果输出。 即输出P%1000000007
    */
-  public int InversePairs(int [] array) {
-    int count = sort(array, 0, array.length - 1, 0);
-    if (count > 1000000007) {
-      count = count % 1000000007;
+  public int InversePairs(int[] array) {
+    if (array == null || array.length < 2) {
+      return 0;
+    }
+    return MergeSort(array, 0, array.length - 1);
+  }
+
+
+  public int MergeSort(int[] array, int l, int r) {
+    if (l == r) {
+      return 0;
+    }
+    int mid = l + ((r - l) >> 1);
+    int left = MergeSort(array, l, mid);
+    int right = MergeSort(array, mid + 1, r);
+    int merge = merge(array, l, mid, r);
+    int result = (left + right + merge) >  1000000007 ? (left + right + merge) % 1000000007 : left + right + merge;
+//    System.out.println("resul1 = " + result);
+    return result;
+  }
+
+  public int merge(int[] array, int l, int mid, int r) {
+    int[] help = new int[r - l + 1];
+    int i = 0;
+    int leftIndex = l;
+    int rightIndex = mid + 1;
+    int count = 0;
+
+    while (leftIndex <= mid && rightIndex <= r) {
+      if (array[leftIndex] > array[rightIndex]) {
+        count += mid - leftIndex + 1;
+        if (count > 1000000007) {
+          count = count % 1000000007;
+        }
+        help[i++] = array[rightIndex++];
+      } else {
+        help[i++] = array[leftIndex++];
+      }
+    }
+
+    while (leftIndex <= mid) {
+      help[i++] = array[leftIndex++];
+    }
+
+    while (rightIndex <= r) {
+      help[i++] = array[rightIndex++];
+    }
+
+    for (i = 0; i < help.length; i++) {
+      array[l + i] = help[i];
     }
     return count;
   }
-  public static int sort(int[] array, int start, int end, int count) {
-    //如果指针相遇，返回
-    if (start >= end) {
-      return count;
-    }
 
-    //递归
-    //找到中间对索引
-    int mid = (start + end) / 2;
-    //对左边对数组进行递归
-    int left = sort(array, start, mid, count);
-    //对右边对数组进行递归
-    int right = sort(array, mid + 1, end, count);
-
-    //开始计算逆数对
-    int i = mid;
-    int j = end;
-
-    while (i >= start && j > mid) {
-      if (array[i] > array[j]) {
-        System.out.println("array[i] = " + array[i]);
-        System.out.println("array[j] = " + array[j]);
-        count += j - mid;
-//        if (count > 1000000007) {
-//          count = count % 1000000007;
-//        }
-        System.out.println("count = " + count);
-        i--;
-      } else {
-        j--;
-      }
-    }
-    //合并
-    merge(array, start, mid, end);
-    return left + right + count;
+  public int InversePairs2(int [] array) {
+    if(array == null) return 0;
+    int[] tmp = new int[array.length];
+    return mergeSort(array, tmp, 0, array.length-1);
   }
 
-  public static void merge(int[] array, int left, int mid, int right) {
+  //归并排序，递归
+  private int mergeSort(int[] array, int[] tmp, int low, int high) {
+    if(low >= high) return 0;
+    int res = 0, mid = low + (high - low) / 2;
+    res += mergeSort(array, tmp, low, mid);
+    res %= 1000000007;
+    res += mergeSort(array, tmp, mid + 1, high);
+    res %= 1000000007;
+    res += merge(array, tmp, low, mid, high);
+    res %= 1000000007;
+//    System.out.println("result2 = " + res);
+    return res;
+  }
 
-    //临时数组，用来储存有序的结果
-    int[] tempArray = new int[array.length];
-    //临时数组的开始是左数组的第一个元素的位置
-    int tempIndex = left;
-
-    //右数组的第一个元素的索引
-    int rightStart = mid + 1;
-    //将排序后的临时数组赋值会原数组
-    int copyIndex = left;
-
-    //在两个数组中选择最小的放入临时数组
-    while (left <= mid && rightStart <= right) {
-      if (array[left] <= array[rightStart]) {
-        tempArray[tempIndex++] = array[left++];
-      } else {
-        tempArray[tempIndex++] = array[rightStart++];
-      }
+  //归并排序，合并
+  private int merge(int[] array, int[] tmp, int low, int mid, int high) {
+    int i = low, i1 = low, i2 = mid + 1;
+    int res = 0;
+    while(i1 <= mid && i2 <= high) {
+      if(array[i1] > array[i2]) {
+        res += mid - i1 + 1;
+        res %= 1000000007;
+        tmp[i++] = array[i2++];
+      } else
+        tmp[i++] = array[i1++];
     }
-
-    //将剩余不分一次放入临时数组（两个while只会执行其中一个）
-    while (left <= mid) {
-      tempArray[tempIndex++] = array[left++];
-    }
-    while (rightStart <= right) {
-      tempArray[tempIndex++] = array[rightStart++];
-    }
-    //将临时数组中的内容拷贝回原数组中
-    while(copyIndex <= right) {
-      array[copyIndex] = tempArray[copyIndex++];
-    }
-
+    while(i1 <= mid)
+      tmp[i++] = array[i1++];
+    while(i2 <= high)
+      tmp[i++] = array[i2++];
+    for (i = low; i <= high; i++)
+      array[i] = tmp[i];
+    return res;
   }
 
   /**

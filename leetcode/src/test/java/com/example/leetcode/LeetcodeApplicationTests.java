@@ -1,11 +1,14 @@
 package com.example.leetcode;
 
 import com.example.leetcode.service.ArrayServiceImpl;
+import com.example.leetcode.service.ArraySortImpl;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +20,24 @@ class LeetcodeApplicationTests {
   @Autowired
   private ArrayServiceImpl arrayService;
 
+  @Autowired
+  private ArraySortImpl arraySort;
+
   @Test
   void contextLoads() throws Exception {
+
+    String dateStr = "2020-10-20 00:00:00";
+    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    Calendar calendar = new GregorianCalendar();
+    try {
+      calendar.setTime(format.parse(dateStr));
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+    calendar.add(Calendar.DAY_OF_YEAR,+1);
+    String result = format.format(calendar.getTime());
+    System.out.println(result);
+
 //    int target = 7;
 //    int array[][] = new int[][] {{1,2,8,9},{2,4,9,12},{4,7,10,13},{6,8,11,15}, {7,9,12,16}};
 //    boolean flag = arrayService.find(target, array);
@@ -37,13 +56,28 @@ class LeetcodeApplicationTests {
     //1,2,3,4,5,6,7,0
     //7
 //    mergeSort(array);
-    int[] array1 = new int[]{1, 2, 4, 7, 3, 5, 6, 8};
-    int[] array2 = new int[]{4, 7, 2, 1, 5, 3, 8, 6};
-//    int k = 6;
-//
-//    int i = arrayService.GetNumberOfK(array, k);
-//    System.out.println(i);
+//    int[] array1 = new int[]{2, 0, 0, 8, 45, 0, 95};
+////    int[] array2 = new int[]{2, 0, 0, 8, 45, 0, 95};
+//    int res1 = arrayService.InversePairs(array1);
+//    for (int i = 0; i< array1.length; i++) {
+//      System.out.println(array1[i]);
+//    }
+//    int res2 = arrayService.InversePairs2(array2);
+//    System.out.println(res1);
+//    System.out.println(res2);
 
+
+
+  }
+  public static int[] copyArray(int[] arr) {
+    if (arr == null) {
+      return null;
+    }
+    int[] res = new int[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+      res[i] = arr[i];
+    }
+    return res;
   }
 
   public List<String> test1(List<String> list, List<String> list2) {

@@ -69,7 +69,7 @@ class BootJedisApplicationTests {
     }
 
 
-    long nowUnixSecondTime = LocalDateUtils.getUnixSecondTime(LocalDateTime.now());
+    long nowUnixSecondTime = LocalDateUtils.getUnixSecondTime(LocalDateTime.now().minusDays(3));
       System.out.println(nowUnixSecondTime);
 
 //    String a = "a";
