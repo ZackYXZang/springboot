@@ -307,14 +307,18 @@ public class ArrayServiceImpl {
   }
 
   public int InversePairs2(int [] array) {
-    if(array == null) return 0;
+    if(array == null) {
+      return 0;
+    }
     int[] tmp = new int[array.length];
     return mergeSort(array, tmp, 0, array.length-1);
   }
 
   //归并排序，递归
   private int mergeSort(int[] array, int[] tmp, int low, int high) {
-    if(low >= high) return 0;
+    if(low >= high) {
+      return 0;
+    }
     int res = 0, mid = low + (high - low) / 2;
     res += mergeSort(array, tmp, low, mid);
     res %= 1000000007;
@@ -335,15 +339,19 @@ public class ArrayServiceImpl {
         res += mid - i1 + 1;
         res %= 1000000007;
         tmp[i++] = array[i2++];
-      } else
+      } else {
         tmp[i++] = array[i1++];
+      }
     }
-    while(i1 <= mid)
+    while(i1 <= mid) {
       tmp[i++] = array[i1++];
-    while(i2 <= high)
+    }
+    while(i2 <= high) {
       tmp[i++] = array[i2++];
-    for (i = low; i <= high; i++)
+    }
+    for (i = low; i <= high; i++) {
       array[i] = tmp[i];
+    }
     return res;
   }
 
@@ -460,4 +468,60 @@ public class ArrayServiceImpl {
 //
 //  }
 
+  /**
+   * 给定一个数组，求如果排序之后，相邻两数的最大差值，要求时
+   * 间复杂度O(N)，且要求不能用非基于比较的排序。
+   * @param arr
+   * @return
+   */
+  public int MaxGap(int[] arr) {
+    if(arr == null || arr.length < 2) {
+      return 0;
+    }
+
+    //遍历数组，找到最大值和最小值，如果最大和最小值相等，那么证明数组的所有值都是相等的
+    int length = arr.length;
+    int max = Integer.MIN_VALUE;
+    int min = Integer.MAX_VALUE;
+    for(int i = 0; i < length; i++) {
+      max = Math.max(max, arr[i]);
+      min = Math.min(min, arr[i]);
+    }
+    if (max == min) {
+      return 0;
+    }
+
+    //arr的长度是length，桶的长度是length + 1，那么桶一定有最少一个位置是空
+    //所以差的最大值一定不会是在桶的同一个板子里
+    //把arr等分，看成桶，记录每一个位置的最大值和最小值
+    int[] maxs = new int[length + 1];
+    int[] mins = new int[length + 1];
+    //记录桶的每一个位置是否有位置
+    boolean[] hasNumber = new boolean[length + 1];
+
+    //把arr的数对应到桶上，找到桶上每个位置的最大值和最小值
+    int bucketIndex = 0;
+    for(int i = 0; i < length; i++) {
+      bucketIndex = bucket(arr[i], length, min, max);
+      mins[bucketIndex] = hasNumber[bucketIndex] ? Math.min(mins[bucketIndex], arr[i]) : arr[i];
+      maxs[mins[bucketIndex]] = hasNumber[bucketIndex] ? Math.max(maxs[bucketIndex], arr[i]) : arr[i];
+      hasNumber[bucketIndex] = true;
+    }
+
+    //遍历桶，用下一个板子的最小值，减去上一个板子的最大值，来算最大差值
+    int result = 0;
+    int lastMax = maxs[0];
+    for (int i = 1; i < length; i++) {
+      if (hasNumber[i]) {
+        result = Math.max(result, mins[i] - lastMax);
+        lastMax = maxs[i];
+      }
+    }
+    return result;
+  }
+
+  //确定当前数属于桶上的哪个板子
+  public int bucket(long num, long len, long min, long max) {
+    return (int) ((num - min) * len/(max - min));
+  }
 }

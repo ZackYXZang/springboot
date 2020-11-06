@@ -26,16 +26,22 @@ class LeetcodeApplicationTests {
   @Test
   void contextLoads() throws Exception {
 
-    String dateStr = "2020-10-20 00:00:00";
-    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    Calendar calendar = new GregorianCalendar();
-    try {
-      calendar.setTime(format.parse(dateStr));
-    } catch (ParseException e) {
-      e.printStackTrace();
-    }
-    calendar.add(Calendar.DAY_OF_YEAR,+1);
-    String result = format.format(calendar.getTime());
+    long max = 100;
+    long min = 50;
+    long length = 5;
+    long num = 61;
+    int result = (int) ((num - min) * length/(max - min));
+
+//    String dateStr = "2020-10-20 00:00:00";
+//    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//    Calendar calendar = new GregorianCalendar();
+//    try {
+//      calendar.setTime(format.parse(dateStr));
+//    } catch (ParseException e) {
+//      e.printStackTrace();
+//    }
+//    calendar.add(Calendar.DAY_OF_YEAR,+1);
+//    String result = format.format(calendar.getTime());
     System.out.println(result);
 
 //    int target = 7;
