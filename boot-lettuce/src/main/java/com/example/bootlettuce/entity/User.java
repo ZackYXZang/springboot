@@ -10,9 +10,16 @@ import lombok.Data;
 @Data
 public class User {
 
+  public User() {
+//    super();
+    this.setWorkids(new int[1]);
+  }
+
   private String id;
 
   private String name;
 
   private Integer age;
+  private int[] workids;
+
 }

@@ -2,8 +2,10 @@ package com.example.leetcode;
 
 import com.example.leetcode.service.ArrayServiceImpl;
 import com.example.leetcode.service.ArraySortImpl;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.commons.lang.ArrayUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,16 +27,7 @@ public class SortTests {
 
   @Test
   void contextLoads() throws Exception {
-    int[] arr1 = generateRandomArray(10, 100);
-    List<Integer> list = Arrays.asList(ArrayUtils.toObject(arr1));
-    list.forEach(System.out::println);
-
-    System.out.println("分割符");
-
-    arraySort.QuickSort(arr1);
-    List<Integer> list2 = Arrays.asList(ArrayUtils.toObject(arr1));
-    list2.stream().forEach(System.out::println);
-
+    test();
   }
 
   public void test() {
@@ -45,17 +38,32 @@ public class SortTests {
     for (int i = 0; i < testTime; i++) {
       int[] arr1 = generateRandomArray(maxSize, maxValue);
       int[] arr2 = copyArray(arr1);
-      int result1 = arrayService.InversePairs(arr1);
-      int result2 = arrayService.InversePairs2(arr2);
-      if  (result1 != result2) {
-        succeed = false;
-        printArray(arr1);
+      arrayService.reOrderArray1(arr1);
+      arrayService.reOrderArray2(arr2);
+      String result1 = "";
+      String result2 = "";
+      for (int m = 0; m < arr1.length; m++) {
+        result1 += arr1[m];
+      }
+      for (int n = 0; n < arr1.length; n++) {
+        result2 += arr2[n];
+      }
+      if (!result1.equals(result2)) {
         System.out.println(result1);
         System.out.println(result2);
-        break;
       }
+//      int result1 = arrayService.InversePairs(arr1);
+//      int result2 = arrayService.InversePairs2(arr2);
+//
+//      if  (result1 != result2) {
+//        succeed = false;
+//        printArray(arr1);
+//        System.out.println(result1);
+//        System.out.println(result2);
+//        break;
+//      }
     }
-    System.out.println(succeed ? "Nice!" : "Fucking fucked!");
+//    System.out.println(succeed ? "Nice!" : "Fucking fucked!");
   }
 
   // for test

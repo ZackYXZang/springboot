@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
-import javax.swing.tree.TreeNode;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,13 +15,11 @@ import org.springframework.stereotype.Service;
 public class ArrayServiceImpl {
 
   /**
-   * 	1。二维数组中的查找
-   * 在一个二维数组中（每个一维数组的长度相同），每一行都按照从左到右递增的顺序排序，
-   * 每一列都按照从上到下递增的顺序排序。请完成一个函数，输入这样的一个二维数组和一个整数，
+   * 1。二维数组中的查找 在一个二维数组中（每个一维数组的长度相同），每一行都按照从左到右递增的顺序排序， 每一列都按照从上到下递增的顺序排序。请完成一个函数，输入这样的一个二维数组和一个整数，
    * 判断数组中是否含有该整数。
    */
-  public boolean find(int target, int [][] array) {
-    if(array == null || array.length == 0 || array[0] == null || array[0].length == 0) {
+  public boolean find(int target, int[][] array) {
+    if (array == null || array.length == 0 || array[0] == null || array[0].length == 0) {
       return false;
     }
     int rowStart = 0; //表示有多少行
@@ -49,13 +46,11 @@ public class ArrayServiceImpl {
   }
 
   /**
-   * 斐波那契数列
-   * 大家都知道斐波那契数列，现在要求输入一个整数n，请你输出斐波那契数列的第n项（从0开始，第0项为0，第1项是1）。
-   * n<=39
+   * 斐波那契数列 大家都知道斐波那契数列，现在要求输入一个整数n，请你输出斐波那契数列的第n项（从0开始，第0项为0，第1项是1）。 n<=39
    */
   public int fibonacci(int n) {
     //0,1,1,2,3,5,8,13
-    if (n == 0 ||n == 1) {
+    if (n == 0 || n == 1) {
       return n;
     }
     int first = 0;
@@ -71,15 +66,15 @@ public class ArrayServiceImpl {
   }
 
   /**
-   *调整数组顺序使奇数位于偶数前面
-   *输入一个整数数组，实现一个函数来调整该数组中数字的顺序，使得所有的奇数位于数组的前半部分，所有的偶数位于数组的后半部分，并保证奇数和奇数，偶数和偶数之间的相对位置不变。
+   * 调整数组顺序使奇数位于偶数前面 输入一个整数数组，实现一个函数来调整该数组中数字的顺序，
+   * 使得所有的奇数位于数组的前半部分，所有的偶数位于数组的后半部分，并保证奇数和奇数，偶数和偶数之间的相对位置不变。
    */
-  public void reOrderArray(int [] array) {
+  public void reOrderArray1(int[] array) {
     for (int i = 0; i < array.length; i++) {
       if (array[i] % 2 == 1) {
         int temp = array[i];
         int j = 0;
-        for(j = i - 1; j >= 0; j--) {
+        for (j = i - 1; j >= 0; j--) {
           if (array[j] % 2 == 0) {
             array[j + 1] = array[j];
           } else {
@@ -91,14 +86,71 @@ public class ArrayServiceImpl {
     }
   }
 
+  //归并方法，时间复杂度也是O(N^2)
+  public void reOrderArray2(int[] array) {
+    if(array == null || array.length < 2) {
+      return;
+    }
+
+    reOrderArraySub(array, 0, array.length - 1);
+
+  }
+
+  private void reOrderArraySub(int[] array, int l, int r) {
+    if(l < r) {
+      int mid = l + (r - l) /2;
+      reOrderArraySub(array, l, mid);
+      reOrderArraySub(array, mid + 1, r);
+      reOrderArraySub1(array, l, mid, r);
+    }
+  }
+
+  private void reOrderArraySub1(int[] array, int l, int mid, int r) {
+    int[] help =  new int[r - l + 1];
+    int left = l;
+    int right = mid + 1;
+    int index = 0;
+    while (left <= mid) {
+      if (array[left] % 2 == 1) {
+        help[index++] = array[left];
+      }
+      left++;
+    }
+
+    while (right <= r) {
+      if (array[right] % 2 == 1) {
+        help[index++] = array[right];
+      }
+      right++;
+    }
+    left = l;
+    right = mid + 1;
+
+    while (left <= mid) {
+      if (array[left] % 2 == 0) {
+        help[index++] = array[left];
+      }
+      left++;
+    }
+
+    while (right <= r) {
+      if (array[right] % 2 == 0) {
+        help[index++] = array[right];
+      }
+      right++;
+    }
+
+    for (int i = 0; i < help.length; i++) {
+      array[l + i] = help[i];
+    }
+  }
+
   /**
-   * 顺时针打印出矩阵
-   * 输入一个矩阵，按照从外向里以顺时针的顺序依次打印出每一个数字，
-   * 例如，如果输入如下4 X 4矩阵： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
-   * 则依次打印出数字1,2,3,4,8,12,16,15,14,13,9,5,6,7,11,10.
+   * 顺时针打印出矩阵 输入一个矩阵，按照从外向里以顺时针的顺序依次打印出每一个数字， 例如，如果输入如下4 X 4矩阵： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+   * 16 则依次打印出数字1,2,3,4,8,12,16,15,14,13,9,5,6,7,11,10.
    */
-  public ArrayList<Integer> printMatrix(int [][] matrix) {
-    if(matrix == null || matrix.length == 0 || matrix[0] == null || matrix[0].length == 0) {
+  public ArrayList<Integer> printMatrix(int[][] matrix) {
+    if (matrix == null || matrix.length == 0 || matrix[0] == null || matrix[0].length == 0) {
       return new ArrayList<Integer>();
     }
     int rowStart = 0; //表示有多少行
@@ -153,10 +205,9 @@ public class ArrayServiceImpl {
   }
 
   /**
-   * 最小K个数
-   * 输入n个整数，找出其中最小的K个数。例如输入4,5,1,6,2,7,3,8这8个数字，则最小的4个数字是1,2,3,4。
+   * 最小K个数 输入n个整数，找出其中最小的K个数。例如输入4,5,1,6,2,7,3,8这8个数字，则最小的4个数字是1,2,3,4。
    */
-  public ArrayList<Integer> GetLeastNumbers_Solution(int [] input, int k) {
+  public ArrayList<Integer> GetLeastNumbers_Solution(int[] input, int k) {
     if (input == null || input.length < k || k == 0) {
       return new ArrayList<>();
     }
@@ -199,10 +250,9 @@ public class ArrayServiceImpl {
   }
 
   /**
-   * 把数组排成最小的数
-   * 输入一个正整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如输入数组{3，32，321}，则打印出这三个数字能排成的最小数字为321323。
+   * 把数组排成最小的数 输入一个正整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如输入数组{3，32，321}，则打印出这三个数字能排成的最小数字为321323。
    */
-  public String PrintMinNumber(int [] numbers) {
+  public String PrintMinNumber(int[] numbers) {
     if (numbers == null || numbers.length == 0) {
       return "";
     }
@@ -230,7 +280,8 @@ public class ArrayServiceImpl {
 
   }
 
-  private void getNumberList (List<String> list, StringBuffer sb, String[] numbers, int length, boolean[] used) {
+  private void getNumberList(List<String> list, StringBuffer sb, String[] numbers, int length,
+      boolean[] used) {
     if (sb.length() == length) {
       list.add(sb.toString());
       return;
@@ -248,9 +299,8 @@ public class ArrayServiceImpl {
   }
 
   /**
-   * 数组中的逆序对
-   * 在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。
-   * 输入一个数组,求出这个数组中的逆序对的总数P。并将P对1000000007取模的结果输出。 即输出P%1000000007
+   * 数组中的逆序对 在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。 输入一个数组,求出这个数组中的逆序对的总数P。并将P对1000000007取模的结果输出。
+   * 即输出P%1000000007
    */
   public int InversePairs(int[] array) {
     if (array == null || array.length < 2) {
@@ -268,7 +318,8 @@ public class ArrayServiceImpl {
     int left = MergeSort(array, l, mid);
     int right = MergeSort(array, mid + 1, r);
     int merge = merge(array, l, mid, r);
-    int result = (left + right + merge) >  1000000007 ? (left + right + merge) % 1000000007 : left + right + merge;
+    int result = (left + right + merge) > 1000000007 ? (left + right + merge) % 1000000007
+        : left + right + merge;
 //    System.out.println("resul1 = " + result);
     return result;
   }
@@ -306,17 +357,17 @@ public class ArrayServiceImpl {
     return count;
   }
 
-  public int InversePairs2(int [] array) {
-    if(array == null) {
+  public int InversePairs2(int[] array) {
+    if (array == null) {
       return 0;
     }
     int[] tmp = new int[array.length];
-    return mergeSort(array, tmp, 0, array.length-1);
+    return mergeSort(array, tmp, 0, array.length - 1);
   }
 
   //归并排序，递归
   private int mergeSort(int[] array, int[] tmp, int low, int high) {
-    if(low >= high) {
+    if (low >= high) {
       return 0;
     }
     int res = 0, mid = low + (high - low) / 2;
@@ -334,8 +385,8 @@ public class ArrayServiceImpl {
   private int merge(int[] array, int[] tmp, int low, int mid, int high) {
     int i = low, i1 = low, i2 = mid + 1;
     int res = 0;
-    while(i1 <= mid && i2 <= high) {
-      if(array[i1] > array[i2]) {
+    while (i1 <= mid && i2 <= high) {
+      if (array[i1] > array[i2]) {
         res += mid - i1 + 1;
         res %= 1000000007;
         tmp[i++] = array[i2++];
@@ -343,10 +394,10 @@ public class ArrayServiceImpl {
         tmp[i++] = array[i1++];
       }
     }
-    while(i1 <= mid) {
+    while (i1 <= mid) {
       tmp[i++] = array[i1++];
     }
-    while(i2 <= high) {
+    while (i2 <= high) {
       tmp[i++] = array[i2++];
     }
     for (i = low; i <= high; i++) {
@@ -356,12 +407,10 @@ public class ArrayServiceImpl {
   }
 
   /**
-   * 	数字在排序数组出现的次数
-   * 题目描述
-   * 统计一个数字在升序数组中出现的次数。
+   * 数字在排序数组出现的次数 题目描述 统计一个数字在升序数组中出现的次数。
    */
-  public int GetNumberOfK(int [] array , int k) {
-    if(array == null || array.length == 0) {
+  public int GetNumberOfK(int[] array, int k) {
+    if (array == null || array.length == 0) {
       return 0;
     }
     //方法一：暴力循环O(n)
@@ -396,8 +445,8 @@ public class ArrayServiceImpl {
     int rightBound = 0;
     //寻找上边界
     while (start < end) {
-      int mid = (start + end) /2;
-      if(array[mid] <= k) {
+      int mid = (start + end) / 2;
+      if (array[mid] <= k) {
         start = mid + 1;
       } else {
         end = mid;
@@ -409,10 +458,10 @@ public class ArrayServiceImpl {
     end = array.length - 1;
     //下边界
     while (start < end) {
-      int mid = (start + end) /2;
+      int mid = (start + end) / 2;
       if (array[mid] < k) {
         start = mid + 1;
-      }else {
+      } else {
         end = mid;
       }
     }
@@ -422,13 +471,10 @@ public class ArrayServiceImpl {
   }
 
   /**
-   * 题目描述
-   * 输入某二叉树的前序遍历和中序遍历的结果，请重建出该二叉树。
-   * 假设输入的前序遍历和中序遍历的结果中都不含重复的数字。
-   * 例如输入前序遍历序列{1,2,4,7,3,5,6,8}和中序遍历序列{4,7,2,1,5,3,8,6}，则重建二叉树并返回。
+   * 题目描述 输入某二叉树的前序遍历和中序遍历的结果，请重建出该二叉树。 假设输入的前序遍历和中序遍历的结果中都不含重复的数字。 例如输入前序遍历序列{1,2,4,7,3,5,6,8}和中序遍历序列{4,7,2,1,5,3,8,6}，则重建二叉树并返回。
    * [1,2,3,4,5,6,7],[3,2,4,1,6,5,7]
    */
-  public TreeNode reConstructBinaryTree(int [] pre,int [] in) {
+  public TreeNode reConstructBinaryTree(int[] pre, int[] in) {
     if (pre == null || pre.length == 0 || in == null || in.length == 0) {
       return null;
     }
@@ -437,25 +483,33 @@ public class ArrayServiceImpl {
     return root;
   }
 
-  public TreeNode reConstructBinaryTree(int[] pre, int startPre, int endPre, int[] in, int startIn, int endIn) {
-    if (startPre > endPre ||startIn > endIn) {
+  public TreeNode reConstructBinaryTree(int[] pre, int startPre, int endPre, int[] in, int startIn,
+      int endIn) {
+    if (startPre > endPre || startIn > endIn) {
       return null;
     }
     TreeNode root = new TreeNode(pre[startPre]);
 
-    for(int i = startIn; i <= endIn; i++) {
-      if(in[i] == root.val) {
-        root.left = reConstructBinaryTree(pre, startPre + 1, startPre + (i - startIn), in, startIn, i - 1);
-        root.right = reConstructBinaryTree(pre, startPre + (i - startIn) + 1, endPre, in, i + 1, endIn);
+    for (int i = startIn; i <= endIn; i++) {
+      if (in[i] == root.val) {
+        root.left = reConstructBinaryTree(pre, startPre + 1, startPre + (i - startIn), in, startIn,
+            i - 1);
+        root.right = reConstructBinaryTree(pre, startPre + (i - startIn) + 1, endPre, in, i + 1,
+            endIn);
       }
     }
     return root;
   }
-    class TreeNode {
+
+  class TreeNode {
+
     int val;
     TreeNode left;
     TreeNode right;
-    TreeNode(int x) { val = x; }
+
+    TreeNode(int x) {
+      val = x;
+    }
   }
 
   /**
@@ -469,13 +523,13 @@ public class ArrayServiceImpl {
 //  }
 
   /**
-   * 给定一个数组，求如果排序之后，相邻两数的最大差值，要求时
-   * 间复杂度O(N)，且要求不能用非基于比较的排序。
+   * 给定一个数组，求如果排序之后，相邻两数的最大差值，要求时 间复杂度O(N)，且要求不能用非基于比较的排序。
+   *
    * @param arr
    * @return
    */
   public int MaxGap(int[] arr) {
-    if(arr == null || arr.length < 2) {
+    if (arr == null || arr.length < 2) {
       return 0;
     }
 
@@ -483,7 +537,7 @@ public class ArrayServiceImpl {
     int length = arr.length;
     int max = Integer.MIN_VALUE;
     int min = Integer.MAX_VALUE;
-    for(int i = 0; i < length; i++) {
+    for (int i = 0; i < length; i++) {
       max = Math.max(max, arr[i]);
       min = Math.min(min, arr[i]);
     }
@@ -501,10 +555,11 @@ public class ArrayServiceImpl {
 
     //把arr的数对应到桶上，找到桶上每个位置的最大值和最小值
     int bucketIndex = 0;
-    for(int i = 0; i < length; i++) {
+    for (int i = 0; i < length; i++) {
       bucketIndex = bucket(arr[i], length, min, max);
       mins[bucketIndex] = hasNumber[bucketIndex] ? Math.min(mins[bucketIndex], arr[i]) : arr[i];
-      maxs[mins[bucketIndex]] = hasNumber[bucketIndex] ? Math.max(maxs[bucketIndex], arr[i]) : arr[i];
+      maxs[mins[bucketIndex]] =
+          hasNumber[bucketIndex] ? Math.max(maxs[bucketIndex], arr[i]) : arr[i];
       hasNumber[bucketIndex] = true;
     }
 
@@ -522,6 +577,11 @@ public class ArrayServiceImpl {
 
   //确定当前数属于桶上的哪个板子
   public int bucket(long num, long len, long min, long max) {
-    return (int) ((num - min) * len/(max - min));
+    return (int) ((num - min) * len / (max - min));
   }
+
+  /**
+   * 荷兰国旗问题
+   */
+
 }

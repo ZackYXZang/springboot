@@ -116,24 +116,45 @@ class BootLettuceApplicationTests {
     return "a";
   }
   public void test2() {
-    List<String> ab = new ArrayList<>();
-    ab.add("ab");
-    List<test> list = new ArrayList<>();
-    test a = new test();
-    a.setName1("a");
-    a.setId1("1");
-    a.setAb(ab);
-    test b = new test();
-    b.setName1("b");
-    b.setId1("2");
-    b.setAb(ab);
-    test c = new test();
-    c.setName1("c");
-    c.setId1("3");
-    c.setAb(ab);
-    list.add(b);
-    list.add(a);
-    list.add(c);
+
+    User user1 = new User();
+    user1.setId("1");
+    User user2 = new User();
+    user2.setId("2");
+    User user3 = new User();
+    user3.setId("3");
+    List<User> list = new ArrayList<>();
+    list.add(user1);
+    list.add(user2);
+    list.add(user3);
+
+    List<User> list1 = new ArrayList<>();
+    list1.add(user1);
+    list1.add(user2);
+    list1.add(user3);
+    List<String> collect = list1.stream().filter(a -> !list.contains(a)).map(User::getId)
+        .collect(Collectors.toList());
+    System.out.println(list1.get(0).getId());
+
+//
+//    List<String> ab = new ArrayList<>();
+//    ab.add("ab");
+//    List<test> list = new ArrayList<>();
+//    test a = new test();
+//    a.setName1("a");
+//    a.setId1("1");
+//    a.setAb(ab);
+//    test b = new test();
+//    b.setName1("b");
+//    b.setId1("2");
+//    b.setAb(ab);
+//    test c = new test();
+//    c.setName1("c");
+//    c.setId1("3");
+//    c.setAb(ab);
+//    list.add(b);
+//    list.add(a);
+//    list.add(c);
 
 //    List<test> collect = list.stream().filter(x -> {
 //      if (x.getName1().equals("c")) {
@@ -144,10 +165,10 @@ class BootLettuceApplicationTests {
 //      }
 //      return true;
 //    }).collect(Collectors.toList());
-
-    List<test> collect = list.stream().filter(x -> !x.getName1().equals("b") && !x.getName1().equals(filterTest(x))).collect(Collectors.toList());
-
-    collect.forEach(System.out::println);
+//
+//    List<test> collect = list.stream().filter(x -> !x.getName1().equals("b") && !x.getName1().equals(filterTest(x))).collect(Collectors.toList());
+//
+//    collect.forEach(System.out::println);
 
 
 //    list.stream().forEach(x -> x.setName1("zangyuxiang"));

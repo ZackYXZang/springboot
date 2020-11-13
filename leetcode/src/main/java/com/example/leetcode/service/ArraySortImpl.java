@@ -11,6 +11,19 @@ import org.springframework.stereotype.Service;
 public class ArraySortImpl {
 
   /**
+   * 稳定性：
+   * 具有稳定性的算法：
+   *      冒泡排序：可以实现成稳定的，当大的值向后移动时，碰到相等的值一起往后移动，就可以保证稳定性
+   *      插入排序：可以实现成稳定的，当小的值向前移动时，碰到相等的值就不动了，就可以保证稳定性
+   *      归并排序：当左边和右边相等时，先拷贝左边的
+   * 不具有稳定性的算法：
+   *      选择排序（找小的数，从头开始排序）
+   *      快速排序（选一个值，划分出大于，等于、小于它的区间，递归）
+   *      堆排序
+   *
+   */
+
+  /**
    * 冒泡排序 O(N^2)
    * [3, 2, 4, 0, 7]
    * 第一次：位置1和位置2比较，大的放后面，类推：位置2和位置3比较，直到位置N-1和位置N，此时位置N的数最大
@@ -154,6 +167,10 @@ public class ArraySortImpl {
 
   /**
    * 快排
+   * 时间复杂度O(N*logN)，因为选择的划分点是随机的，所以时间复杂度是一个长期期望的复杂度
+   * 随机快排的空间复杂度O(logN)，就是划分点
+   * T(N) = 2 * T(N/2) + O(N) => O(N*logN)
+   * 会被经常使用3，优势是常数项小
    * @param arr
    */
   public void QuickSort(int[] arr) {
@@ -209,13 +226,18 @@ public class ArraySortImpl {
   }
 
 
+  /**
+   * 堆排序
+   * 时间复杂度O(N*logN)，空间复杂度O(1)
+   * @param arr
+   */
   public void HeapSort(int[] arr) {
     if (arr == null || arr.length < 2) {
       return;
     }
 
     //从位置0开始，到最后到位置，构建出一个大根堆
-    //时间复杂度为
+    //时间复杂度为O(N*logN)，因为heapInsert(arr, i);时间复杂度是O(logN)
     for (int i = 0; i < arr.length; i++) {
       heapInsert(arr, i);
     }
@@ -224,6 +246,7 @@ public class ArraySortImpl {
     int size = arr.length;
     swap(arr, 0, --size);
 
+    //时间复杂度为O(N*logN)，heapify(arr, 0, size);时间复杂度是O(logN)
     while(size > 0) {
       //重新构建最大堆
       heapify(arr, 0, size);
