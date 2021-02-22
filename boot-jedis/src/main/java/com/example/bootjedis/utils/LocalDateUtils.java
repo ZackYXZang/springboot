@@ -1,13 +1,14 @@
 package com.example.bootjedis.utils;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.StringJoiner;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
 
 /**
  * @author sxk
@@ -24,14 +25,15 @@ public class LocalDateUtils {
   public static final DateTimeFormatter PATTERN_YYYY_MM_DD_HH_MM_SS = DateTimeFormatter
       .ofPattern("yyyy-MM-dd HH:mm:ss");
 
-  public static final ZoneId SYSTEM_ZONE_ID = ZoneId.systemDefault();
-
   public static final DateTimeFormatter HH = DateTimeFormatter.ofPattern("HH");
+  public static final DateTimeFormatter MIN = DateTimeFormatter.ofPattern("mm");
+
+  public static final DateTimeFormatter PATTERN_HHMMSS = DateTimeFormatter.ofPattern("HHmmss");
+
+  public static final ZoneId SYSTEM_ZONE_ID = ZoneId.systemDefault();
 
   /**
    * 格式 yyyyMMdd
-   *
-   * @return
    */
   public static String getNowStr() {
     return getNowStr(PATTERN_YYYYMMDD);
@@ -42,10 +44,21 @@ public class LocalDateUtils {
     return now.format(dtf);
   }
 
+  public static String getNowTimeStr() {
+    LocalDateTime now = LocalDateTime.now();
+    return now.format(PATTERN_YYYY_MM_DD_HH_MM_SS);
+  }
+
+  public static String getNowTimeStartStr() {
+    LocalDateTime now = LocalDate.now().atStartOfDay();
+    return now.format(PATTERN_YYYY_MM_DD_HH_MM_SS);
+  }
+
   public static String getNowTimeStr(DateTimeFormatter dtf) {
     LocalDateTime now = LocalDateTime.now();
     return now.format(dtf);
   }
+
 
   public static String format(LocalDate date) {
     return format(date, PATTERN_YYYY_MM_DD);
@@ -64,6 +77,9 @@ public class LocalDateUtils {
   }
 
   public static LocalDate str2LocalDate(String dateStr) {
+    if (Strings.isBlank(dateStr)) {
+      return null;
+    }
     return str2LocalDate(dateStr, PATTERN_YYYY_MM_DD);
   }
 
@@ -71,7 +87,7 @@ public class LocalDateUtils {
     try {
       return LocalDate.parse(dateStr, dtf);
     } catch (Exception e) {
-      log.error("local date:{} parse error:", dateStr, e);
+      log.error("local date:'{}', parse error:", dateStr, e);
       return null;
     }
   }
@@ -104,6 +120,14 @@ public class LocalDateUtils {
     return (int) ChronoUnit.DAYS.between(startDate, endDate);
   }
 
+  public static int betweenMinutes(LocalDateTime startDate, LocalDateTime endDate) {
+    return (int) ChronoUnit.MINUTES.between(startDate, endDate);
+  }
+
+  public static int betweenSecond(LocalDateTime startDate, LocalDateTime endDate) {
+    return (int) ChronoUnit.SECONDS.between(startDate, endDate);
+  }
+
   public static LocalDateTime toLocalDateTime(Date date) {
     if (date == null) {
       return null;
@@ -113,16 +137,28 @@ public class LocalDateUtils {
 
   /**
    * 判断是否为同一天
-   *
-   * @param startDate
-   * @param endDate
-   * @return
    */
   public static boolean isSameDay(LocalDateTime startDate, LocalDateTime endDate) {
     if (startDate == null || endDate == null) {
       return false;
     }
     return startDate.toLocalDate().equals(endDate.toLocalDate());
+  }
+
+  public static LocalDate timestampToLocalDate(long timestamp) {
+    return Instant.ofEpochMilli(timestamp).atZone(SYSTEM_ZONE_ID).toLocalDate();
+  }
+
+  public static LocalDateTime timestampToLocalDateTime(long timestamp) {
+    return Instant.ofEpochMilli(timestamp).atZone(SYSTEM_ZONE_ID).toLocalDateTime();
+  }
+
+  public static long getUnixSecondTime(LocalDate localDate) {
+    return localDate.atStartOfDay(SYSTEM_ZONE_ID).toInstant().getEpochSecond();
+  }
+
+  public static long getUnixMilliTime(LocalDate localDate) {
+    return localDate.atStartOfDay(SYSTEM_ZONE_ID).toInstant().toEpochMilli();
   }
 
   public static long getUnixSecondTime(LocalDateTime localDateTime) {
@@ -133,32 +169,4 @@ public class LocalDateUtils {
     return localDateTime.atZone(SYSTEM_ZONE_ID).toInstant().toEpochMilli();
   }
 
-
-  /**
-   * 对非法数据 补充0
-   *
-   * @param dateStr
-   * @return
-   */
-  public static String fixDateStr(String dateStr) {
-    if (dateStr != null && dateStr.length() != 10) {
-      StringJoiner sj = new StringJoiner("-");
-      String[] split = dateStr.split("-");
-      if (split.length == 3) {
-        sj.add(split[0]);
-        if (split[1].length() != 2) {
-          sj.add("0" + split[1]);
-        } else {
-          sj.add(split[1]);
-        }
-        if (split[2].length() != 2) {
-          sj.add("0" + split[2]);
-        } else {
-          sj.add(split[2]);
-        }
-      }
-      return sj.toString();
-    }
-    return dateStr;
-  }
 }

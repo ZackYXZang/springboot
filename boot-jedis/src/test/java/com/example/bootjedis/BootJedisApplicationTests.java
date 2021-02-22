@@ -1,14 +1,28 @@
 package com.example.bootjedis;
 
+import com.alibaba.excel.util.DateUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.example.bootjedis.Service.UserService;
+import com.example.bootjedis.pojo.ChannelData;
+import com.example.bootjedis.pojo.ChatInputParam;
+import com.example.bootjedis.pojo.ChatInputParamNew;
 import com.example.bootjedis.pojo.LiveCondition;
 import com.example.bootjedis.pojo.User;
+import com.example.bootjedis.utils.JsonUtils;
 import com.example.bootjedis.utils.LocalDateUtils;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -19,9 +33,13 @@ import java.util.HashMap;
 import java.util.List;
 import com.alibaba.fastjson.JSONObject;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.jar.JarEntry;
+import java.util.stream.Collectors;
 import org.apache.poi.ss.formula.functions.T;
 import org.assertj.core.util.Strings;
+import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,6 +54,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.Pipeline;
+import redis.clients.jedis.Response;
 import redis.clients.jedis.Tuple;
 
 @SpringBootTest
@@ -50,10 +70,92 @@ class BootJedisApplicationTests {
   @Autowired
   private RestTemplate restTemplate;
 
-
+  private String keyPre = "changba:%s";
   @Test
   void contextLoads() {
-    test2();
+    LocalDateTime time = LocalDateTime.now();
+    LocalDate localDate = time.toLocalDate();
+    LocalDateTime time1 = time.minusSeconds(10);
+    LocalDate localDate1 = time1.toLocalDate();
+    LocalDateTime time2 = time.minusDays(1);
+    LocalDate localDate2 = time2.toLocalDate();
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    String formatDateTime = time.format(formatter);
+    String formatDateTime1 = time1.format(formatter);
+    System.out.println(formatDateTime);
+    System.out.println(formatDateTime1);
+    if (formatDateTime.equals(formatDateTime1)) {
+      System.out.println("formatDateTime1 equal");
+    } else {
+      System.out.println("formatDateTime1 not equal");
+    }
+
+    String formatDateTime2 = time2.format(formatter);
+    System.out.println(formatDateTime);
+    System.out.println(formatDateTime2);
+    if (formatDateTime.equals(formatDateTime2)) {
+      System.out.println("formatDateTime2 equal");
+    } else {
+      System.out.println("formatDateTime2 not equal");
+    }
+
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    LocalDateTime parse = LocalDateTime.parse(formatDateTime + " 00:00:00", timeFormatter);
+    System.out.println(parse);
+
+    if (localDate.equals(localDate1)) {
+      System.out.println("localDate localDate1 equal");
+    }
+
+    if (localDate.equals(localDate2)) {
+      System.out.println("localDate localDate2 equal");
+    }
+
+
+  }
+
+
+  public static boolean checkObjAllFieldsIsNull(Object object) {
+    if (null == object) {
+      return true;
+    }
+
+    try {
+      for (Field f : object.getClass().getDeclaredFields()) {
+        if (f.get(object) == null || StringUtils.isEmpty(f.get(object).toString())) {
+          return false;
+        }
+
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return true;
+  }
+
+
+  public void getNewColumnFeature(String type, String columnFeature, List<String> result, JSONObject jsonObject) {
+    if (type.equals("un") || type.equals("list") || type.equals("timediff")) {
+      result.add(columnFeature);
+    } else if (type.equals("enum") || type.equals("kv")) {
+      String[] enumList = jsonObject.getString("list").split(";");
+      for (String num : enumList) {
+        result.add(columnFeature + "_" + num);
+      }
+    }
+    return;
+  }
+
+
+  public List<String> getRTSelectedDs() {
+    try(Jedis jedis = jedisPool.getResource()) {
+      List<String> result = new ArrayList<>();
+      Set<String> filed = jedis.zrange("aaa", 0, -1);
+      result.addAll(filed);
+      return result;
+    }
   }
 
   public void test2() {

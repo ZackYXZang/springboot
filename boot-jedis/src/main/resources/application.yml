@@ -20,6 +20,20 @@ spring:
     password: meiyisi123
     driver-class-name: com.mysql.jdbc.Driver
 
+
+redis:
+  pool:
+    max-active: 100
+    max-idle: 50
+    max-wait: 50
+  jedis-test:
+    port: 6379
+    password: zhongtai@_Ra1i
+    host: 127.0.0.1
+    timeout: 2000
+    database: 1
+
+
 #mybatis的相关配置
 mybatis:
   #mapper配置文件
