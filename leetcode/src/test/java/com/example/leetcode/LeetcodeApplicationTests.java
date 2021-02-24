@@ -2,6 +2,8 @@ package com.example.leetcode;
 
 import com.example.leetcode.service.ArrayServiceImpl;
 import com.example.leetcode.service.ArraySortImpl;
+import com.example.leetcode.service.ArraySortImplTwo;
+import com.example.leetcode.service.ZuoClassThreePractice;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,23 +15,43 @@ class LeetcodeApplicationTests {
   private ArrayServiceImpl arrayService;
 
   @Autowired
-  private ArraySortImpl arraySort;
+  private ArraySortImplTwo arraySortTwo;
+
+  @Autowired
+  private ZuoClassThreePractice leetCode;
 
   @Test
   void contextLoads() throws Exception {
 
     int[] array = new int[]{1, 5, 4, 3, 2, 6, 8, 7, 9};
     //冒泡
-    for (int i = array.length - 1; i >= 0; i--) {
-      for (int j = 0; j < i; j++) {
-        if(array[j] > array[j + 1]) {
-          swap(array, j, j + 1);
-        }
-      }
-    }
+//    arraySortTwo.BubbleSort(array);
 
-    System.out.println(printArray(array));
+    //选择排序
+//    arraySortTwo.SelectSort(array);
 
+    //插入排序
+//    arraySortTwo.InsertSort(array);
+
+    //归并排序
+//    arraySortTwo.MergeSort(array);
+
+    //快速排序
+//    arraySortTwo.QuickSort(array);
+
+    //堆排序
+//    arraySortTwo.HeapSort(array);
+
+
+
+
+//    System.out.println(printArray(array));
+
+    int[] array2 = new int[]{19, 30, 49, 59, 60};
+    int maxGap = leetCode.MaxGap(array2);
+    int maxGap1 = arrayService.MaxGap(array2);
+    System.out.println(maxGap);
+    System.out.println(maxGap1);
   }
 
   public String printArray(int[] array){

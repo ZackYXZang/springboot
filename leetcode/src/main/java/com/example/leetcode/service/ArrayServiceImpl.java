@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
  * @create 2020-09-01-7:51 下午
  * @desc 数组实现方法
  **/
-@Service
+@Service("arrayService")
 public class ArrayServiceImpl {
 
   /**
@@ -66,8 +66,7 @@ public class ArrayServiceImpl {
   }
 
   /**
-   * 调整数组顺序使奇数位于偶数前面 输入一个整数数组，实现一个函数来调整该数组中数字的顺序，
-   * 使得所有的奇数位于数组的前半部分，所有的偶数位于数组的后半部分，并保证奇数和奇数，偶数和偶数之间的相对位置不变。
+   * 调整数组顺序使奇数位于偶数前面 输入一个整数数组，实现一个函数来调整该数组中数字的顺序， 使得所有的奇数位于数组的前半部分，所有的偶数位于数组的后半部分，并保证奇数和奇数，偶数和偶数之间的相对位置不变。
    */
   public void reOrderArray1(int[] array) {
     for (int i = 0; i < array.length; i++) {
@@ -88,7 +87,7 @@ public class ArrayServiceImpl {
 
   //归并方法，时间复杂度也是O(N^2)
   public void reOrderArray2(int[] array) {
-    if(array == null || array.length < 2) {
+    if (array == null || array.length < 2) {
       return;
     }
 
@@ -97,8 +96,8 @@ public class ArrayServiceImpl {
   }
 
   private void reOrderArraySub(int[] array, int l, int r) {
-    if(l < r) {
-      int mid = l + (r - l) /2;
+    if (l < r) {
+      int mid = l + (r - l) / 2;
       reOrderArraySub(array, l, mid);
       reOrderArraySub(array, mid + 1, r);
       reOrderArraySub1(array, l, mid, r);
@@ -106,7 +105,7 @@ public class ArrayServiceImpl {
   }
 
   private void reOrderArraySub1(int[] array, int l, int mid, int r) {
-    int[] help =  new int[r - l + 1];
+    int[] help = new int[r - l + 1];
     int left = l;
     int right = mid + 1;
     int index = 0;
@@ -523,7 +522,7 @@ public class ArrayServiceImpl {
 //  }
 
   /**
-   * 给定一个数组，求如果排序之后，相邻两数的最大差值，要求时 间复杂度O(N)，且要求不能用非基于比较的排序。
+   * 给定一个数组，求如果排序之后，相邻两数的最大差值，要求时间复杂度O(N)，且要求不能用非基于比较的排序。
    *
    * @param arr
    * @return
@@ -541,32 +540,42 @@ public class ArrayServiceImpl {
       max = Math.max(max, arr[i]);
       min = Math.min(min, arr[i]);
     }
+    System.out.println("max :" + max);
+    System.out.println("min :" + min);
     if (max == min) {
       return 0;
     }
 
-    //arr的长度是length，桶的长度是length + 1，那么桶一定有最少一个位置是空
+    //arr的长度是length，桶的长度是length + 1，那么桶一定有最少一个位置是空，且这个位置一定在中间某个位置
     //所以差的最大值一定不会是在桶的同一个板子里
     //把arr等分，看成桶，记录每一个位置的最大值和最小值
     int[] maxs = new int[length + 1];
     int[] mins = new int[length + 1];
     //记录桶的每一个位置是否有位置
     boolean[] hasNumber = new boolean[length + 1];
+    System.out.println("maxs original: " + printArray(maxs));
+    System.out.println("mins original: " + printArray(mins));
 
     //把arr的数对应到桶上，找到桶上每个位置的最大值和最小值
     int bucketIndex = 0;
     for (int i = 0; i < length; i++) {
       bucketIndex = bucket(arr[i], length, min, max);
       mins[bucketIndex] = hasNumber[bucketIndex] ? Math.min(mins[bucketIndex], arr[i]) : arr[i];
-      maxs[mins[bucketIndex]] =
+      maxs[bucketIndex] =
           hasNumber[bucketIndex] ? Math.max(maxs[bucketIndex], arr[i]) : arr[i];
       hasNumber[bucketIndex] = true;
     }
 
+    System.out.println("maxs : " + printArray(maxs));
+    System.out.println("mins : " + printArray(mins));
+
     //遍历桶，用下一个板子的最小值，减去上一个板子的最大值，来算最大差值
     int result = 0;
     int lastMax = maxs[0];
-    for (int i = 1; i < length; i++) {
+    for (int i = 1; i < length + 1; i++) {
+      //疑问：为什么不用空桶的位置？
+      //比如：19，空，30，39，那么最大值是19，不是11
+      //空桶只是为了排除最大差值在同一个桶里的可能性，不代表空桶两侧的数相减一定是最大差值
       if (hasNumber[i]) {
         result = Math.max(result, mins[i] - lastMax);
         lastMax = maxs[i];
@@ -580,8 +589,11 @@ public class ArrayServiceImpl {
     return (int) ((num - min) * len / (max - min));
   }
 
-  /**
-   * 荷兰国旗问题
-   */
-
+  public String printArray(int[] array){
+    String result = "";
+    for (int i = 0; i < array.length; i++) {
+      result += array[i] + ",";
+    }
+    return result;
+  }
 }

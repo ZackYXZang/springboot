@@ -202,12 +202,12 @@ public class ArraySortImpl {
     while (l < more) {
       if (arr[l] > arr[r]) {
         //如果l位置的数，比目标数要大，
-        //那么交换l位置和more位置的数，并且让more的位置向前移动一位，因为more之后（包括more位置）表示比目标数大的数
+        //那么让more的位置向前移动一位，并且交换l位置和more位置的数，因为more之后（包括more位置）表示比目标数大的数
         swap(arr, l, --more);
       } else if (arr[l] < arr[r]) {
         //如果l位置的数，比目标数要小，
-        //那么先交换l位置的数，和less下一位的数，并让less向右移动一位，
-        //因为less位置表示小于目标数（包括less），所以交换的是less下一位的数
+        //那么先让less向右移动一位，然后交换l位置的数，和右移后的less位的数
+        //因为less位置表示小于目标数（包括less），所以交换的是less下一位的数，这个位置是等于的位置的数
         //同时l向右移动一 位
         swap(arr, l++, ++less);
       } else {

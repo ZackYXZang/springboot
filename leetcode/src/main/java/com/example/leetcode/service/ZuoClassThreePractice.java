@@ -3,12 +3,14 @@ package com.example.leetcode.service;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
+import org.springframework.stereotype.Service;
 
 /**
  * @author yuxiangzang
  * @create 2020-11-17-11:25 上午
  * @desc 左神第三个pdf练习题
  **/
+@Service("leetCode")
 public class ZuoClassThreePractice {
 
   /**
@@ -32,7 +34,7 @@ public class ZuoClassThreePractice {
         //stack is empty
         return null;
       }
-      return array[size  -1];
+      return array[size - 1];
     }
 
     public void push(int element) {
@@ -248,6 +250,140 @@ public class ZuoClassThreePractice {
       queue2 = temp;
     }
 
+  }
+
+
+  public int smallSum(int[] arr) {
+    if (arr == null || arr.length == 0) {
+      return 0;
+    }
+
+    int res = smallSumMerge(arr, 0, arr.length - 1);
+    return res;
+  }
+
+  public int smallSumMerge(int[] arr, int start, int end) {
+    if (start >= end) {
+      return 0;
+    }
+
+    int mid = start + (end - start) / 2;
+    return smallSumMerge(arr, start, mid) + smallSumMerge(arr, mid + 1, end) + smallSumMergeSub(arr, start, mid, end);
+  }
+
+
+
+  public int smallSumMergeSub(int[] arr, int start, int mid, int end) {
+    int[] help = new int[end - start + 1];
+    int helpIndex = 0;
+    int l = start;
+    int r = mid + 1;
+    int res = 0;
+
+    while (l <= mid && r <= end) {
+      //这里用end - r + 1，因为用半部分此时已经是递增的了
+      res += arr[l] < arr[r] ? (end - r + 1) * arr[l] : 0;
+      help[helpIndex++] = arr[l] < arr[r] ? arr[l++] : arr[r++];
+    }
+
+    while (l <= mid) {
+      help[helpIndex++] = arr[l++];
+    }
+
+    while (r <= end) {
+      help[helpIndex++] = arr[r++];
+    }
+
+    for (int i = 0; i < help.length; i++) {
+      arr[start + i] = help[i];
+    }
+
+    return res;
+  }
+
+
+
+
+  public static int merge(int[] arr, int start, int mid, int end) {
+    int[] help = new int[end - start + 1];
+    int i = 0;
+    int p1 = start;
+    int p2 = mid + 1;
+    int res = 0;
+    while (p1 <= mid && p2 <= end) {
+      res += arr[p1] < arr[p2] ? (end - p2 + 1) * arr[p1] : 0;
+      help[i++] = arr[p1] < arr[p2] ? arr[p1++] : arr[p2++];
+    }
+    while (p1 <= mid) {
+      help[i++] = arr[p1++];
+    }
+    while (p2 <= end) {
+      help[i++] = arr[p2++];
+    }
+    for (i = 0; i < help.length; i++) {
+      arr[start + i] = help[i];
+    }
+    return res;
+  }
+
+  public int MaxGap(int[] arr) {
+    if (arr == null || arr.length == 0) {
+      return 0;
+    }
+
+    int max = Integer.MIN_VALUE;
+    int min = Integer.MAX_VALUE;
+    for (int i = 0; i < arr.length; i++) {
+      max = Math.max(max, arr[i]);
+      min = Math.min(min, arr[i]);
+    }
+    System.out.println("max :" + max);
+    System.out.println("min :" + min);
+
+    if (max == min) {
+      return 0;
+    }
+
+    int[] maxArr = new int[arr.length + 1];
+    int[] minArr = new int[arr.length + 1];
+    boolean[] hasValue = new boolean[arr.length + 1];
+    System.out.println("maxArr original: " + printArray(maxArr));
+    System.out.println("minArr original: " + printArray(minArr));
+
+    int bucketIndex = 0;
+    for (int i = 0; i < arr.length; i++) {
+      bucketIndex = getBucket(arr[i], arr.length, max, min);
+      maxArr[bucketIndex] = hasValue[bucketIndex] ? Math.max(maxArr[bucketIndex], arr[i]) : arr[i];
+      minArr[bucketIndex] = hasValue[bucketIndex] ? Math.min(minArr[bucketIndex], arr[i]) : arr[i];
+      hasValue[bucketIndex] = true;
+    }
+    System.out.println("maxArr : " + printArray(maxArr));
+    System.out.println("minArr : " + printArray(minArr));
+
+
+    int res = 0;
+    int lastMax = maxArr[0];
+    for (int i = 1; i < maxArr.length; i++) {
+      if (hasValue[i]) {
+        res = Math.max(res, minArr[i] - lastMax);
+        lastMax = maxArr[i];
+      }
+    }
+    return res;
+  }
+
+  private int getBucket(int value, int length, int max, int min) {
+    return (value - min) * length / (max - min);
+  }
+
+
+
+  public String printArray(int[] array){
+    String result = "";
+    for (int i = 0; i < array.length; i++) {
+      result += array[i] + ",";
+    }
+    return result;
   }
 
 }
