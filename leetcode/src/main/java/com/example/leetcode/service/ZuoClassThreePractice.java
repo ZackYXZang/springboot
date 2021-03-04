@@ -1,6 +1,8 @@
 package com.example.leetcode.service;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Stack;
 import org.springframework.stereotype.Service;
@@ -377,6 +379,606 @@ public class ZuoClassThreePractice {
   }
 
 
+  /**
+   * 转圈（顺时针）打印矩阵
+   * @param matrix
+   */
+  public void printMatrix(int[][] matrix) {
+    int rowStart = 0;
+    int rowEnd = matrix.length - 1;
+    int colStart = 0;
+    int colEnd = matrix[0].length - 1;
+    while (rowStart <= rowEnd && colStart <= colEnd) {
+      print(matrix, rowStart++, rowEnd--, colStart++, colEnd--);
+    }
+  }
+
+  public void print(int[][] matrix, int rowStart, int rowEnd, int colStart, int colEnd) {
+    if(rowStart == rowEnd) {
+      for (int i = colStart; i <= colEnd; i++) {
+        System.out.println(matrix[rowStart][i] + "");
+      }
+    } else if (colStart == colEnd) {
+      for (int i = rowStart; i <= rowEnd; i++) {
+        System.out.println(matrix[i][colStart] + "");
+      }
+    } else {
+      int currRow = rowStart;
+      int currCol = colStart;
+
+      while (currCol != colEnd) {
+        System.out.println(matrix[rowStart][currCol++] + "");
+      }
+      while (currRow != rowEnd) {
+        System.out.println(matrix[currRow++][colEnd] + "");
+      }
+      while (currCol != colStart) {
+        System.out.println(matrix[rowEnd][currCol--] + "");
+      }
+      while (currRow != rowStart) {
+        System.out.println(matrix[currRow--][colStart] + "");
+      }
+    }
+  }
+
+  /**
+   * 顺时针旋转正方形矩阵
+   * @param matrix
+   */
+  public void rotateMatrix(int[][] matrix) {
+    int rowStart = 0;
+    int rowEnd = matrix.length - 1;
+    int colStart = 0;
+    int colEnd = matrix[0].length - 1;
+    while (rowStart < rowEnd ) {
+      int length = rowEnd - rowStart;
+      for (int i = 0; i < length; i++) {
+        int temp = matrix[rowStart][colStart + i];
+        matrix[rowStart][colStart + i] = matrix[rowEnd - i][colStart];
+        matrix[rowEnd - i][colStart] = matrix[rowEnd][colEnd - i];
+        matrix[rowEnd][colEnd - i] = matrix[rowStart + i][colEnd];
+        matrix[rowStart + i][colEnd] = temp;
+      }
+      rowStart++;
+      rowEnd--;
+      colStart++;
+      colEnd--;
+    }
+  }
+
+  /**
+   * 反转单向列表
+   * @param head
+   * @return
+   */
+  public Node reverseNodeList(Node head) {
+    Node pre = null;
+    Node next = null;
+
+    while (head != null) {
+      next = head.next;
+      head.next = pre;
+      pre = head;
+      head = next;
+    }
+    return pre;
+  }
+
+  /**
+   * 反转双向链表
+   * @param head
+   * @return
+   */
+  public DoubleNode reverseDoubleNodeList(DoubleNode head) {
+    DoubleNode pre = null;
+    DoubleNode next = null;
+
+    while (head != null) {
+      next = head.next;
+      head.next = pre;
+      head.last = next;
+      pre = head;
+      head = next;
+    }
+    return pre;
+  }
+
+
+  public void printZigMatrix(int[][] matrix) {
+    int rowA = 0;
+    int colA = 0;
+    int rowB = 0;
+    int colB = 0;
+    int rowLength = matrix.length - 1;
+    int colLength = matrix[0].length - 1;
+    boolean print = false;
+    List<Integer> result = new ArrayList<>();
+
+    while (rowA <= rowLength) {
+      printZigMatrixSub(matrix, rowA, colA, rowB, colB, print, result);
+      rowA = colA == colLength ? rowA + 1 : rowA;
+      colA = colA == colLength ? colA : colA + 1;
+      colB = rowB == rowLength ? colB + 1 : colB;
+      rowB = rowB == rowLength ? rowB : rowB + 1;
+      print = !print;
+    }
+
+  }
+
+  /**
+   * 之字形打印矩阵
+   * @param matrix
+   * @param rowA
+   * @param colA
+   * @param rowB
+   * @param colB
+   * @param print
+   * @param result
+   */
+  public void printZigMatrixSub(int[][] matrix, int rowA, int colA, int rowB, int colB, boolean print, List<Integer> result) {
+    if (print) {
+      while (rowA <= rowB) {
+        result.add(matrix[rowA][colA]);
+        System.out.print(matrix[rowA++][colA--] + ",");
+      }
+    } else {
+      while (rowB >= rowA) {
+        result.add(matrix[rowB][colB]);
+        System.out.print(matrix[rowB--][colB++] + ",");
+      }
+    }
+  }
+
+
+
+  //链表题，可优化的地方是额外空间
+  public Node getMid(Node head) {
+
+    //method1
+//    Node right = head.next;
+//    Node curr = head;
+//
+//    while (curr.next != null && curr.next.next != null) {
+//      right = right.next;
+//      curr = curr.next.next;
+//    }
+//    return right;
+
+    //method2
+    //好处是，可以确定中点前一个位置的节点
+    Node n1 = head;
+    Node n2 = head;
+    while (n2.next != null && n2.next.next != null) { // find mid node
+      n1 = n1.next; // n1 -> mid
+      n2 = n2.next.next; // n2 -> end
+    }
+    n2 = n1.next;
+    return n2;
+  }
+
+  /**
+   * 判断链表是否是回文链表
+   * 时间复杂度为O(N), 空间复杂度为O(1)
+   * @param head
+   * @return
+   */
+  public boolean isPalindrome(Node head) {
+    if (head == null || head.next == null){
+      return false;
+    }
+
+    //慢指针
+    Node node1 = head;
+    //快指针
+    Node node2 = head;
+    while (node2.next != null && node2.next.next != null) {
+      node1 = node1.next;
+      node2 = node2.next.next;
+    }
+
+    //此时快指针改为指向中点，也就是node2的位置是中点的位置
+    //奇数的时候，来到中间，偶数的时候，来到中点的前一个位置
+    node2 = node1.next;
+
+    //让链表中点前面的节点指向null，然后开始翻转后半部分链表
+    node1.next = null;//node1 = pre
+    Node node3 = null;//node3 = next
+
+    while (node2 != null) {
+      node3 = node2.next;
+      node2.next = node1;
+      node1 = node2;
+      node2 = node3;
+    }
+
+    node3 = node1; //node3就是最后一个节点
+    node2  = head;
+
+    //check palindrome
+    boolean result = true;
+    while (node2 != null && node1 != null) {
+      if (node1.value != node2.value) {
+        result = false;
+        break;
+      }
+      node1 = node1.next;
+      node2 = node2.next;
+    }
+
+    //恢复链表后半部分
+    node1 = null;
+    while (node3 != null) {
+      node2 = node3.next;
+      node3.next = node1;
+      node1 = node3;
+      node3 = node2;
+    }
+
+    return result;
+  }
+
+
+  /**
+   * 给定一个数，把链表按照小中大分类，且保持链表的稳定性（也就是按照远顺序排序）
+   * @param head
+   * @param pivot
+   * @return
+   */
+  public Node listPartition(Node head, int pivot) {
+    if (head == null) {
+      return null;
+    }
+
+    Node lessStart = null;
+    Node lessEnd = null;
+    Node equalStart = null;
+    Node equalEnd = null;
+    Node moreStart = null;
+    Node moreEnd = null;
+
+    //按照小中大分类
+    while (head != null) {
+      if (pivot > head.value) {
+        if (lessStart == null) {
+          lessStart = head;
+          lessEnd = head;
+        } else {
+          lessEnd.next = head;
+          lessEnd = lessEnd.next;
+        }
+      } else if (pivot == head.value) {
+        if (equalStart == null) {
+          equalStart = head;
+          equalEnd = head;
+        } else {
+          equalEnd.next = head;
+          equalEnd = equalEnd.next;
+        }
+      } else {
+        if (moreStart == null) {
+          moreStart = head;
+          moreEnd = head;
+        } else {
+          moreEnd.next = head;
+          moreEnd = moreEnd.next;
+        }
+      }
+      head = head.next;
+    }
+
+    //拼接
+    if (lessEnd != null) {
+      lessEnd.next = equalStart;
+      equalEnd = equalEnd == null ? lessEnd : equalEnd;
+    }
+
+    if (equalEnd != null) {
+      equalEnd.next = moreStart;
+    }
+
+    return lessStart != null ? lessStart : equalStart != null ? equalStart : moreStart;
+  }
+
+  /**
+   * 复制含有随机指针节点的链表
+   * @param head
+   */
+
+  public RandomNode copyRandomNodeList(RandomNode head) {
+    if (head == null) {
+      return null;
+    }
+
+    //1->2->3->4 变成：
+    //1->1`->2->2`->3->3`->4->4`
+    RandomNode node = head;
+    while (node != null) {
+      RandomNode copy = new RandomNode(node.value);
+      RandomNode temp = node.next;
+      node.next = copy;
+      copy.next = temp;
+      node = node.next.next;
+    }
+
+    //copy random point
+    node = head;
+    while (node != null) {
+      node.next.rand = node.rand == null ? null : node.rand.next;
+      node = node.next.next;
+    }
+
+    //split
+    RandomNode newHead = head.next;
+    node = newHead;
+    while (node != null && node.next != null) {
+      node.next = node.next.next;
+      node = node.next;
+    }
+
+    return newHead;
+
+  }
+
+
+  /**
+   * 两个单链表相交问题
+   * @param head1
+   * @param head2
+   * @return
+   */
+  public Node getIntersectNode(Node head1, Node head2) {
+    //1。判断是否有环，loop1，loop2表示两个链表入环的第一个节点或者null
+    Node loop1 = getLoopNode(head1);
+    Node loop2 = getLoopNode(head2);
+    //2。判断两个无环链表相交
+    if (loop1 == null && loop2 == null) {
+      Node result = noLoopIntersect(head1, head2);
+      return result;
+    }
+    //3。判断两个有环链表相交，包含三种情况
+    //3。1 两个有环链表不相交
+    //3。2 两个有环链表在环外相交
+    //3。3 两个有环链表在环上相交
+    if (loop1 != null && loop2 != null) {
+      Node result = bothLoopIntersect(head1, head2, loop1, loop2);
+      return result;
+    }
+    //4。一个有环，一个无环的链表不可能相交
+    return null;
+  }
+
+  public Node bothLoopIntersect(Node head1, Node head2, Node loop1, Node loop2) {
+    Node curr1 = null;
+    Node curr2 = null;
+    if (loop1 == loop2) {
+      //3。2 两个有环链表在环外相交
+      curr1 = head1;
+      curr2 = head2;
+      int length = 0;
+
+      while (curr1 != loop1) {
+        curr1 = curr1.next;
+        length++;
+      }
+      while (curr2 != loop2) {
+        curr2 = curr2.next;
+        length--;
+      }
+
+      curr1 = length > 0 ? head1 : head2;
+      curr2 = curr1 == head1 ? head2 : head1;
+      length = Math.abs(length);
+      while (length > 0) {
+        curr1 = curr1.next;
+        length--;
+      }
+
+      while (curr1 != curr2) {
+        curr1 = curr1.next;
+        curr2 = curr2.next;
+      }
+      return curr1;
+
+    } else {
+      //3。3 两个有环链表在环上相交
+      curr1 = loop1.next;
+      while (curr1 != loop1) {
+        if (curr1 == loop2) {
+          return loop1;
+        }
+        curr1 = curr1.next;
+      }
+
+      //3。1 两个有环链表不相交
+      return null;
+    }
+
+  }
+
+  //判断两个无环链表相交
+  public Node noLoopIntersect(Node head1, Node head2) {
+    if (head1 == null || head2 == null) {
+      return null;
+    }
+
+    Node curr1 = head1;
+    Node curr2 = head2;
+    int length = 0;
+    while (curr1.next != null) {
+      curr1 = curr1.next;
+      length++;
+    }
+    while (curr2.next != null) {
+      curr2 = curr2.next;
+      length--;
+    }
+    if (curr1 != curr2) {
+      return null;
+    }
+
+    curr1 = length > 0 ? head1 : head2;
+    curr2 = curr1 == head1 ? head2 : head1;
+    length = Math.abs(length);
+    while (length > 0) {
+      curr1 = curr1.next;
+      length--;
+    }
+
+    while (curr1 != curr2) {
+      curr1 = curr1.next;
+      curr2 = curr2.next;
+    }
+    return curr1;
+  }
+
+  public Node getLoopNode(Node head) {
+    if (head == null || head.next == null || head.next.next == null) {
+      return null;
+    }
+
+    Node slow = head.next;
+    Node fast = head.next.next;
+    while (slow != fast) {
+      if (fast.next == null || fast.next.next == null) {
+        //无环
+        return null;
+      }
+      slow = slow.next;
+      fast = fast.next.next;
+    }
+
+    //有环
+    //让快指针回到原点
+    fast = head;
+    while (slow != fast) {
+      slow = slow.next;
+      fast = fast.next;
+    }
+
+    return slow;
+  }
+
+
+  public static Node getIntersectNode1(Node head1, Node head2) {
+    if (head1 == null || head2 == null) {
+      return null;
+    }
+    Node loop1 = getLoopNode1(head1);
+    Node loop2 = getLoopNode1(head2);
+    if (loop1 == null && loop2 == null) {
+      return noLoop(head1, head2);
+    }
+    if (loop1 != null && loop2 != null) {
+      return bothLoop(head1, loop1, head2, loop2);
+    }
+    return null;
+  }
+
+  public static Node getLoopNode1(Node head) {
+    if (head == null || head.next == null || head.next.next == null) {
+      return null;
+    }
+    Node n1 = head.next; // n1 -> slow
+    Node n2 = head.next.next; // n2 -> fast
+    while (n1 != n2) {
+      if (n2.next == null || n2.next.next == null) {
+        return null;
+      }
+      n2 = n2.next.next;
+      n1 = n1.next;
+    }
+    n2 = head; // n2 -> walk again from head
+    while (n1 != n2) {
+      n1 = n1.next;
+      n2 = n2.next;
+    }
+    return n1;
+  }
+
+  public static Node noLoop(Node head1, Node head2) {
+    if (head1 == null || head2 == null) {
+      return null;
+    }
+    Node cur1 = head1;
+    Node cur2 = head2;
+    int n = 0;
+    while (cur1.next != null) {
+      n++;
+      cur1 = cur1.next;
+    }
+    while (cur2.next != null) {
+      n--;
+      cur2 = cur2.next;
+    }
+    if (cur1 != cur2) {
+      return null;
+    }
+    cur1 = n > 0 ? head1 : head2;
+    cur2 = cur1 == head1 ? head2 : head1;
+    n = Math.abs(n);
+    while (n != 0) {
+      n--;
+      cur1 = cur1.next;
+    }
+    while (cur1 != cur2) {
+      cur1 = cur1.next;
+      cur2 = cur2.next;
+    }
+    return cur1;
+  }
+
+  public static Node bothLoop(Node head1, Node loop1, Node head2, Node loop2) {
+    Node cur1 = null;
+    Node cur2 = null;
+    if (loop1 == loop2) {
+      cur1 = head1;
+      cur2 = head2;
+      int n = 0;
+      while (cur1 != loop1) {
+        n++;
+        cur1 = cur1.next;
+      }
+      while (cur2 != loop2) {
+        n--;
+        cur2 = cur2.next;
+      }
+      cur1 = n > 0 ? head1 : head2;
+      cur2 = cur1 == head1 ? head2 : head1;
+      n = Math.abs(n);
+      while (n != 0) {
+        n--;
+        cur1 = cur1.next;
+      }
+      while (cur1 != cur2) {
+        cur1 = cur1.next;
+        cur2 = cur2.next;
+      }
+      return cur1;
+    } else {
+      cur1 = loop1.next;
+      while (cur1 != loop1) {
+        if (cur1 == loop2) {
+          return loop1;
+        }
+        cur1 = cur1.next;
+      }
+      return null;
+    }
+  }
+
+
+
+  public static class DoubleNode {
+    public int value;
+    public DoubleNode last;
+    public DoubleNode next;
+
+    public DoubleNode(int data) {
+      this.value = data;
+    }
+  }
+
+
 
   public String printArray(int[] array){
     String result = "";
@@ -386,4 +988,26 @@ public class ZuoClassThreePractice {
     return result;
   }
 
+  public static class Node {
+    public int value;
+    public Node next;
+
+    public Node(int data) {
+      this.value = data;
+    }
+  }
+
+
+  public static class RandomNode {
+    public int value;
+    public RandomNode next;
+    public RandomNode rand;
+
+    public RandomNode(int data) {
+      this.value = data;
+    }
+  }
+
 }
+
+

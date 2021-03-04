@@ -16,6 +16,7 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -33,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import com.alibaba.fastjson.JSONObject;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.UUID;
 import java.util.jar.JarEntry;
@@ -73,45 +75,6 @@ class BootJedisApplicationTests {
   private String keyPre = "changba:%s";
   @Test
   void contextLoads() {
-    LocalDateTime time = LocalDateTime.now();
-    LocalDate localDate = time.toLocalDate();
-    LocalDateTime time1 = time.minusSeconds(10);
-    LocalDate localDate1 = time1.toLocalDate();
-    LocalDateTime time2 = time.minusDays(1);
-    LocalDate localDate2 = time2.toLocalDate();
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    String formatDateTime = time.format(formatter);
-    String formatDateTime1 = time1.format(formatter);
-    System.out.println(formatDateTime);
-    System.out.println(formatDateTime1);
-    if (formatDateTime.equals(formatDateTime1)) {
-      System.out.println("formatDateTime1 equal");
-    } else {
-      System.out.println("formatDateTime1 not equal");
-    }
-
-    String formatDateTime2 = time2.format(formatter);
-    System.out.println(formatDateTime);
-    System.out.println(formatDateTime2);
-    if (formatDateTime.equals(formatDateTime2)) {
-      System.out.println("formatDateTime2 equal");
-    } else {
-      System.out.println("formatDateTime2 not equal");
-    }
-
-    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-    LocalDateTime parse = LocalDateTime.parse(formatDateTime + " 00:00:00", timeFormatter);
-    System.out.println(parse);
-
-    if (localDate.equals(localDate1)) {
-      System.out.println("localDate localDate1 equal");
-    }
-
-    if (localDate.equals(localDate2)) {
-      System.out.println("localDate localDate2 equal");
-    }
-
 
   }
 
@@ -213,20 +176,30 @@ class BootJedisApplicationTests {
   }
 
 
+  @Test
   public static void main(String[] args) {
-    /** 初始化集合类*/
-    ArrayList<TestObj> list = new ArrayList<>();
-    for (int i = 0; i < 100; i++) {
-      list.add(new TestObj(i));
-    }
+//    /** 初始化集合类*/
+//    ArrayList<TestObj> list = new ArrayList<>();
+//    for (int i = 0; i < 100; i++) {
+//      list.add(new TestObj(i));
+//    }
+//
+//    /** 遍历时删除元素*/
+//    for (TestObj obj : list) {
+//      if (obj.getValue() < 10) {
+//        /** 这里会抛出ConcurrentModificationException*/
+//        list.remove(obj);
+//      }
+//    }
+//    Scanner scan = new Scanner(System.in);
+    // 从键盘接收数据
 
-    /** 遍历时删除元素*/
-    for (TestObj obj : list) {
-      if (obj.getValue() < 10) {
-        /** 这里会抛出ConcurrentModificationException*/
-        list.remove(obj);
-      }
-    }
+    // next方式接收字符串
+
+    int i = 100;
+    double j = ((double) i * 2) / 6;
+    DecimalFormat df = new DecimalFormat("0.00");
+    System.out.println(df.format(j));
   }
 
 
