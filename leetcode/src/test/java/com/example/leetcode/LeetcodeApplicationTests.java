@@ -1,14 +1,14 @@
 package com.example.leetcode;
 
 import com.example.leetcode.service.ArrayServiceImpl;
-import com.example.leetcode.service.ArraySortImpl;
 import com.example.leetcode.service.ArraySortImplTwo;
 import com.example.leetcode.service.TreeServiceImpl;
-import com.example.leetcode.service.TreeServiceImpl.TreeNode;
 import com.example.leetcode.service.ZuoClassThreePractice;
 import com.example.leetcode.service.ZuoClassThreePractice.DoubleNode;
-import com.example.leetcode.service.ZuoClassThreePractice.Node;
-import com.example.leetcode.service.ZuoClassThreePractice.RandomNode;
+import com.example.leetcode.utils.Node;
+import com.example.leetcode.utils.PrintBinaryTree;
+import com.example.leetcode.utils.RandomNode;
+import com.example.leetcode.utils.TreeNode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -57,7 +57,7 @@ class LeetcodeApplicationTests {
      * 13, 14, 15, 16
      */
 
-    int[][] matrix = { { 1, 2, 3, 4}, { 5, 6, 7, 8}, { 9, 10, 11, 12}, {13, 14, 15, 16}};
+    int[][] matrix = {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}};
 //    leetCode.rotateMatrix(matrix);
 //    leetCode.printMatrix(matrix);
 
@@ -109,7 +109,6 @@ class LeetcodeApplicationTests {
 //    printRandLinkedList(head);
 //    RandomNode randomNode = leetCode.copyRandomNodeList(head);
 //    printRandLinkedList(randomNode);
-
 
     // 1->2->3->4->5->6->7->null
 //    Node head1 = new Node(1);
@@ -163,7 +162,8 @@ class LeetcodeApplicationTests {
     head.right.left = new TreeNode(6);
     head.right.right = new TreeNode(7);
 
-    treeService.postOrderUnRecur(head);
+    PrintBinaryTree.printTree(head);
+//    treeService.postOrderUnRecur(head);
 
   }
 
@@ -210,7 +210,7 @@ class LeetcodeApplicationTests {
   }
 
 
-  public String printArray(int[] array){
+  public String printArray(int[] array) {
     String result = "";
     for (int i = 0; i < array.length; i++) {
       result += array[i];

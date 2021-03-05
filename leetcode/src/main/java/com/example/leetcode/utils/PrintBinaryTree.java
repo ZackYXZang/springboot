@@ -1,5 +1,6 @@
 package com.example.leetcode.utils;
 
+
 /**
  * @author yuxiangzang
  * @create 2021-03-05-上午11:51
@@ -66,14 +67,5 @@ public class PrintBinaryTree {
 
   }
 
-  public static class TreeNode {
 
-    public int value;
-    public TreeNode left;
-    public TreeNode right;
-
-    public TreeNode(int data) {
-      this.value = data;
-    }
-  }
 }

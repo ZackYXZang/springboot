@@ -1,5 +1,7 @@
 package com.example.leetcode.service;
 
+import com.example.leetcode.utils.Node;
+import com.example.leetcode.utils.RandomNode;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -988,25 +990,6 @@ public class ZuoClassThreePractice {
     return result;
   }
 
-  public static class Node {
-    public int value;
-    public Node next;
-
-    public Node(int data) {
-      this.value = data;
-    }
-  }
-
-
-  public static class RandomNode {
-    public int value;
-    public RandomNode next;
-    public RandomNode rand;
-
-    public RandomNode(int data) {
-      this.value = data;
-    }
-  }
 
 }
 

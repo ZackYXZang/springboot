@@ -1,5 +1,6 @@
 package com.example.leetcode.service;
 
+import com.example.leetcode.utils.TreeNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -149,15 +150,5 @@ public class TreeServiceImpl {
 
   }
 
-
-  public static class TreeNode {
-    public int value;
-    public TreeNode left;
-    public TreeNode right;
-
-    public TreeNode(int data) {
-      this.value = data;
-    }
-  }
 
 }
