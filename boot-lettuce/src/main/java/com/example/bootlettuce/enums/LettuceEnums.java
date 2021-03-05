@@ -13,11 +13,4 @@ import java.util.Map;
  **/
 public class LettuceEnums {
 
-  Map<String, BaseEntity> map = new HashMap<String, BaseEntity>() {
-    {
-      put("test1", new test());
-      put("test2", new User());
-    }
-  };
-
 }

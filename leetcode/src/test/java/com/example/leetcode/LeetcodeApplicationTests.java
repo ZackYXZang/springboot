@@ -3,6 +3,8 @@ package com.example.leetcode;
 import com.example.leetcode.service.ArrayServiceImpl;
 import com.example.leetcode.service.ArraySortImpl;
 import com.example.leetcode.service.ArraySortImplTwo;
+import com.example.leetcode.service.TreeServiceImpl;
+import com.example.leetcode.service.TreeServiceImpl.TreeNode;
 import com.example.leetcode.service.ZuoClassThreePractice;
 import com.example.leetcode.service.ZuoClassThreePractice.DoubleNode;
 import com.example.leetcode.service.ZuoClassThreePractice.Node;
@@ -22,6 +24,9 @@ class LeetcodeApplicationTests {
 
   @Autowired
   private ZuoClassThreePractice leetCode;
+
+  @Autowired
+  private TreeServiceImpl treeService;
 
   @Test
   void contextLoads() throws Exception {
@@ -107,48 +112,58 @@ class LeetcodeApplicationTests {
 
 
     // 1->2->3->4->5->6->7->null
-    Node head1 = new Node(1);
-    head1.next = new Node(2);
-    head1.next.next = new Node(3);
-    head1.next.next.next = new Node(4);
-    head1.next.next.next.next = new Node(5);
-    head1.next.next.next.next.next = new Node(6);
-    head1.next.next.next.next.next.next = new Node(7);
+//    Node head1 = new Node(1);
+//    head1.next = new Node(2);
+//    head1.next.next = new Node(3);
+//    head1.next.next.next = new Node(4);
+//    head1.next.next.next.next = new Node(5);
+//    head1.next.next.next.next.next = new Node(6);
+//    head1.next.next.next.next.next.next = new Node(7);
+//
+//    // 0->9->8->6->7->null
+//    Node head2 = new Node(0);
+//    head2.next = new Node(9);
+//    head2.next.next = new Node(8);
+//    head2.next.next.next = head1.next.next.next.next.next; // 8->6
+//    //2 无环，在6相交
+//    System.out.println(leetCode.getIntersectNode(head1, head2).value);
+//
+//    // 1->2->3->4->5->6->7->4...
+//    head1 = new Node(1);
+//    head1.next = new Node(2);
+//    head1.next.next = new Node(3);
+//    head1.next.next.next = new Node(4);
+//    head1.next.next.next.next = new Node(5);
+//    head1.next.next.next.next.next = new Node(6);
+//    head1.next.next.next.next.next.next = new Node(7);
+//    //head1有环，在4
+//    head1.next.next.next.next.next.next = head1.next.next.next; // 7->4
+//
+//    // 0->9->8->2...
+//    head2 = new Node(0);
+//    head2.next = new Node(9);
+//    head2.next.next = new Node(8);
+//    head2.next.next.next = head1.next; // 8->2
+//    //3。2 head1和head2环外相交，交点在2
+//    System.out.println(leetCode.getIntersectNode(head1, head2).value);
+//
+//    // 0->9->8->6->7->4->5->6..
+//    head2 = new Node(0);
+//    head2.next = new Node(9);
+//    head2.next.next = new Node(8);
+//    head2.next.next.next = head1.next.next.next.next.next; // 8->6
+//    //3。3 head1和head2环上相交， 交点是6或者4
+//    System.out.println(leetCode.getIntersectNode(head1, head2).value);
 
-    // 0->9->8->6->7->null
-    Node head2 = new Node(0);
-    head2.next = new Node(9);
-    head2.next.next = new Node(8);
-    head2.next.next.next = head1.next.next.next.next.next; // 8->6
-    //2 无环，在6相交
-    System.out.println(leetCode.getIntersectNode(head1, head2).value);
+    TreeNode head = new TreeNode(1);
+    head.left = new TreeNode(2);
+    head.right = new TreeNode(3);
+    head.left.left = new TreeNode(4);
+    head.left.right = new TreeNode(5);
+    head.right.left = new TreeNode(6);
+    head.right.right = new TreeNode(7);
 
-    // 1->2->3->4->5->6->7->4...
-    head1 = new Node(1);
-    head1.next = new Node(2);
-    head1.next.next = new Node(3);
-    head1.next.next.next = new Node(4);
-    head1.next.next.next.next = new Node(5);
-    head1.next.next.next.next.next = new Node(6);
-    head1.next.next.next.next.next.next = new Node(7);
-    //head1有环，在4
-    head1.next.next.next.next.next.next = head1.next.next.next; // 7->4
-
-    // 0->9->8->2...
-    head2 = new Node(0);
-    head2.next = new Node(9);
-    head2.next.next = new Node(8);
-    head2.next.next.next = head1.next; // 8->2
-    //3。2 head1和head2环外相交，交点在2
-    System.out.println(leetCode.getIntersectNode(head1, head2).value);
-
-    // 0->9->8->6->7->4->5->6..
-    head2 = new Node(0);
-    head2.next = new Node(9);
-    head2.next.next = new Node(8);
-    head2.next.next.next = head1.next.next.next.next.next; // 8->6
-    //3。3 head1和head2环上相交， 交点是6或者4
-    System.out.println(leetCode.getIntersectNode(head1, head2).value);
+    treeService.postOrderUnRecur(head);
 
   }
 
