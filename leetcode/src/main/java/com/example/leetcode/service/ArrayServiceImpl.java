@@ -1,5 +1,6 @@
 package com.example.leetcode.service;
 
+import com.example.leetcode.utils.TreeNode;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -490,7 +491,7 @@ public class ArrayServiceImpl {
     TreeNode root = new TreeNode(pre[startPre]);
 
     for (int i = startIn; i <= endIn; i++) {
-      if (in[i] == root.val) {
+      if (in[i] == root.value) {
         root.left = reConstructBinaryTree(pre, startPre + 1, startPre + (i - startIn), in, startIn,
             i - 1);
         root.right = reConstructBinaryTree(pre, startPre + (i - startIn) + 1, endPre, in, i + 1,
@@ -500,16 +501,7 @@ public class ArrayServiceImpl {
     return root;
   }
 
-  class TreeNode {
 
-    int val;
-    TreeNode left;
-    TreeNode right;
-
-    TreeNode(int x) {
-      val = x;
-    }
-  }
 
   /**
    * 输入一个递增排序的数组和一个数字S，在数组中查找两个数，使得他们的和正好是S，如果有多对数字的和等于S，输出两个数的乘积最小的。

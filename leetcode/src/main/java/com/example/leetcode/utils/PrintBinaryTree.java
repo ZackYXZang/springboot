@@ -36,36 +36,4 @@ public class PrintBinaryTree {
     }
     return buf.toString();
   }
-
-  public static void main(String[] args) {
-    TreeNode head = new TreeNode(1);
-    head.left = new TreeNode(-222222222);
-    head.right = new TreeNode(3);
-    head.left.left = new TreeNode(Integer.MIN_VALUE);
-    head.right.left = new TreeNode(55555555);
-    head.right.right = new TreeNode(66);
-    head.left.left.right = new TreeNode(777);
-    printTree(head);
-
-    head = new TreeNode(1);
-    head.left = new TreeNode(2);
-    head.right = new TreeNode(3);
-    head.left.left = new TreeNode(4);
-    head.right.left = new TreeNode(5);
-    head.right.right = new TreeNode(6);
-    head.left.left.right = new TreeNode(7);
-    printTree(head);
-
-    head = new TreeNode(1);
-    head.left = new TreeNode(1);
-    head.right = new TreeNode(1);
-    head.left.left = new TreeNode(1);
-    head.right.left = new TreeNode(1);
-    head.right.right = new TreeNode(1);
-    head.left.left.right = new TreeNode(1);
-    printTree(head);
-
-  }
-
-
 }

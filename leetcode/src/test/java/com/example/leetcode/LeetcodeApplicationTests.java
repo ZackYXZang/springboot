@@ -6,9 +6,11 @@ import com.example.leetcode.service.TreeServiceImpl;
 import com.example.leetcode.service.ZuoClassThreePractice;
 import com.example.leetcode.service.ZuoClassThreePractice.DoubleNode;
 import com.example.leetcode.utils.Node;
+import com.example.leetcode.utils.ParentNode;
 import com.example.leetcode.utils.PrintBinaryTree;
 import com.example.leetcode.utils.RandomNode;
 import com.example.leetcode.utils.TreeNode;
+import java.util.Stack;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -162,9 +164,67 @@ class LeetcodeApplicationTests {
     head.right.left = new TreeNode(6);
     head.right.right = new TreeNode(7);
 
-    PrintBinaryTree.printTree(head);
+    int nodeNum = treeService.getNodeNum(head);
+    System.out.println(nodeNum);
+
+//    PrintBinaryTree.printTree(head);
 //    treeService.postOrderUnRecur(head);
 
+//    ParentNode head = new ParentNode(1);
+//    head.left = new ParentNode(2);
+//    head.left.parent = head;
+//    head.right = new ParentNode(3);
+//    head.right.parent = head;
+//
+//    head.left.left = new ParentNode(4);
+//    head.left.left.parent = head.left;
+//    head.left.right = new ParentNode(5);
+//    head.left.right.parent = head.left;
+//
+//    head.right.left = new ParentNode(6);
+//    head.right.left.parent = head.right;
+//    head.right.right = new ParentNode(7);
+//    head.right.right.parent = head.right;
+//    ParentNode successorNode = getSuccessorNode(head.right.left);
+//    System.out.println(successorNode.value);
+//
+//    ParentNode successorNode = treeService.getSuccessorNode(head.right.right);
+//    System.out.println(successorNode == null ? "null" : successorNode.value);
+
+  }
+
+  public ParentNode getSuccessorNode(ParentNode node) {
+    if (node == null) {
+      return null;
+    }
+
+    //如果右子树不为空
+    if (node.right != null) {
+      return getLeftMost(node.right);
+    }
+
+    //如果右子树为空
+    ParentNode parent = node.parent;
+    ParentNode curr = node;
+    while (parent != null && parent.left != curr) {
+      curr = parent;
+      parent = curr.parent;
+    }
+
+    return parent;
+
+  }
+
+  public ParentNode getLeftMost(ParentNode node) {
+    if (node == null) {
+      return null;
+    }
+
+    ParentNode curr = node;
+    while (curr.left != null) {
+      curr = curr.left;
+    }
+    return curr;
   }
 
   public static void printRandLinkedList(RandomNode head) {
