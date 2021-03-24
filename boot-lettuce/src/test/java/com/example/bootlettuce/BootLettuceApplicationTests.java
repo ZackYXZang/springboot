@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 import javax.xml.crypto.Data;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.json.JsonbTester;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -38,14 +39,121 @@ class BootLettuceApplicationTests {
 
   @Test
   void contextLoads() {
-    test2();
+    test1();
   }
 
   public void test1() {
-    String day = DateUtils.formatDate(new Date(), DateUtils.YYYYMMDDS);
-    System.out.println(day);
 
 
+    String tableConf =
+        "\n"
+            + "{\n"
+            + "    \"name\":\"dmbj.dm_songid_recommend_feature_information_v3\",\n"
+            + "    \"partition\":\"dt\",\n"
+            + "    \"partition_value\":\"#lastdate#\",\n"
+            + "    \"fields_expand_rule\":{\n"
+            + "        \"parent_songid\":{\n"
+            + "            \"type\":\"un\"\n"
+            + "        },\n"
+            + "        \"artist_sex\":{\n"
+            + "            \"type\":\"enum\",\n"
+            + "            \"list\":\"-1;1;2;3\"\n"
+            + "        },\n"
+            + "        \"tag\":{\n"
+            + "            \"type\":\"list\"\n"
+            + "        },\n"
+            + "        \"song_version\":{\n"
+            + "            \"type\":\"enum\",\n"
+            + "            \"list\":\"0;1;2;3;4\"\n"
+            + "        },\n"
+            + "        \"artist_characteristic_songid_uv\":{\n"
+            + "            \"type\":\"kv\",\n"
+            + "            \"list\":\"1;2;3;4;5;6;7;8;9;10;11;12;13\"\n"
+            + "        },\n"
+            + "        \"gender_datekey_pv\":{\n"
+            + "            \"type\":\"zip\",\n"
+            + "            \"first\":\"0;1\",\n"
+            + "            \"second\":\"7;30\"\n"
+            + "        },\n"
+            + "        \"artist_sing_listen_uv\":{\n"
+            + "            \"type\":\"zip\",\n"
+            + "            \"first\":\"sing_userid_uv;listen_userid_uv;songid_artist_exposure_ctr\",\n"
+            + "            \"second\":\"1;3;7;30\",\n"
+            + "            \"third\":\"6;8\"\n"
+            + "        },\n"
+            + "        \"songid_behavior\":{\n"
+            + "            \"type\":\"zip\",\n"
+            + "            \"first\":\"bei_sing_songid_pv;bei_exposure_pv\",\n"
+            + "            \"second\":\"1;3;7;30\",\n"
+            + "            \"third\":\"5;9\",\n"
+            + "            \"bei_sing_songid_pv\":{\"second\":\"1;30\"}\n"
+            + "        }\n"
+            + "    }\n"
+            + "}";
+    JSONObject jsonObject = JSONObject.parseObject(tableConf);
+    JSONObject fieldsExpandRule = (JSONObject)jsonObject.get("fields_expand_rule");
+
+
+    Map<String, Object> mapMap = new HashMap<>();
+    for(Map.Entry<String, Object> entry : fieldsExpandRule.entrySet()) {
+      String key = entry.getKey();
+      JSONObject value = (JSONObject) entry.getValue();
+      String type = (String)value.get("type");
+      if (!type.equals("zip")) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("type", type);
+        Object list = value.get("list");
+        if (list != null) {
+          map.put("list", list);
+        }
+        mapMap.put(key, new JSONObject(map));
+        continue;
+      }
+
+      String first = (String)value.get("first");
+      if (StringUtils.isEmpty(first)) {
+        continue;
+      }
+      String[] firstArray = first.split(";");
+
+      for (String firstElement : firstArray) {
+        if (value.get(firstElement) != null) {
+          JSONObject valueInner = (JSONObject)value.get(firstElement);
+          convertZipJson(mapMap, key, firstElement, valueInner);
+
+        } else {
+          convertZipJson(mapMap, key, firstElement, value);
+        }
+      }
+    }
+    jsonObject.put("fields_expand_rule", JSONObject.toJSON(mapMap));
+    String result = jsonObject.toString();
+    System.out.println(result);
+
+  }
+
+  public void convertZipJson(Map<String, Object> mapMap, String key, String firstElement, JSONObject value) {
+    String second = (String)value.get("second");
+    if(StringUtils.isEmpty(second)) {
+      return;
+    }
+    String third = (String)value.get("third");
+    if (StringUtils.isEmpty(third)) {
+      Map<String, Object> map = new HashMap<>();
+      map.put("type", "kv");
+      map.put("list", second);
+      String newKey = key + "_" + firstElement;
+      mapMap.put(newKey, JSONObject.toJSON(map));
+    } else {
+      String[] secondSArray = second.split(";");
+      for (String secondElement : secondSArray) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("type", "kv");
+        map.put("list", third);
+        String newKey = key + "_" + firstElement + "_" + secondElement;
+        mapMap.put(newKey, JSONObject.toJSON(map));
+      }
+    }
   }
 
   public void test3() {

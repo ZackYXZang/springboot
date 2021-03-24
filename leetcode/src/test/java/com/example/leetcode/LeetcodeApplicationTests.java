@@ -7,10 +7,7 @@ import com.example.leetcode.service.ZuoClassThreePractice;
 import com.example.leetcode.service.ZuoClassThreePractice.DoubleNode;
 import com.example.leetcode.utils.Node;
 import com.example.leetcode.utils.ParentNode;
-import com.example.leetcode.utils.PrintBinaryTree;
 import com.example.leetcode.utils.RandomNode;
-import com.example.leetcode.utils.TreeNode;
-import java.util.Stack;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,6 +29,11 @@ class LeetcodeApplicationTests {
 
   @Test
   void contextLoads() throws Exception {
+
+
+    int a = 3;
+    int b = --a;
+    System.out.println(b);
 
     int[] array = new int[]{1, 5, 4, 3, 2, 6, 8, 7, 9};
     //冒泡
@@ -156,16 +158,16 @@ class LeetcodeApplicationTests {
 //    //3。3 head1和head2环上相交， 交点是6或者4
 //    System.out.println(leetCode.getIntersectNode(head1, head2).value);
 
-    TreeNode head = new TreeNode(1);
-    head.left = new TreeNode(2);
-    head.right = new TreeNode(3);
-    head.left.left = new TreeNode(4);
-    head.left.right = new TreeNode(5);
-    head.right.left = new TreeNode(6);
-    head.right.right = new TreeNode(7);
-
-    int nodeNum = treeService.getNodeNum(head);
-    System.out.println(nodeNum);
+//    TreeNode head = new TreeNode(1);
+//    head.left = new TreeNode(2);
+//    head.right = new TreeNode(3);
+//    head.left.left = new TreeNode(4);
+//    head.left.right = new TreeNode(5);
+//    head.right.left = new TreeNode(6);
+//    head.right.right = new TreeNode(7);
+//
+//    int nodeNum = treeService.getNodeNum(head);
+//    System.out.println(nodeNum);
 
 //    PrintBinaryTree.printTree(head);
 //    treeService.postOrderUnRecur(head);
