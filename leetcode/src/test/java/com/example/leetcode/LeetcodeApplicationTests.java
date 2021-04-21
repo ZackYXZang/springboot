@@ -3,8 +3,13 @@ package com.example.leetcode;
 import com.example.leetcode.service.ArrayServiceImpl;
 import com.example.leetcode.service.ArraySortImplTwo;
 import com.example.leetcode.service.TreeServiceImpl;
+import com.example.leetcode.service.ZuoClassDPPractice;
+import com.example.leetcode.service.ZuoClassGraphPractice;
 import com.example.leetcode.service.ZuoClassThreePractice;
 import com.example.leetcode.service.ZuoClassThreePractice.DoubleNode;
+import com.example.leetcode.utils.Graph;
+import com.example.leetcode.utils.GraphGenerator;
+import com.example.leetcode.utils.GraphNode;
 import com.example.leetcode.utils.Node;
 import com.example.leetcode.utils.ParentNode;
 import com.example.leetcode.utils.RandomNode;
@@ -27,13 +32,15 @@ class LeetcodeApplicationTests {
   @Autowired
   private TreeServiceImpl treeService;
 
+  @Autowired
+  private ZuoClassGraphPractice zuoClassGraphPractice;
+
+  @Autowired
+  private ZuoClassDPPractice zuoClassDPPractice;
+
   @Test
   void contextLoads() throws Exception {
 
-
-    int a = 3;
-    int b = --a;
-    System.out.println(b);
 
     int[] array = new int[]{1, 5, 4, 3, 2, 6, 8, 7, 9};
     //冒泡
@@ -61,7 +68,7 @@ class LeetcodeApplicationTests {
      * 13, 14, 15, 16
      */
 
-    int[][] matrix = {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}};
+//    int[][] matrix = {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}};
 //    leetCode.rotateMatrix(matrix);
 //    leetCode.printMatrix(matrix);
 
@@ -193,6 +200,45 @@ class LeetcodeApplicationTests {
 //    ParentNode successorNode = treeService.getSuccessorNode(head.right.right);
 //    System.out.println(successorNode == null ? "null" : successorNode.value);
 
+
+    //图
+//    Graph graph = generateGraph();
+//    zuoClassGraphPractice.dfs(graph.nodes.get(1));
+
+//    int[] num = {2,7,9,3,1};
+//    int rob = rob(num);
+//    System.out.println(rob);
+//    String a  = "abcd";
+//    zuoClassDPPractice.printAllPermutations1(a);
+//    zuoClassDPPractice.printAllSubsquence("zang");
+    int[][] matrix = { { 1, 3, 5, 9 }, { 8, 1, 3, 5 }, { 5, 0, 6, 1 }, { 8, 8, 4, 0 } };
+//    int minPath = zuoClassDPPractice.minPath(matrix);
+    int[] arr = {1, 2, 3};
+    int aim = 5;
+    boolean money = zuoClassDPPractice.money(arr, aim);
+    System.out.println(money);
+
+  }
+
+  public int rob(int[] nums) {
+    if (nums.length == 0) {
+      return 0;
+    }
+
+    int length = nums.length;
+    int[] dp = new int[length + 1];
+    dp[0] = 0;
+    dp[1] = nums[0];
+    for (int k = 2; k <= length; k++) {
+      dp[k] = Math.max(dp[k-1], nums[k-1] + dp[k-2]);
+    }
+    return dp[length];
+  }
+
+  public Graph generateGraph() {
+    int[][] matrix = {{0, 1, 2}, {0, 1, 3}, {0, 1, 4}, {0, 2, 3}, {0, 2, 7}, {0, 7, 3}, {0, 3, 5}, {0, 4, 6}};
+    Graph graph = GraphGenerator.createGraph(matrix);
+    return graph;
   }
 
   public ParentNode getSuccessorNode(ParentNode node) {

@@ -76,7 +76,7 @@ public class ZuoClassFiveSevenPractice {
    */
   public int countIslands(int[][] matrix) {
     //思路是：
-    //1。在碰到1的时候，把所有相连的1变成2，0返回
+    //1。在碰到1的时候，把所有相连的1变成2，遇到0返回
     //2。继续，如果碰到0、或者边界返回，碰到2继续，碰到1，结果加1，同时重复步骤1
     if (matrix == null || matrix.length == 0 || matrix[0] == null || matrix[0].length == 0) {
       return 0;
@@ -112,16 +112,12 @@ public class ZuoClassFiveSevenPractice {
 
   //并查集，用来查找a，b是否是一个集合
   //必须要在一开始给定一个集合
-  class UnionFindSet {
-
-    class FanXing {
-      //范型，随便定义
-    }
+  static class UnionFindSet {
 
     //value是key的父节点
-    public HashMap<FanXing, FanXing> fatherMap;
+    public HashMap<Object, Object> fatherMap;
     //表示以key为头节点的集合有多大
-    public HashMap<FanXing, Integer> sizeMap;
+    public HashMap<Object, Integer> sizeMap;
 
     public UnionFindSet() {
       this.fatherMap = new HashMap<>();
@@ -129,18 +125,18 @@ public class ZuoClassFiveSevenPractice {
     }
 
     //初始化，此时每一个节点到父节点都是自己
-    public void makeSets(List<FanXing> list) {
+    public void makeSets(List<Object> list) {
       fatherMap.clear();
       sizeMap.clear();
-      for (FanXing fanXing : list) {
+      for (Object fanXing : list) {
         fatherMap.put(fanXing, fanXing);
         sizeMap.put(fanXing, 1);
       }
     }
 
     //找到节点到父节点
-    private FanXing findHead(FanXing fanXing) {
-      FanXing father = fatherMap.get(fanXing);
+    private Object findHead(Object fanXing) {
+      Object father = fatherMap.get(fanXing);
       if (father != fanXing) {
         father = findHead(father);
       }
@@ -149,18 +145,18 @@ public class ZuoClassFiveSevenPractice {
     }
 
     //判断两个节点是不是同一个集合
-    public boolean isSameSet(FanXing a, FanXing b) {
+    public boolean isSameSet(Object a, Object b) {
       return findHead(a) == findHead(b);
     }
 
     //合并两个节点，同时要把以两个节点为头的集合合并了，小的合并到大的里
-    public void union(FanXing a, FanXing b) {
+    public void union(Object a, Object b) {
       if (a == null || b == null) {
         return;
       }
 
-      FanXing aHead = findHead(a);
-      FanXing bHead = findHead(b);
+      Object aHead = findHead(a);
+      Object bHead = findHead(b);
 
       if (aHead != bHead) {
         int aSetSize = sizeMap.get(a);

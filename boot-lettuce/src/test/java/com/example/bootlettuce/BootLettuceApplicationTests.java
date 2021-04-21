@@ -7,9 +7,13 @@ import com.example.bootlettuce.entity.BaseEntity;
 import com.example.bootlettuce.entity.User;
 import com.example.bootlettuce.entity.test;
 import com.example.bootlettuce.utils.DateUtils;
+import java.math.BigDecimal;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -22,6 +26,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.xml.crypto.Data;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Jedis;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.JsonbTester;
 import org.springframework.http.HttpEntity;
@@ -43,62 +48,80 @@ class BootLettuceApplicationTests {
   }
 
   public void test1() {
+    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime date = now.minusDays(7);
+    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+    String format = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    SimpleDateFormat df1 = new SimpleDateFormat("yyyyMMdd");
+    String format1 = date.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    System.out.println(format);
+    System.out.println(format1);
+  }
+
+  /**
+   * 和线上的特征比较
+   * @param newFeaturesOnline
+   * @return
+   */
+  public void getOnlineSRedisValue( String newFeaturesOnline) {
+
+    JSONObject newFeaturesOnlineJson = JSONObject.parseObject(newFeaturesOnline);
+    Map<String, Object> add = new HashMap<>();
+    Map<String, Object> edit = new HashMap<>();
+    Map<String, Object> result = new HashMap<>();
+    for (Map.Entry<String, Object> entry : newFeaturesOnlineJson.entrySet()) {
+      String key = entry.getKey();
+      Object newValue = entry.getValue();
+      result.put(key, newValue);
+    }
+
+    System.out.println("666");
+    System.out.println(result.toString());
+    System.out.println("888");
+    System.out.println(((JSONObject)JSONObject.toJSON(result)).toJSONString());
+  }
+
+  public int rob(int[] nums) {
+    if (nums.length == 0) {
+      return 0;
+    }
+    // 子问题：
+    // f(k) = 偷 [0..k) 房间中的最大金额
+
+    // f(0) = 0
+    // f(1) = nums[0]
+    // f(k) = max{ rob(k-1), nums[k-1] + rob(k-2) }
+
+    int N = nums.length;
+    int[] dp = new int[N+1];
+    dp[0] = 0;
+    dp[1] = nums[0];
+    for (int k = 2; k <= N; k++) {
+      dp[k] = Math.max(dp[k-1], nums[k-1] + dp[k-2]);
+    }
+    return dp[N];
+  }
 
 
-    String tableConf =
-        "\n"
-            + "{\n"
-            + "    \"name\":\"dmbj.dm_songid_recommend_feature_information_v3\",\n"
-            + "    \"partition\":\"dt\",\n"
-            + "    \"partition_value\":\"#lastdate#\",\n"
-            + "    \"fields_expand_rule\":{\n"
-            + "        \"parent_songid\":{\n"
-            + "            \"type\":\"un\"\n"
-            + "        },\n"
-            + "        \"artist_sex\":{\n"
-            + "            \"type\":\"enum\",\n"
-            + "            \"list\":\"-1;1;2;3\"\n"
-            + "        },\n"
-            + "        \"tag\":{\n"
-            + "            \"type\":\"list\"\n"
-            + "        },\n"
-            + "        \"song_version\":{\n"
-            + "            \"type\":\"enum\",\n"
-            + "            \"list\":\"0;1;2;3;4\"\n"
-            + "        },\n"
-            + "        \"artist_characteristic_songid_uv\":{\n"
-            + "            \"type\":\"kv\",\n"
-            + "            \"list\":\"1;2;3;4;5;6;7;8;9;10;11;12;13\"\n"
-            + "        },\n"
-            + "        \"gender_datekey_pv\":{\n"
-            + "            \"type\":\"zip\",\n"
-            + "            \"first\":\"0;1\",\n"
-            + "            \"second\":\"7;30\"\n"
-            + "        },\n"
-            + "        \"artist_sing_listen_uv\":{\n"
-            + "            \"type\":\"zip\",\n"
-            + "            \"first\":\"sing_userid_uv;listen_userid_uv;songid_artist_exposure_ctr\",\n"
-            + "            \"second\":\"1;3;7;30\",\n"
-            + "            \"third\":\"6;8\"\n"
-            + "        },\n"
-            + "        \"songid_behavior\":{\n"
-            + "            \"type\":\"zip\",\n"
-            + "            \"first\":\"bei_sing_songid_pv;bei_exposure_pv\",\n"
-            + "            \"second\":\"1;3;7;30\",\n"
-            + "            \"third\":\"5;9\",\n"
-            + "            \"bei_sing_songid_pv\":{\"second\":\"1;30\"}\n"
-            + "        }\n"
-            + "    }\n"
-            + "}";
+  /**
+   * 格式转换
+   * @param tableConf
+   * @return
+   */
+  public JSONObject converTableConf(String tableConf) {
+    if (StringUtils.isEmpty(tableConf)) {
+      return null;
+    }
+
     JSONObject jsonObject = JSONObject.parseObject(tableConf);
     JSONObject fieldsExpandRule = (JSONObject)jsonObject.get("fields_expand_rule");
-
 
     Map<String, Object> mapMap = new HashMap<>();
     for(Map.Entry<String, Object> entry : fieldsExpandRule.entrySet()) {
       String key = entry.getKey();
       JSONObject value = (JSONObject) entry.getValue();
       String type = (String)value.get("type");
+      //转换非zip格式的json
       if (!type.equals("zip")) {
         Map<String, Object> map = new HashMap<>();
         map.put("type", type);
@@ -110,28 +133,32 @@ class BootLettuceApplicationTests {
         continue;
       }
 
+      //转换zip格式的json
       String first = (String)value.get("first");
       if (StringUtils.isEmpty(first)) {
         continue;
       }
       String[] firstArray = first.split(";");
-
       for (String firstElement : firstArray) {
         if (value.get(firstElement) != null) {
           JSONObject valueInner = (JSONObject)value.get(firstElement);
           convertZipJson(mapMap, key, firstElement, valueInner);
-
         } else {
           convertZipJson(mapMap, key, firstElement, value);
         }
       }
     }
-    jsonObject.put("fields_expand_rule", JSONObject.toJSON(mapMap));
-    String result = jsonObject.toString();
-    System.out.println(result);
+    return (JSONObject)JSONObject.toJSON(mapMap);
 
   }
 
+  /**
+   * 转换zip格式的json
+   * @param mapMap
+   * @param key
+   * @param firstElement
+   * @param value
+   */
   public void convertZipJson(Map<String, Object> mapMap, String key, String firstElement, JSONObject value) {
     String second = (String)value.get("second");
     if(StringUtils.isEmpty(second)) {
@@ -155,6 +182,8 @@ class BootLettuceApplicationTests {
       }
     }
   }
+
+
 
   public void test3() {
     String s = getsessioninfolist();
