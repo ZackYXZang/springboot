@@ -5,6 +5,7 @@ import com.example.leetcode.service.ArraySortImplTwo;
 import com.example.leetcode.service.TreeServiceImpl;
 import com.example.leetcode.service.ZuoClassDPPractice;
 import com.example.leetcode.service.ZuoClassGraphPractice;
+import com.example.leetcode.service.ZuoClassSlidingWindowPractice;
 import com.example.leetcode.service.ZuoClassThreePractice;
 import com.example.leetcode.service.ZuoClassThreePractice.DoubleNode;
 import com.example.leetcode.utils.Graph;
@@ -13,6 +14,8 @@ import com.example.leetcode.utils.GraphNode;
 import com.example.leetcode.utils.Node;
 import com.example.leetcode.utils.ParentNode;
 import com.example.leetcode.utils.RandomNode;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,11 +41,14 @@ class LeetcodeApplicationTests {
   @Autowired
   private ZuoClassDPPractice zuoClassDPPractice;
 
+  @Autowired
+  private ZuoClassSlidingWindowPractice zuoClassSlidingWindowPractice;
+
   @Test
   void contextLoads() throws Exception {
 
 
-    int[] array = new int[]{1, 5, 4, 3, 2, 6, 8, 7, 9};
+//    int[] array = new int[]{1, 5, 4, 3, 2, 6, 8, 7, 9};
     //冒泡
 //    arraySortTwo.BubbleSort(array);
 
@@ -211,12 +217,19 @@ class LeetcodeApplicationTests {
 //    String a  = "abcd";
 //    zuoClassDPPractice.printAllPermutations1(a);
 //    zuoClassDPPractice.printAllSubsquence("zang");
-    int[][] matrix = { { 1, 3, 5, 9 }, { 8, 1, 3, 5 }, { 5, 0, 6, 1 }, { 8, 8, 4, 0 } };
-//    int minPath = zuoClassDPPractice.minPath(matrix);
-    int[] arr = {1, 2, 3};
-    int aim = 5;
-    boolean money = zuoClassDPPractice.money(arr, aim);
-    System.out.println(money);
+//    int[][] matrix = { { 1, 3, 5, 9 }, { 8, 1, 3, 5 }, { 5, 0, 6, 1 }, { 8, 8, 4, 0 } };
+////    int minPath = zuoClassDPPractice.minPath(matrix);
+//    int[] arr = {1, 2, 3};
+//    int aim = 5;
+//    boolean money = zuoClassDPPractice.money(arr, aim);
+//    System.out.println(money);
+    int[] array = {3, 1, 2, 4, 1, 2};
+    int water1 = zuoClassSlidingWindowPractice.getWater1(array);
+    System.out.println(water1);
+    int water2 = zuoClassSlidingWindowPractice.getWater2(array);
+    System.out.println(water2);
+    int water3 = zuoClassSlidingWindowPractice.getWater3(array);
+    System.out.println(water3);
 
   }
 

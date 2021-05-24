@@ -15,11 +15,37 @@ public class User {
     this.setWorkids(new int[1]);
   }
 
+
+  public User(Integer id, String name, Integer age, int[] workids, String tag, Integer priority, Integer score, Integer gender) {
+    this.id = String.valueOf(id);
+    this.name = name;
+    this.age = age;
+    this.workids = workids;
+    this.tag = tag;
+    this.priority = priority;
+    this.gender = gender;
+  }
+
+  public User(String name, Integer priority, Integer score, Integer gender) {
+    this.name = name;
+    this.priority = priority;
+    this.gender = gender;
+  }
+
   private String id;
 
   private String name;
 
   private Integer age;
+
+  private Integer gender;
+
   private int[] workids;
+
+  private String tag;
+
+  private Integer priority;
+
+  private ThreadLocal<Long> score = ThreadLocal.withInitial(() -> 0L);
 
 }

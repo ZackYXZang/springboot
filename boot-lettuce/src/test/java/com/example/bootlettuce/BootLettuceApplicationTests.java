@@ -5,27 +5,38 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.example.bootlettuce.entity.BaseEntity;
 import com.example.bootlettuce.entity.User;
+import com.example.bootlettuce.entity.WhiteListEntity;
 import com.example.bootlettuce.entity.test;
 import com.example.bootlettuce.utils.DateUtils;
+import com.example.bootlettuce.utils.LocalDateUtils;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import javax.jws.soap.SOAPBinding.Use;
 import javax.xml.crypto.Data;
+import org.assertj.core.internal.bytebuddy.asm.Advice.Local;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Jedis;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.JsonbTester;
@@ -35,6 +46,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ConcurrentReferenceHashMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
@@ -48,14 +60,80 @@ class BootLettuceApplicationTests {
   }
 
   public void test1() {
-    LocalDateTime now = LocalDateTime.now();
-    LocalDateTime date = now.minusDays(7);
-    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-    String format = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    SimpleDateFormat df1 = new SimpleDateFormat("yyyyMMdd");
-    String format1 = date.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-    System.out.println(format);
-    System.out.println(format1);
+//    List<User> list = new ArrayList<>();
+//    list.add(new User("zang", 1,1,1));
+//    list.add(new User("zang", 2,2,2));
+//    list.add(new User("zang", 3,3,3));
+//    list.add(new User("zang", 4,4,4));
+//    List<User> collect = list.stream().sorted(Comparator.comparing(User::getPriority).thenComparing(Comparator.comparing(User::getGender).reversed()))
+//        .collect(Collectors.toList());
+//    System.out.println(collect.get(0));
+
+    String sessionListUrl = "https://apis.changbalive.com/api_3rdparty_changba_server.php?ac=getsessioninfolist&kulvdebug=d043fdf7c0a35f2306fe5c3056280332";
+    String s ="";
+    try {
+      RestTemplate restTemplate = new RestTemplate();
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+      HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(null, headers);
+      //  执行HTTP请求
+      ResponseEntity<String> response = restTemplate
+          .exchange(sessionListUrl, HttpMethod.GET, requestEntity, String.class);
+      s = response.getBody();
+    } catch (Exception e) {
+
+    }
+
+    List<Integer> userIds = new ArrayList<>();
+    JSONArray ja = JSON.parseObject(s).getJSONArray("result");
+    for (int i = 0; i < ja.size(); i++) {
+      Integer userid =  (Integer) ja.getJSONObject(i).getJSONObject("anchorinfo").get("changbauserid");
+      userIds.add(userid);
+    }
+    String result = "(" + userIds.get(0);
+
+    for (int i = 1; i < userIds.size(); i++) {
+      result += "," + userIds.get(i);
+    }
+    result += ")";
+    System.out.println(result);
+    int i = testException();
+  }
+
+  public int testException() {
+    try {
+      int i  = 1;
+    } catch (Exception e) {
+      throw e;
+    }
+    return 1;
+  }
+
+
+  public void getNum(String str) {
+    int numB = 0;
+    int length = str.length();
+    int index = length - 1;
+    int count = 0;
+    char[] chars = str.toCharArray();
+    while (index >= 0) {
+      if (chars[index] == 'b') {
+        break;
+      }
+      index--;
+    }
+
+
+    while (index >= 0) {
+      if (chars[index] == 'b') {
+        numB++;
+      } else {
+        count = (count + numB) % 1000000007;
+        numB = (2 * numB) % 1000000007;
+      }
+      index--;
+    }
+    System.out.println(count);
   }
 
   /**
