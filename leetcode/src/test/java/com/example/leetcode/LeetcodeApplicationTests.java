@@ -1,7 +1,10 @@
 package com.example.leetcode;
 
 import com.example.leetcode.service.ArrayServiceImpl;
+import com.example.leetcode.service.ArraySortImpl;
 import com.example.leetcode.service.ArraySortImplTwo;
+import com.example.leetcode.service.KMPAndManacherAndBFPRTAlgorithm;
+import com.example.leetcode.service.LeetCodeHot100;
 import com.example.leetcode.service.TreeServiceImpl;
 import com.example.leetcode.service.ZuoClassDPPractice;
 import com.example.leetcode.service.ZuoClassGraphPractice;
@@ -15,7 +18,10 @@ import com.example.leetcode.utils.Node;
 import com.example.leetcode.utils.ParentNode;
 import com.example.leetcode.utils.RandomNode;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,6 +34,9 @@ class LeetcodeApplicationTests {
 
   @Autowired
   private ArraySortImplTwo arraySortTwo;
+
+  @Autowired
+  private ArraySortImpl arraySort;
 
   @Autowired
   private ZuoClassThreePractice leetCode;
@@ -44,11 +53,19 @@ class LeetcodeApplicationTests {
   @Autowired
   private ZuoClassSlidingWindowPractice zuoClassSlidingWindowPractice;
 
+  @Autowired
+  private LeetCodeHot100 leetCodeHot;
+
+  @Autowired
+  private KMPAndManacherAndBFPRTAlgorithm kmpAndManacherAndBFPRTAlgorithm;
+
   @Test
   void contextLoads() throws Exception {
 
+    String s = "cbbd";
+    int length = kmpAndManacherAndBFPRTAlgorithm.maxLcpsLength(s);
+    System.out.println(length);
 
-//    int[] array = new int[]{1, 5, 4, 3, 2, 6, 8, 7, 9};
     //冒泡
 //    arraySortTwo.BubbleSort(array);
 
@@ -65,7 +82,8 @@ class LeetcodeApplicationTests {
 //    arraySortTwo.QuickSort(array);
 
     //堆排序
-//    arraySortTwo.HeapSort(array);
+//    arraySort.HeapSort(array);
+//    System.out.println(array[0]);
 
     /**
      * 1,   2,  3,  4
@@ -223,15 +241,63 @@ class LeetcodeApplicationTests {
 //    int aim = 5;
 //    boolean money = zuoClassDPPractice.money(arr, aim);
 //    System.out.println(money);
-    int[] array = {3, 1, 2, 4, 1, 2};
-    int water1 = zuoClassSlidingWindowPractice.getWater1(array);
-    System.out.println(water1);
-    int water2 = zuoClassSlidingWindowPractice.getWater2(array);
-    System.out.println(water2);
-    int water3 = zuoClassSlidingWindowPractice.getWater3(array);
-    System.out.println(water3);
+//    int[] array = {3, 1, 2, 4, 1, 2};
+//    int water1 = zuoClassSlidingWindowPractice.getWater1(array);
+//    System.out.println(water1);
+//    int water2 = zuoClassSlidingWindowPractice.getWater2(array);
+//    System.out.println(water2);
+//    int water3 = zuoClassSlidingWindowPractice.getWater3(array);
+//    System.out.println(water3);
 
   }
+
+  class Solution {
+    Map<Character, Integer> ori = new HashMap<Character, Integer>();
+    Map<Character, Integer> cnt = new HashMap<Character, Integer>();
+
+    public String minWindow(String s, String t) {
+      int tLen = t.length();
+      for (int i = 0; i < tLen; i++) {
+        char c = t.charAt(i);
+        ori.put(c, ori.getOrDefault(c, 0) + 1);
+      }
+      int l = 0, r = -1;
+      int len = Integer.MAX_VALUE, ansL = -1, ansR = -1;
+      int sLen = s.length();
+      while (r < sLen) {
+        ++r;
+        if (r < sLen && ori.containsKey(s.charAt(r))) {
+          cnt.put(s.charAt(r), cnt.getOrDefault(s.charAt(r), 0) + 1);
+        }
+        while (check() && l <= r) {
+          if (r - l + 1 < len) {
+            len = r - l + 1;
+            ansL = l;
+            ansR = l + len;
+          }
+          if (ori.containsKey(s.charAt(l))) {
+            cnt.put(s.charAt(l), cnt.getOrDefault(s.charAt(l), 0) - 1);
+          }
+          ++l;
+        }
+      }
+      return ansL == -1 ? "" : s.substring(ansL, ansR);
+    }
+
+    public boolean check() {
+      Iterator iter = ori.entrySet().iterator();
+      while (iter.hasNext()) {
+        Map.Entry entry = (Map.Entry) iter.next();
+        Character key = (Character) entry.getKey();
+        Integer val = (Integer) entry.getValue();
+        if (cnt.getOrDefault(key, 0) < val) {
+          return false;
+        }
+      }
+      return true;
+    }
+  }
+
 
   public int rob(int[] nums) {
     if (nums.length == 0) {

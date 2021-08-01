@@ -1,5 +1,6 @@
 package com.example.leetcode.service;
 
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 /**
@@ -7,13 +8,11 @@ import org.springframework.util.StringUtils;
  * @create 2021-04-27-上午10:27
  * @desc KMP算法
  **/
+@Service
 public class KMPAndManacherAndBFPRTAlgorithm {
 
   /**
-   * 概念
-   * 1. 最长前/后缀相等时的长度
-   *  比如： A, A, A, A, B
-   *  在B的位置，长度就是3，因为不能包含自己本身长度，就是(AAAA)
+   * KMP概念 1. 最长前/后缀相等时的长度 比如： A, A, A, A, B 在B的位置，长度就是3，因为不能包含自己本身长度，就是(AAAA)
    */
   //这个next数组，每个位置的值代表：
   // 对应原字符串从位置i往前看最长前缀相等时的长度
@@ -51,11 +50,10 @@ public class KMPAndManacherAndBFPRTAlgorithm {
   }
 
   /**
-   * 判断字符A是否包含字符B
-   * 如果是，返回开始包含的第一个位置，如果不是，返回-1
+   * 判断字符A是否包含字符B 如果是，返回开始包含的第一个位置，如果不是，返回-1
    */
   public int getIndexOf(String a, String b) {
-    if (StringUtils.isEmpty(a) || StringUtils.isEmpty(b) || a.length() <  b.length()) {
+    if (StringUtils.isEmpty(a) || StringUtils.isEmpty(b) || a.length() < b.length()) {
       return -1;
     }
 
@@ -75,6 +73,7 @@ public class KMPAndManacherAndBFPRTAlgorithm {
         //所以aIndex++，就是要从下一个位置开始重新判断
         aIndex++;
       } else {
+        //next[bIndex]位置上的值，正好是字符B从bIndex开始往前，最长的回文传的位置
         bIndex = next[bIndex];
       }
     }
@@ -83,6 +82,87 @@ public class KMPAndManacherAndBFPRTAlgorithm {
     return bIndex == bChars.length ? aIndex - bIndex : -1;
   }
 
+  /**
+   * Manacher算法，判断回文传的长度 时间复杂度O(n)
+   *
+   * @param str
+   * @return
+   */
+  public static int maxLcpsLength(String str) {
+    if (str == null || str.length() == 0) {
+      return 0;
+    }
+    char[] charArr = manacherString(str);
+    //用来记录每一个位置的回文传半径长度
+    int[] pArr = new int[charArr.length];
+    //index用来记录中心点 -> 取最右边界的时候的中心，也就是更新最右边界的时候更新中心点
+    //对应下面的if (i + pArr[i] > pR)
+    int index = -1;
+    //pR用来记录有边界 -> 回文半径的最右边界
+    int pR = -1;
+    int max = Integer.MIN_VALUE;
 
+    String maxStr = "";
+    for (int i = 0; i != charArr.length; i++) {
+      //通过i`得到i位置的回文半径
+      //Math.min(pArr[2 * index - i], pR - i)表示：
+      //如果i`位置的回文半径比i到最右边界大，那么i位置的回文半径就是最右边界 - i的位置(pR - i)，并且此时不用继续往下了，也就是不用进while循环里
+      //如果i`位置的回文半径比i到最右边界小，那么i位置的回文半径就是i`的回文半径，并且此时不用继续往下了，也就是不用进while循环里
+      //如果i`位置的回文半径和i到最右边界相等，那么进入while循环，继续判断是不是往外扩
+
+      //整体的意思是如果i在最有回文半径里，通过i`取到回文半径，如果不在就是1
+      pArr[i] = pR > i ? Math.min(pArr[2 * index - i], pR - i) : 1;
+      while (i + pArr[i] < charArr.length && i - pArr[i] > -1) {
+        if (charArr[i + pArr[i]] == charArr[i - pArr[i]])
+        //更新i位置的回文半径
+        {
+          pArr[i]++;
+        } else {
+          break;
+        }
+      }
+
+      //结束while后，如果大于右边界，扩展右边界，更新中心点
+      // 否则中心点保持不变，i + 1移动
+      if (i + pArr[i] > pR) {
+        pR = i + pArr[i];
+        index = i;
+
+      }
+
+      if (max < pArr[i]) {
+        System.out.println("i = " + i);
+        System.out.println("max = " + max);
+        System.out.println("pArr[i] = " + pArr[i]);
+
+        int end = (i + pArr[i]) / 2;
+        int start = end >=(i + 1 - pArr[i]) / 2 ? (i + 1 - pArr[i]) / 2 : end;
+        maxStr = str.substring(start, end);
+        System.out.println(maxStr);
+      }
+      max = Math.max(max, pArr[i]);
+
+    }
+//    for (int j = 0; j < pArr.length; j++) {
+//      System.out.println(pArr[j]);
+//    }
+    return max - 1;
+  }
+
+  /**
+   * 以防偶数的情况 构建一个str.length * 2 + 1的数组 并且使偶数位置为#，奇数位置为字符串本身
+   *
+   * @param str
+   * @return
+   */
+  public static char[] manacherString(String str) {
+    char[] charArr = str.toCharArray();
+    char[] res = new char[str.length() * 2 + 1];
+    int index = 0;
+    for (int i = 0; i != res.length; i++) {
+      res[i] = (i & 1) == 0 ? '#' : charArr[index++];
+    }
+    return res;
+  }
 
 }

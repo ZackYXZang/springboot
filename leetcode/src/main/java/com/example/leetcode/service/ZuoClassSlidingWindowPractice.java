@@ -124,7 +124,7 @@ public class ZuoClassSlidingWindowPractice {
     }
 
     //窗口最大值/最小值更新结构
-    //1. 使用双端链表（双向链表结构），保证从大到小的顺序
+    //1. 使用双端链表（双向链表结构）存的是数组的角标，保证从大到小的顺序
     //2. 假设窗口的两端为left，right
     //3. 每当right右移，就要把新的数加入双端链表，从后面加入，如果数进来后，不能保证从大到小的顺序，就把前面的数都弹出，直到保证这个从大到小的结构为止
     //4. 注意：如果新加进去的数和前一个相等，也要弹出前面的数，加入新的数
@@ -203,9 +203,27 @@ public class ZuoClassSlidingWindowPractice {
     rightMax[array.length - 1] = array[array.length - 1];
 
     for (int i = 1; i < array.length; i++) {
-
+      leftMax[i] = Math.max(leftMax[i - 1], array[i]);
     }
-    return 0;
+
+    for (int i = array.length - 2; i > 1; i--) {
+      rightMax[i] = Math.max(rightMax[i + 1], array[i]);
+    }
+
+    int max = 0;
+    for (int i = 0; i < array.length - 1; i++) {
+      max = Math.max(leftMax[i] - rightMax[i+1], max);
+    }
+    return max;
+  }
+
+  public int maxABS3(int[] array) {
+    int max = Integer.MIN_VALUE;
+    for (int i = 0; i< array.length; i++) {
+      max = Math.max(max, array[i]);
+    }
+
+    return max - Math.min(array[0], array[array.length - 1]);
   }
 
 }

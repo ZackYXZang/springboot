@@ -74,4 +74,7 @@ public interface ChannelDataMapper {
      */
     int selectAllByAccount(@Param("userName") String userName);
 
+
+    List<String> test();
+
 }

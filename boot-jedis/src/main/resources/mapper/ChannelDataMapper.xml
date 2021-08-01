@@ -116,4 +116,10 @@
       and creator = #{userName}
     </if>
   </select>
+
+  <select id="test" resultType="java.lang.String" >
+    select id
+    from channel_data
+
+  </select>
 </mapper>
