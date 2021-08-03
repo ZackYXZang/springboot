@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -1128,6 +1129,506 @@ public class LeetCodeHot100 {
   //字母异位词分组
   //给定一个字符串数组，将字母异位词组合在一起。可以按任意顺序返回结果列表。
   //字母异位词指字母相同，但排列不同的字符串。
+  //遍历，排序，使用map，时间复杂度O(nklogk)，n表示n个字符，k表示字符最大的长度，因为遍历所以是n，每一个字符的排序是O(klogk)
+  //空间复杂度O(nk)
+  public List<List<String>> groupAnagrams(String[] strs) {
+    if(strs == null || strs.length == 0) {
+      return new ArrayList<>();
+    }
+
+    //将每一个字符都排序，因为每一个字符的字母都是相同的，所以排序后都是相等的，取得的hash值也是相等的，放入Map
+    Map<String, List<String>> map = new HashMap<>();
+    for (String str : strs) {
+      char[] chars = str.toCharArray();
+      Arrays.sort(chars);
+      String key = new String(chars);
+      List<String> list = map.getOrDefault(key, new ArrayList<>());
+      list.add(str);
+      map.put(key, list);
+    }
+    return new ArrayList<List<String>>(map.values());
+  }
+
+  //最大子序和
+  //给定一个整数数组 nums ，找到一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+  //方法：遍历，对于位置i来说，如果i前面的位置加和小于0，那么i前面的位置都可以不要，因为对于任意一个数，只有加上比0大的数才会更大
+  //时间复杂度O(n)
+  public int maxSubArray(int[] nums) {
+    if (nums == null || nums.length == 0) {
+      return 0;
+    }
+    int current = 0;
+    int result = Integer.MIN_VALUE;
+    for (int i = 0; i < nums.length; i++) {
+      current += nums[i];
+      result = Math.max(result, current);
+      current = current > 0 ? current : 0;
+    }
+    return result;
+  }
+
+  //给定一个非负整数数组 nums ，你最初位于数组的 第一个下标 。
+  //数组中的每个元素代表你在该位置可以跳跃的最大长度。
+  //判断你是否能够到达最后一个下标。
+  //贪心算法，时间复杂度O(n)，空间复杂度O(1)
+  public boolean canJump(int[] nums) {
+    if (nums == null || nums.length == 0) {
+      return false;
+    }
+
+    //从头遍历，维护一个能达到的最远距离
+    // 计算在目前最远距离的范围内的位置，能达到的最远距离，不停迭代最远距离，判断能不能到最后
+    //如果遍历时，某个位置不在不在最远距离里，就是不能达到最后
+    int remoteIndex = 0;
+
+    for (int i = 0; i < nums.length; i++) {
+      if (i <= remoteIndex) {
+        remoteIndex = Math.max(remoteIndex, i + nums[i]);
+        if (remoteIndex >= nums.length - 1) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+
+  //合并区间
+  //以数组 intervals 表示若干个区间的集合，其中单个区间为 intervals[i] = [starti, endi] 。
+  // 请你合并所有重叠的区间，并返回一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间。
+  //先排序，然后遍历比较右侧的位置，时间复杂度O(nlogn)，空间复杂度O(logn)
+  public int[][] merge(int[][] intervals) {
+    if (intervals == null || intervals.length == 0 || intervals[0] == null || intervals[0].length == 0) {
+      return new int[0][0];
+    }
+
+    List<int[]> result = new ArrayList<>();
+    //按照区间的起始位置从小到大排序
+    Arrays.sort(intervals, new Comparator<int[]>() {
+      @Override
+      public int compare(int[] o1, int[] o2) {
+        return o1[0] - o2[0];
+      }
+    });
+
+    for (int i = 0; i < intervals.length; i++) {
+      if (result.size() == 0) {
+        result.add(intervals[i]);
+      }
+      int left = intervals[i][0];
+      int right = intervals[i][1];
+      if (result.get(result.size() - 1)[1] < left) {
+        //如果当前数组的左边界，不在已知区间内
+        result.add(intervals[i]);
+      } else {
+        //更新已知区间的右边界
+        result.get(result.size() - 1)[1] = Math.max(result.get(result.size() - 1)[1], right);
+      }
+    }
+    return result.toArray(new int[result.size()][]);
+  }
+
+
+  //不同路径
+  //一个机器人位于一个 m x n 网格的左上角 （起始点在下图中标记为 “Start” ）。
+  //机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为 “Finish” ）。
+  //问总共有多少条不同的路径？
+  //动态规划，时间复杂度O(n^2)，空间复杂度O(n^2)
+  public int uniquePaths(int m, int n) {
+    if (m == 0 && n == 0) {
+      return 0;
+    }
+    if (m == 0 || n == 0) {
+      return 1;
+    }
+
+    int[][] dp = new int[m][n];
+    //初始化状态：最左侧一列只有一条路径，最上面一行只有一条路径
+    for (int i = 0; i < m; i++) {
+      dp[i][0] = 1;
+    }
+    for (int i = 0; i < n; i++) {
+      dp[0][i] = 1;
+    }
+
+    //动态方程dp[i][j] = dp[i - 1][j] + dp[i][j - 1]
+    for (int i = 1; i < m; i++) {
+      for (int j = 1; j < n; j++) {
+        dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+      }
+    }
+
+    //最终结果就是dp数组中最右下角的值
+    return dp[m - 1][n - 1];
+  }
+
+  //最小路径和
+  //给定一个包含非负整数的 m x n 网格 grid ，请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。
+  //说明：每次只能向下或者向右移动一步。
+  //动态规划：时间复杂度O(n^2)，空间复杂度O(n^2)
+  public int minPathSum(int[][] grid) {
+    if (grid == null || grid.length == 0 || grid[0] == null || grid[0].length == 0) {
+      return 0;
+    }
+    int m = grid.length;
+    int n = grid[0].length;
+
+    int[][] dp = new int[m][n];
+    //初始化状态：最左侧一列和最上面一行的值是当前位置的值加上上一个位置的值
+    dp[0][0] = grid[0][0];
+    for (int i = 1; i < m; i++) {
+      dp[i][0] = dp[i - 1][0] + grid[i][0];
+    }
+    for (int i = 1; i < n; i++) {
+      dp[0][i] = dp[0][i - 1] + grid[0][i];
+    }
+
+    //动态方程dp[i][j] = Math.min(dp[i - 1][j], dp[i][j - 1]) + grid[i][j]
+    for (int i = 1; i < m; i++) {
+      for (int j = 1; j < n; j++) {
+        dp[i][j] = Math.min(dp[i - 1][j], dp[i][j - 1]) + grid[i][j];
+      }
+    }
+
+    //最终结果就是dp数组中最右下角的值
+    return dp[m - 1][n - 1];
+  }
+
+  //爬楼梯
+  //假设你正在爬楼梯。需要 n 阶你才能到达楼顶。
+  //每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？
+  //注意：给定 n 是一个正整数。
+  //动态规划，时间复杂度(n)，空间复杂度O(n)
+  public int climbStairs(int n) {
+    if (n == 0 || n == 1) {
+      return n;
+    }
+    int[] dp = new int[n];
+    dp[0] = 1;
+    dp[1] = 2;
+    //dp[i] = dp[i - 1] + dp[i  -2]
+    for (int i = 2; i < n; i++) {
+      dp[i] = dp[i - 1] + dp[i - 2];
+    }
+    return dp[n - 1];
+  }
+
+
+  //编辑距离
+  //给你两个单词 word1 和 word2，请你计算出将 word1 转换成 word2 所使用的最少操作数 。
+  //你可以对一个单词进行如下三种操作：
+  //插入一个字符
+  //删除一个字符
+  //替换一个字符
+  //动态规划，时间复杂度O(m * n)，空间复杂度O(m * n)
+  public int minDistance(String word1, String word2) {
+    if ((word1 == null || word1.equals("")) && (word2 == null || word2.equals(""))) {
+      return 0;
+    }
+    if (word1 == null || word1.equals("")) {
+      return word2.length();
+    }
+    if (word2 == null || word2.equals("")) {
+      return word1.length();
+    }
+
+    int m = word1.length();
+    int n = word2.length();
+    int[][] dp = new int[m + 1][n + 1];
+    //初始化：最左侧一列是字符word1，每一个位置需要修改的步骤都是当前位置的坐标值，
+    //最上面一行是字符word2，每一个位置需要修改的步骤都是当前位置的坐标值
+    for (int i = 0; i < m + 1; i++) {
+      dp[i][0] = i;
+    }
+    for (int i = 0; i < n + 1; i++) {
+      dp[0][i] = i;
+    }
+
+    //i位置表示word1的的第i个位置，j位置表示word2的的第j个位置
+    //dp[i][j]表示，word1的前i个位置，和word2的前j个位置相等时需要进行多少步操作
+    //分为三种情况：
+    //一、word1的前i - 1个位置已经和word2的前j个位置相等相等了，那么要想word1的前i个位置已经和word2的前j个位置相等相等，
+    // 只需要把word1的第i个位置上的字符删除就好，这种情况就是dp[i - 1][j] + 1
+    //二、word1的前i个位置已经和word2的前j - 1个位置相等相等了，那么要想word1的前i个位置已经和word2的前j个位置相等相等，
+    // 只需要把word2的第j个位置上的字符删除就好，这种情况就是dp[i][j - 1] + 1
+    //三、word1的前i - 1个位置已经和word2的前j - 1个位置相等相等了，那么要想word1的前i个位置已经和word2的前j个位置相等相等，
+    // 只需要让word1的第i个位置上的字符和word2的第j个位置上的字符相等就好，
+    //这里又分为两种情况，
+    //3.1 就是word1的第i个位置上的字符和word2的第j个位置上的字符已经相等，这种就是dp[i - 1][j - 1]
+    //3.2 就是word1的第i个位置上的字符和word2的第j个位置上的字符不相等，这种就是dp[i - 1][j - 1] + 1
+    //dp[i][j] = Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]) + 1
+    //dp[i][j] = Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1] - 1) + 1
+    for (int i = 1; i < m + 1; i++) {
+      for (int j = 1; j < n + 1; j++) {
+        int left = dp[i - 1][j] + 1;
+        int right = dp[i][j - 1] + 1;
+        int left_down = dp[i - 1][j - 1];
+        if (word1.charAt(i - 1) != word2.charAt(j - 1)) {
+          left_down += 1;
+        }
+        dp[i][j] = Math.min(left, Math.min(right, left_down));
+      }
+    }
+
+    return dp[m][n];
+  }
+
+  //颜色分类
+  //给定一个包含红色、白色和蓝色，一共 n 个元素的数组，原地对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。
+  //此题中，我们使用整数 0、 1 和 2 分别表示红色、白色和蓝色。
+  //
+  public void sortColors(int[] nums) {
+    if (nums == null || nums.length == 0) {
+      return;
+    }
+    //方法一：快排的衍生问题：国旗问题，时间复杂度O(nlogn)，空间复杂度O(1)
+//    sortColorsSub(nums, 0, nums.length - 1);
+    //方法二：设置判断条件，时间复杂度O(n)，空间复杂度O(1)
+    // 循环终止条件是 i == two，那么循环可以继续的条件是 i < two
+    // 为了保证初始化的时候 [0, zero) 为空，设置 zero = 0，
+    // 所以下面遍历到 0 的时候，先交换，再加
+    int zero = 0;
+    // 为了保证初始化的时候 [two, len - 1] 为空，设置 two = len
+    // 所以下面遍历到 2 的时候，先减，再交换
+    int two = nums.length;
+    int i = 0;
+    // 当 i == two 上面的三个子区间正好覆盖了全部数组
+    // 因此，循环可以继续的条件是 i < two
+    while (i < two) {
+      if (nums[i] == 0) {
+        swap(nums, i, zero);
+        zero++;
+        i++;
+      } else if (nums[i] == 1) {
+        i++;
+      } else {
+        two--;
+        swap(nums, i, two);
+      }
+    }
+  }
+
+
+  public void sortColorsSub(int[] nums, int start, int end) {
+    if (start >= end) {
+      return;
+    }
+
+    //随机将某一个位置的数和end位置的数交换，因为之后partition方法中的比较是以nums[end]上的值作为pivot
+    //如果没有这步，会死循环，或者stackOverFlow
+    swap(nums, start + (int)(Math.random() * (end - start + 1)), end);
+    int[] partition = partition(nums, start, end);
+    sortColorsSub(nums, start, partition[0] - 1);
+    sortColorsSub(nums, partition[1] + 1, end);
+  }
+
+  //将数组分成大，中，小三份，返回值是中间区域的两个角标
+  private int[] partition(int[] nums, int start, int end) {
+    int less = start - 1;
+    int more = end;
+
+    //这里比较start和more。是因为startmore之后是大于的范围，start之前是小于等于的范围
+    while (start < more) {
+      if (nums[start] < nums[end]) {
+        //0,1,2,2,1,7,9  当start在数组4的位置，less在数组1的位置，less需要先加一到2的位置，然后和4位置的数交换，这样保持2位置之前的数都是在小于的范围，包括位置2
+        less++;
+        swap(nums, start, less);
+        start++;
+      } else if (nums[start] > nums[end]) {
+        //0,1,1,8,2,1,9,7  当start在数组3的位置，more在数组7的位置，more需要先减一到6的位置，然后和位置3的数交换，这样保持6位置之后的数都是在大于的范围，不包括位置7
+        more--;
+        swap(nums, more, start);
+      } else {
+        //等于的区间移动start
+        start++;
+      }
+    }
+
+    //此时最后一位的数是等于区间的，此时more来到了大于的边界，也就是在more位置之后的数都是大于区间的，包括more位置上的数，所以交换more位置上的数和最后一位，交换之后，more就是等于区间的右边界
+    //0,1,1,1,2,9,8,2
+    swap(nums, more, end);
+    //此时less是小于区域的边界，所以等于区域的左边界是less + 1
+    return new int[]{less + 1, more};
+  }
+
+
+  //最小覆盖子串
+  //给你一个字符串 s 、一个字符串 t 。返回 s 中涵盖 t 所有字符的最小子串。如果 s 中不存在涵盖 t 所有字符的子串，则返回空字符串 "" 。
+  //滑动窗口：时间复杂度O(n)，空间复杂度O(k)
+  public String minWindow(String s, String t) {
+    if (s == null || s.length() == 0 || t == null || t.length() == 0){
+      return "";
+    }
+    int[] need = new int[128];
+    //记录需要的字符的个数
+    for (int i = 0; i < t.length(); i++) {
+      need[t.charAt(i)]++;
+    }
+    //l是当前左边界，r是当前右边界，size记录窗口大小，count是需求的字符个数，start是最小覆盖串开始的index
+    int l = 0;
+    int r = 0;
+    int size = Integer.MAX_VALUE;
+    int count = t.length();
+    int start = 0;
+    //遍历所有字符
+    while (r < s.length()) {
+      char c = s.charAt(r);
+      if (need[c] > 0) {//需要字符c
+        count--;
+      }
+      need[c]--;//把右边的字符加入窗口
+      if (count == 0) {//窗口中已经包含所有字符
+        while (l < r && need[s.charAt(l)] < 0) {
+          need[s.charAt(l)]++;//释放右边移动出窗口的字符
+          l++;//指针右移
+        }
+        if (r - l + 1 < size) {//不能右移时候挑战最小窗口大小，更新最小窗口开始的start
+          size = r - l + 1;
+          start = l;//记录下最小值时候的开始位置，最后返回覆盖串时候会用到
+        }
+        //l向右移动后窗口肯定不能满足了 重新开始循环
+        need[s.charAt(l)]++;
+        l++;
+        count++;
+      }
+      r++;
+    }
+    return size == Integer.MAX_VALUE ? "" : s.substring(start, start + size);
+  }
+
+  //子集
+  //给你一个整数数组 nums ，数组中的元素 互不相同 。返回该数组所有可能的子集（幂集）。
+  //解集 不能 包含重复的子集。你可以按 任意顺序 返回解集。
+  //回朔，时间复杂度O(n*2^n)，空间复杂度O(n)
+  public List<List<Integer>> subsets(int[] nums) {
+    if (nums == null || nums.length == 0) {
+      return new ArrayList<>();
+    }
+
+    List<List<Integer>> result = new ArrayList<>();
+    subsetsSub(nums, result, new ArrayList<>(), 0);
+    return result;
+  }
+
+  public void subsetsSub(int[] nums, List<List<Integer>> result, List<Integer> list, int start) {
+    result.add(new ArrayList<>(list));
+    for (int i = start; i < nums.length; i++) {
+      list.add(nums[i]);
+      subsetsSub(nums, result, list, i + 1);
+      list.remove(list.size() - 1);
+    }
+  }
+
+
+  //单词搜索
+  //给定一个 m x n 二维字符网格 board 和一个字符串单词 word 。如果 word 存在于网格中，返回 true ；否则，返回 false 。
+  //单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母不允许被重复使用。
+  //回朔
+  public boolean exist(char[][] board, String word) {
+    if (word == null || word.equals("")) {
+      return false;
+    }
+    if (board == null || board.length == 0) {
+      return false;
+    }
+
+    //visited[i][j]表示是否访问过board的这个位置
+    boolean[][] visited = new boolean[board.length][board[0].length];
+    for (int i = 0; i < board.length; i++) {
+      for (int j = 0; j < board[0].length; j++) {
+        //找到visited[i][j]位置上的字符和word开始字符的相等位置开始，上下左右进行深度优先搜索
+        if (board[i][j] == word.charAt(0) && existSub(board, word, i, j, 0, visited)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  public boolean existSub(char[][] board, String word, int i, int j, int wordIndex, boolean[][] visited) {
+    if (wordIndex == word.length()) {
+      return true;
+    }
+    //边界校验
+    if (i < 0 || i >= board.length || j < 0 || j >= board[0].length) {
+      return false;
+    }
+
+    //访问过，不可重复；board[i][j]上的字符，和word.charAt(wordIndex)上的字符不想等
+    if (visited[i][j] || board[i][j] != word.charAt(wordIndex)) {
+       return false;
+    }
+
+    visited[i][j] = true;
+    //上下左右进行遍历
+    if (existSub(board, word, i - 1, j, wordIndex + 1, visited)
+        || existSub(board, word, i + 1, j, wordIndex + 1, visited)
+        || existSub(board, word, i, j - 1, wordIndex + 1, visited)
+        || existSub(board, word, i, j + 1, wordIndex + 1, visited) ) {
+      return true;
+    }
+
+    visited[i][j] = false;
+    return false;
+  }
+
+  //柱状图中最大的矩形
+  //给定 n 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。
+  //求在该柱状图中，能够勾勒出来的矩形的最大面积。
+  //单调栈，时间复杂度O(n)，空间复杂度O(n)
+  public int largestRectangleArea(int[] heights) {
+    if (heights == null || heights.length == 0) {
+      return 0;
+    }
+
+    int[] left = new int[heights.length];
+    int[] right = new int[heights.length];
+
+    //从左到右，找到对于位于位置i上到高度，左侧第一个比他小到位置
+    //栈中存的是数组角标，保持这个栈里角标对应的高度是单调递增的
+    Stack<Integer> stack = new Stack<>();
+    for (int i = 0; i< heights.length; i++) {
+      //为了维持栈中数组是单调递增的，对于高度heights[i]，在他被放入栈中之前，需要把栈中大于等于他的数pop掉
+      while (!stack.isEmpty() && heights[i] <= heights[stack.peek()]) {
+        stack.pop();
+      }
+      //如果一个高度的左边没有比他大的，也就是栈中是空的，用-1来表示
+      //此时栈顶的元素就是i位置左边第一个比他小的位置的角标
+      left[i] = stack.isEmpty() ? -1 : stack.peek();
+      stack.push(i);
+    }
+    stack.clear();
+
+    //同理，从右到左，找到对于位于位置i上到高度，右侧第一个比他小到位置
+    for (int i = heights.length - 1; i >= 0; i--) {
+      while (!stack.isEmpty() && heights[i] <= heights[stack.peek()]) {
+        stack.pop();
+      }
+      right[i] = stack.isEmpty() ? heights.length : stack.peek();
+      stack.push(i);
+    }
+
+    //优化到方法：可以同一一次遍历获取左右边界
+    //原理：首先从左到右，找到对于位于位置i上到高度，左侧第一个比他小到位置，
+    // 那么在把比i位置大的元素pop之前，这个元素右侧第一个比他小的元素就i
+//    for (int i = 0; i< heights.length; i++) {
+//      while (!stack.isEmpty() && heights[i] <= heights[stack.peek()]) {
+//        right[stack.peek()] = i;
+//        stack.pop();
+//      }
+//      left[i] = stack.isEmpty() ? -1 : stack.peek();
+//      stack.push(i);
+//    }
+
+    //对于每一个位置，计算矩形面积，获得最大值
+    int result = 0;
+    for (int i = 0; i < heights.length; i++) {
+      result = Math.max((right[i] - left[i] - 1) * heights[i], result);
+    }
+    return result;
+  }
+
+
 
 }
 

@@ -1,5 +1,6 @@
 package com.example.leetcode;
 
+
 import com.example.leetcode.service.ArrayServiceImpl;
 import com.example.leetcode.service.ArraySortImpl;
 import com.example.leetcode.service.LeetCodeHot100;
@@ -40,7 +41,9 @@ public class LeetCodeHot100Tests {
 
   public void test() {
     int[] nums = new int[]{1, 2, 3};
-    System.out.println(leetCodeHot.permute(nums));;
+    char[][] board = new char[][] {{'A','B','C','E'},{'S','F','C','S'},{'A','D','E','E'}};
+    System.out.println(leetCodeHot.exist(board, "ABCCEE"));
   }
+
 
 }
