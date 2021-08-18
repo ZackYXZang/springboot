@@ -1,13 +1,15 @@
 package com.example.leetcode.service;
 
+import com.example.leetcode.utils.TreeNode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Stack;
 import org.springframework.stereotype.Service;
 
@@ -1027,7 +1029,7 @@ public class LeetCodeHot100 {
       leftMax[i] = Math.max(leftMax[i - 1], height[i]);
     }
 
-    for (int i = height.length - 4; i >=0; i--) {
+    for (int i = height.length - 4; i >= 0; i--) {
       rightMax[i] = Math.max(rightMax[i + 1], height[i + 2]);
     }
 
@@ -1079,7 +1081,8 @@ public class LeetCodeHot100 {
     return result;
   }
 
-  public void permuteSub(int[] nums, List<List<Integer>> result, List<Integer> list, boolean[] used) {
+  public void permuteSub(int[] nums, List<List<Integer>> result, List<Integer> list,
+      boolean[] used) {
     if (list.size() == nums.length) {
       result.add(new ArrayList<>(list));
       return;
@@ -1132,7 +1135,7 @@ public class LeetCodeHot100 {
   //遍历，排序，使用map，时间复杂度O(nklogk)，n表示n个字符，k表示字符最大的长度，因为遍历所以是n，每一个字符的排序是O(klogk)
   //空间复杂度O(nk)
   public List<List<String>> groupAnagrams(String[] strs) {
-    if(strs == null || strs.length == 0) {
+    if (strs == null || strs.length == 0) {
       return new ArrayList<>();
     }
 
@@ -1198,7 +1201,8 @@ public class LeetCodeHot100 {
   // 请你合并所有重叠的区间，并返回一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间。
   //先排序，然后遍历比较右侧的位置，时间复杂度O(nlogn)，空间复杂度O(logn)
   public int[][] merge(int[][] intervals) {
-    if (intervals == null || intervals.length == 0 || intervals[0] == null || intervals[0].length == 0) {
+    if (intervals == null || intervals.length == 0 || intervals[0] == null
+        || intervals[0].length == 0) {
       return new int[0][0];
     }
 
@@ -1416,7 +1420,7 @@ public class LeetCodeHot100 {
 
     //随机将某一个位置的数和end位置的数交换，因为之后partition方法中的比较是以nums[end]上的值作为pivot
     //如果没有这步，会死循环，或者stackOverFlow
-    swap(nums, start + (int)(Math.random() * (end - start + 1)), end);
+    swap(nums, start + (int) (Math.random() * (end - start + 1)), end);
     int[] partition = partition(nums, start, end);
     sortColorsSub(nums, start, partition[0] - 1);
     sortColorsSub(nums, partition[1] + 1, end);
@@ -1456,7 +1460,7 @@ public class LeetCodeHot100 {
   //给你一个字符串 s 、一个字符串 t 。返回 s 中涵盖 t 所有字符的最小子串。如果 s 中不存在涵盖 t 所有字符的子串，则返回空字符串 "" 。
   //滑动窗口：时间复杂度O(n)，空间复杂度O(k)
   public String minWindow(String s, String t) {
-    if (s == null || s.length() == 0 || t == null || t.length() == 0){
+    if (s == null || s.length() == 0 || t == null || t.length() == 0) {
       return "";
     }
     int[] need = new int[128];
@@ -1545,7 +1549,8 @@ public class LeetCodeHot100 {
     return false;
   }
 
-  public boolean existSub(char[][] board, String word, int i, int j, int wordIndex, boolean[][] visited) {
+  public boolean existSub(char[][] board, String word, int i, int j, int wordIndex,
+      boolean[][] visited) {
     if (wordIndex == word.length()) {
       return true;
     }
@@ -1556,7 +1561,7 @@ public class LeetCodeHot100 {
 
     //访问过，不可重复；board[i][j]上的字符，和word.charAt(wordIndex)上的字符不想等
     if (visited[i][j] || board[i][j] != word.charAt(wordIndex)) {
-       return false;
+      return false;
     }
 
     visited[i][j] = true;
@@ -1564,7 +1569,7 @@ public class LeetCodeHot100 {
     if (existSub(board, word, i - 1, j, wordIndex + 1, visited)
         || existSub(board, word, i + 1, j, wordIndex + 1, visited)
         || existSub(board, word, i, j - 1, wordIndex + 1, visited)
-        || existSub(board, word, i, j + 1, wordIndex + 1, visited) ) {
+        || existSub(board, word, i, j + 1, wordIndex + 1, visited)) {
       return true;
     }
 
@@ -1587,7 +1592,7 @@ public class LeetCodeHot100 {
     //从左到右，找到对于位于位置i上到高度，左侧第一个比他小到位置
     //栈中存的是数组角标，保持这个栈里角标对应的高度是单调递增的
     Stack<Integer> stack = new Stack<>();
-    for (int i = 0; i< heights.length; i++) {
+    for (int i = 0; i < heights.length; i++) {
       //为了维持栈中数组是单调递增的，对于高度heights[i]，在他被放入栈中之前，需要把栈中大于等于他的数pop掉
       while (!stack.isEmpty() && heights[i] <= heights[stack.peek()]) {
         stack.pop();
@@ -1629,6 +1634,393 @@ public class LeetCodeHot100 {
   }
 
 
+  //最大矩形
+  //给定一个仅包含 0 和 1 、大小为 rows x cols 的二维二进制矩阵，找出只包含 1 的最大矩形，并返回其面积。
+  public int maximalRectangle(char[][] matrix) {
+    if (matrix == null || matrix.length == 0) {
+      return 0;
+    }
+
+    int[] heights = new int[matrix[0].length];
+    int maxArea = 0;
+
+    for (int i = 0; i < matrix.length; i++) {
+      for (int j = 0; j < matrix[0].length; j++) {
+        if (matrix[i][j] == '1') {
+          heights[j] += 1;
+        } else {
+          heights[j] = 0;
+        }
+      }
+      maxArea = Math.max(maxArea, largestRectangleArea(heights));
+    }
+    return maxArea;
+  }
+
+  // 二叉树的中序遍历
+  //给定一个二叉树的根节点 root ，返回它的 中序 遍历。
+  public List<Integer> inorderTraversal(TreeNode root) {
+    //中序遍历：左根右
+    List<Integer> result = new ArrayList<>();
+
+    //递归版本，时间复杂度：O(n)，空间复杂度O(n)
+//    inorderTraversalRec(root, result);
+    //非递归版本，时间复杂度：O(n)，空间复杂度O(n)
+//    result = inorderTraversalStack(root);
+    Morris(root, result);
+
+    return result;
+  }
+
+  public void inorderTraversalRec(TreeNode root, List<Integer> result) {
+    if (root == null) {
+      return;
+    }
+    inorderTraversalRec(root.left, result);
+    result.add(root.value);
+    inorderTraversalRec(root.right, result);
+  }
+
+  public List<Integer> inorderTraversalStack(TreeNode root) {
+    List<Integer> result = new ArrayList<>();
+    if (root == null) {
+      return result;
+    }
+    Stack<TreeNode> stack = new Stack<>();
+    TreeNode curr = root;
+
+    while (!stack.isEmpty() || curr != null) {
+      if (curr != null) {
+        stack.push(curr);
+        curr = curr.left;
+      } else {
+        curr = stack.pop();
+        result.add(curr.value);
+        curr = curr.right;
+      }
+    }
+    return result;
+  }
+
+  //Morris序，时间复杂度O(n)，空间复杂度O(1)
+  public void Morris(TreeNode head, List<Integer> result) {
+    if (head == null) {
+      return;
+    }
+
+    TreeNode curr = head;
+    TreeNode mostRight = null;
+
+    while (curr != null) {
+      //不停的找该节点的左子树
+      mostRight = curr.left;
+      if (mostRight != null) {
+        while (mostRight.right != null && mostRight.right != curr) {
+          //如果不等于null就证明右节点有值
+          //如果为等于curr，也就是它的父节点，就说明没走过
+          mostRight = mostRight.right;
+        }
+
+        if (mostRight.right == null) {
+          //走到了叶节点，让改节点的右子树指针指向父节点
+          //每一个叶节点，都可以看作是某个节点的左子树的最右节点
+          mostRight.right = curr;
+          result.add(curr.value); //1. 加在这里就是前序遍历，根左右
+          curr = curr.left;
+          continue;
+        } else {
+          //此时，如果mostRight.right != null就说明走过了
+          //也就是跳过了上面的while循环，来到了某个节点的最右节点
+          mostRight.right = null;
+        }
+      } else {
+        result.add(curr.value); //2. 加在这里就是前序遍历，根左右
+      }
+
+      //第一种情况：curr是某个节点的左子树最右节点，让curr = curr.right，也就是让curr回到它的父节点，
+      // 在下一次循环的时候，通过while找到左子树的最右节点，然后通过mostRight.right = null，把左子树的最右节点的右节点（也就是指向curr节点的指针去掉）
+      //让父节点去右子树了
+      //第二种情况：就是没有左子树，根据if (mostRight != null) 判断走到这里
+//      result.add(curr.value); //加在这里就是中序遍历
+      curr = curr.right;
+    }
+
+  }
+
+
+  //不同的二叉搜索树
+  //给你一个整数 n ，求恰由 n 个节点组成且节点值从 1 到 n 互不相同的 二叉搜索树 有多少种？返回满足题意的二叉搜索树的种数。
+  //动态规划：时间复杂度： O(n^2)，空间复杂度：O(n)
+  public int numTrees(int n) {
+    if (n < 2) {
+      return 1;
+    }
+
+    //初始化
+    int[] dp = new int[n + 1];
+    dp[0] = 1;
+    dp[1] = 1;
+
+    //动态方程：dp[i] = dp[j - 1] * dp[i - j], j在[1, i]区间内求和
+    //也就是假设n = 7；那么结果就是以1，2，3，4，5，6，7分别为根节点，分别有多少种情况的和 DP[7] = DP[6] + .... + DP[1]
+    //同时，如果以4为根节点，就是[1, 2, 3]为左子树，[5, 6, 7]为右子树的情况的乘积 DP[4] = DP[4 - 1] * DP[ 7 - 4]
+    //推导为动态方程
+    for (int i = 2; i < n + 1; i++) {
+      for (int j = 1; j <= i; j++) {
+        dp[i] += dp[j - 1] * dp[i - j];
+      }
+    }
+    return dp[n];
+  }
+
+  //验证二叉搜索树
+  //给定一个二叉树，判断其是否是一个有效的二叉搜索树。
+  //假设一个二叉搜索树具有如下特征：
+  //节点的左子树只包含小于当前节点的数。
+  //节点的右子树只包含大于当前节点的数。
+  //所有左子树和右子树自身必须也是二叉搜索树。
+  //中序遍历，时间复杂度O(n)，空间复杂度O(n)
+  public boolean isValidBST(TreeNode root) {
+    if (root == null) {
+      return false;
+    }
+    //只需要判断中序遍历是不是递增的就行
+    Stack<TreeNode> stack = new Stack<>();
+    TreeNode curr = root;
+    double preVal = -Double.MAX_VALUE;
+
+    while (!stack.isEmpty() || curr != null) {
+      if (curr != null) {
+        stack.push(curr);
+        curr = curr.left;
+      } else {
+        curr = stack.pop();
+        if (curr.value <= preVal) {
+          return false;
+        }
+        preVal = curr.value;
+        curr = curr.right;
+      }
+    }
+    return true;
+  }
+
+  //对称二叉树
+  //给定一个二叉树，检查它是否是镜像对称的。
+  //递归，时间复杂度O(n)，空间复杂度O(n)
+  public boolean isSymmetric(TreeNode root) {
+    if (root == null) {
+      return false;
+    }
+    return isSymmetricSub(root.left, root.right);
+  }
+
+
+  public boolean isSymmetricSub(TreeNode left, TreeNode right) {
+    if (left == null || right == null) {
+      return left == right;
+    }
+    if (left.value != right.value) {
+      return false;
+    }
+    boolean leftRes = isSymmetricSub(left.left, right.right);
+    boolean rightRes = isSymmetricSub(left.right, right.left);
+    return leftRes && rightRes;
+  }
+
+  // 二叉树的层序遍历
+  //给你一个二叉树，请你返回其按 层序遍历 得到的节点值。 （即逐层地，从左到右访问所有节点）。
+  //BFS，递归，时间复杂度O(n)，空间复杂度O(n)
+  public List<List<Integer>> levelOrder(TreeNode root) {
+    List<List<Integer>> result = new ArrayList<>();
+    if (root == null) {
+      return result;
+    }
+
+    Queue<TreeNode> queue = new LinkedList<>();
+    queue.offer(root);
+    while (!queue.isEmpty()) {
+      int levelSize = queue.size();
+      List<Integer> list = new ArrayList<>();
+      for (int i = 0; i < levelSize; i++) {
+        TreeNode tempRoot = queue.poll();
+        list.add(tempRoot.value);
+        if (tempRoot.left != null) {
+          queue.offer(tempRoot.left);
+        }
+
+        if (tempRoot.right != null) {
+          queue.offer(tempRoot.right);
+        }
+      }
+      result.add(list);
+
+    }
+    return result;
+
+  }
+
+  //二叉树的最大深度
+  //给定一个二叉树，找出其最大深度。
+  //二叉树的深度为根节点到最远叶子节点的最长路径上的节点数。
+  //说明: 叶子节点是指没有子节点的节点。
+  //深度优先搜索，时间复杂度O(n)，空间复杂度O(height)
+  public int maxDepth(TreeNode root) {
+    if (root == null) {
+      return 0;
+    }
+    int left = maxDepth(root.left);
+    int right = maxDepth(root.right);
+    return Math.max(left, right) + 1;
+  }
+
+  //从前序与中序遍历序列构造二叉树
+  //给定一棵树的前序遍历 preorder 与中序遍历  inorder。请构造二叉树并返回其根节点。
+  //递归，时间复杂度O(n)，空间复杂度O(n)
+  public TreeNode buildTree(int[] preorder, int[] inorder) {
+    //前序遍历：跟左右
+    //中序遍历：左根右
+    if (preorder == null || preorder.length == 0 || inorder == null || inorder.length == 0) {
+      return null;
+    }
+    Map<Integer, Integer> inorderMap = new HashMap<>();
+    for (int i = 0; i < inorder.length; i++) {
+      inorderMap.put(inorder[i], i);
+    }
+    return buildTreeSub(inorderMap, preorder, inorder, 0, preorder.length - 1, 0,
+        inorder.length - 1);
+  }
+
+  public TreeNode buildTreeSub(Map<Integer, Integer> inorderMap, int[] preorder, int[] inorder,
+      int preorderStart, int preorderEnd, int inorderStart, int inorderEnd) {
+    if (preorderStart > preorderEnd) {
+      return null;
+    }
+
+    //此时前序遍历中preorderStart的位置就是某一个子树的根节点，在中序遍历中定位到这个根节点的位置
+    int inorderRoot = inorderMap.get(preorder[preorderStart]);
+    TreeNode root = new TreeNode(inorder[inorderRoot]);
+    //得到左子树的大小
+    int leftSize = inorderRoot - inorderStart;
+    root.left = buildTreeSub(inorderMap, preorder, inorder, preorderStart + 1, preorderStart + leftSize, inorderStart, inorderRoot - 1);
+    root.right = buildTreeSub(inorderMap, preorder, inorder, preorderStart + leftSize + 1, preorderEnd, inorderRoot + 1, inorderEnd);
+    return root;
+  }
+
+  //二叉树展开为链表
+  //给你二叉树的根结点 root ，请你将它展开为一个单链表：
+  //展开后的单链表应该同样使用 TreeNode ，其中 right 子指针指向链表中下一个结点，而左子指针始终为 null 。
+  //展开后的单链表应该与二叉树 先序遍历 顺序相同。
+  //前序遍历，时间复杂度O(n)，空间复杂度O(n)
+  public void flatten(TreeNode root) {
+    if (root == null) {
+      return;
+    }
+
+    //放入前序遍历中，然后重新构建
+    Stack<TreeNode> stack = new Stack<>();
+    TreeNode curr = root;
+    stack.push(curr);
+    List<TreeNode> result = new ArrayList<>();
+
+    while (!stack.isEmpty()) {
+      curr = stack.pop();
+      System.out.println(curr);
+      result.add(curr);
+      if (curr.right != null) {
+        stack.push(curr.right);
+      }
+
+      if (curr.left != null) {
+        stack.push(curr.left);
+      }
+    }
+
+    curr = root;
+    for (int i = 1; i < result.size(); i++) {
+      curr.right = result.get(i);
+      curr.left = null;
+      curr = curr.right;
+    }
+  }
+
+  // 买卖股票的最佳时机
+  //给定一个数组prices ，它的第i个元素 prices[i] 表示一支给定股票第i天的价格。
+  //你只能选择 某一天 买入这只股票，并选择在 未来的某一个不同的日子 卖出该股票。设计一个算法来计算你所能获取的最大利润。
+  //返回你可以从这笔交易中获取的最大利润。如果你不能获取任何利润，返回 0 。
+  //通过辅助数组，时间复杂度O(n)，空间复杂度O(n)
+  public int maxProfit(int[] prices) {
+
+    if (prices == null || prices.length == 0) {
+      return 0;
+    }
+
+    int[] helper = new int[prices.length - 1];
+    for (int i = 1; i < prices.length; i++) {
+      helper[i - 1] = prices[i] - prices[i - 1];
+    }
+
+    int result = 0;
+    int curr = 0;
+    for (int i = 0; i < helper.length; i++) {
+      curr += helper[i];
+      curr = curr >=0 ? curr : 0;
+      result = Math.max(result, curr);
+    }
+    return result;
+  }
+
+  // 二叉树中的最大路径和
+  //路径 被定义为一条从树中任意节点出发，沿父节点-子节点连接，达到任意节点的序列。同一个节点在一条路径序列中 至多出现一次 。
+  // 该路径 至少包含一个 节点，且不一定经过根节点。
+  //路径和 是路径中各节点值的总和。
+  //给你一个二叉树的根节点 root ，返回其 最大路径和 。
+  //时间复杂度O(n)，空间复杂度O(n)
+  public Integer maxPathSumMaxValue = Integer.MIN_VALUE;
+  public int maxPathSum(TreeNode root) {
+    if (root == null) {
+      return 0;
+    }
+    maxPathSumSub(root);
+    return maxPathSumMaxValue;
+  }
+
+  public int maxPathSumSub(TreeNode root) {
+    if (root == null) {
+      return 0;
+    }
+
+    //分别取得这个节点的左子树、右子树路径和
+    int left = Math.max(maxPathSumSub(root.left), 0);
+    int right = Math.max(maxPathSumSub(root.right), 0);
+
+    //获取当前节点最长路径和
+    int pathSum = left + right + root.value;
+
+    //记录最大路径和
+    maxPathSumMaxValue = Math.max(maxPathSumMaxValue, pathSum);
+    //返回当前节点的最大路径和，包含当前节点，和左子树或者右子树中的一条
+    return root.value + Math.max(left, right);
+  }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
