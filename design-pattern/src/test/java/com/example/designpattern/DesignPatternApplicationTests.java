@@ -1,5 +1,6 @@
 package com.example.designpattern;
 
+import com.example.designpattern.service.bridge.BridgeServiceImpl;
 import com.example.designpattern.service.command.CommandServiceImpl;
 import com.example.designpattern.service.decorator.DecoratorServiceImpl;
 import com.example.designpattern.service.factory.FactoryServiceImpl;
@@ -43,6 +44,9 @@ class DesignPatternApplicationTests {
   @Autowired
   private CommandServiceImpl commandService;
 
+  @Autowired
+  private BridgeServiceImpl bridgeService;
+
 
   @Test
   void contextLoads() {
@@ -62,7 +66,9 @@ class DesignPatternApplicationTests {
     //原型模式
 //    prototypeTest();
     //命令模式
-    commandTest();
+//    commandTest();
+    //桥接模式
+    bridgeTest();
   }
 
 
@@ -116,5 +122,9 @@ class DesignPatternApplicationTests {
 
   public void commandTest() {
     commandService.command();
+  }
+
+  public void bridgeTest() {
+    bridgeService.bridge();
   }
 }
