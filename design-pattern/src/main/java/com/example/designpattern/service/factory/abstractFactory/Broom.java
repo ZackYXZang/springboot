@@ -9,7 +9,7 @@ public class Broom extends Vehicle implements Movable {
   }
 
   @Override
-  void run() {
+  public void run() {
     System.out.println("Broom run shuashua...");
   }
 }

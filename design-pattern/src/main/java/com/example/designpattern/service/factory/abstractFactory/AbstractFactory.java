@@ -2,9 +2,9 @@ package com.example.designpattern.service.factory.abstractFactory;
 
 public abstract class AbstractFactory {
 
-  abstract Food createFood();
+  public abstract Food createFood();
 
-  abstract Vehicle createVehicle();
+  public abstract Vehicle createVehicle();
 
-  abstract Weapon createWeapon();
+  public abstract Weapon createWeapon();
 }

@@ -9,7 +9,7 @@ public class Car extends Vehicle implements Movable {
   }
 
   @Override
-  void run() {
+  public void run() {
     System.out.println("Car go dididi...");
   }
 }
