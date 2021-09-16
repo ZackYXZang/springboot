@@ -2,6 +2,7 @@ package com.example.designpattern;
 
 import com.example.designpattern.service.decorator.DecoratorServiceImpl;
 import com.example.designpattern.service.factory.FactoryServiceImpl;
+import com.example.designpattern.service.prototype.PrototypeServiceImpl;
 import com.example.designpattern.service.proxy.ProxyServiceImpl;
 import com.example.designpattern.service.responsibilityChain.ResponsibilityChainServiceImpl;
 import com.example.designpattern.service.strategy.Cat;
@@ -35,6 +36,9 @@ class DesignPatternApplicationTests {
   @Autowired
   private TemplateMethodServiceImpl templateMethodService;
 
+  @Autowired
+  private PrototypeServiceImpl prototypeService;
+
 
   @Test
   void contextLoads() {
@@ -49,8 +53,10 @@ class DesignPatternApplicationTests {
 //    responsibilityChainTest();
     //代理模式
 //    proxyTest();
-    //模版方法/钩子函数
-    templateMethodTest();
+    //模版模式/钩子函数
+//    templateMethodTest();
+    //原型模式
+    prototypeTest();
   }
 
 
@@ -69,6 +75,7 @@ class DesignPatternApplicationTests {
     factoryService.simpleFactory();
     //抽象工厂模式
     factoryService.abstractFactory();
+
   }
 
   public void decoratorTest() {
@@ -91,5 +98,13 @@ class DesignPatternApplicationTests {
 
   public void templateMethodTest() {
     templateMethodService.templateMethod();
+  }
+
+  public void prototypeTest() {
+    try {
+      prototypeService.prototype();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }
