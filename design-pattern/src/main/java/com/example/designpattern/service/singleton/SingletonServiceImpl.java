@@ -1,4 +1,4 @@
-package com.example.designpattern.service;
+package com.example.designpattern.service.singleton;
 
 /**
  * Double Check 单例模式

@@ -1,5 +1,7 @@
 package com.example.designpattern;
 
+import com.example.designpattern.service.decorator.DecoratorServiceImpl;
+import com.example.designpattern.service.factory.FactoryServiceImpl;
 import com.example.designpattern.service.strategy.Cat;
 import com.example.designpattern.service.strategy.CatHeightComparator;
 import com.example.designpattern.service.strategy.CatWeightComparator;
@@ -14,11 +16,24 @@ class DesignPatternApplicationTests {
 
   @Autowired
   private StrategyServiceImpl strategyService;
+
+  @Autowired
+  private FactoryServiceImpl factoryService;
+
+  @Autowired
+  private DecoratorServiceImpl decoratorService;
+
+
+
   @Test
   void contextLoads() {
 
     //策略模式
-    strategyTest();
+//    strategyTest();
+    //工厂模式
+//    factoryTest();
+    //装饰模式
+    decoratorTest();
   }
 
 
@@ -30,5 +45,16 @@ class DesignPatternApplicationTests {
     strategyService.sort(cats, new CatWeightComparator());
     strategyService.sort(cats, new CatHeightComparator());
     System.out.println(Arrays.toString(cats));
+  }
+
+  public void factoryTest() {
+    //简单工厂模式
+    factoryService.simpleFactory();
+    //抽象工厂模式
+    factoryService.abstractFactory();
+  }
+
+  public void decoratorTest() {
+    decoratorService.decorator();
   }
 }
