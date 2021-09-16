@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
  * 原型模式
  * java自带原型模式，一般用于一个对象的属性已经确定，需要产生更多相同对象的时候
  * 需要实现标记型接口Cloneable
+ * 需要区分深克隆与浅克隆
  */
 @Service
 public class PrototypeServiceImpl {

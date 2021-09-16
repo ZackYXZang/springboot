@@ -1,5 +1,6 @@
 package com.example.designpattern;
 
+import com.example.designpattern.service.command.CommandServiceImpl;
 import com.example.designpattern.service.decorator.DecoratorServiceImpl;
 import com.example.designpattern.service.factory.FactoryServiceImpl;
 import com.example.designpattern.service.prototype.PrototypeServiceImpl;
@@ -39,6 +40,9 @@ class DesignPatternApplicationTests {
   @Autowired
   private PrototypeServiceImpl prototypeService;
 
+  @Autowired
+  private CommandServiceImpl commandService;
+
 
   @Test
   void contextLoads() {
@@ -56,7 +60,9 @@ class DesignPatternApplicationTests {
     //模版模式/钩子函数
 //    templateMethodTest();
     //原型模式
-    prototypeTest();
+//    prototypeTest();
+    //命令模式
+    commandTest();
   }
 
 
@@ -106,5 +112,9 @@ class DesignPatternApplicationTests {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  public void commandTest() {
+    commandService.command();
   }
 }
