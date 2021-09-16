@@ -2,6 +2,7 @@ package com.example.designpattern;
 
 import com.example.designpattern.service.decorator.DecoratorServiceImpl;
 import com.example.designpattern.service.factory.FactoryServiceImpl;
+import com.example.designpattern.service.proxy.ProxyServiceImpl;
 import com.example.designpattern.service.responsibilityChain.ResponsibilityChainServiceImpl;
 import com.example.designpattern.service.strategy.Cat;
 import com.example.designpattern.service.strategy.CatHeightComparator;
@@ -27,6 +28,8 @@ class DesignPatternApplicationTests {
   @Autowired
   private ResponsibilityChainServiceImpl responsibilityChainService;
 
+  @Autowired
+  private ProxyServiceImpl proxyService;
 
 
   @Test
@@ -39,7 +42,9 @@ class DesignPatternApplicationTests {
     //装饰模式
 //    decoratorTest();
     //责任链模式
-    responsibilityChainTest();
+//    responsibilityChainTest();
+    //代理模式
+    proxyTest();
   }
 
 
@@ -66,5 +71,12 @@ class DesignPatternApplicationTests {
 
   public void responsibilityChainTest() {
     responsibilityChainService.responsibilityChain();
+  }
+
+  public void proxyTest() {
+    //静态代理
+    proxyService.staticProxy();
+    proxyService.dynamicJDKProxy();
+    proxyService.dynamicCGLibProxy();
   }
 }
