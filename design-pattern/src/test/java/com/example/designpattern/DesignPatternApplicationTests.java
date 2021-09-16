@@ -2,6 +2,7 @@ package com.example.designpattern;
 
 import com.example.designpattern.service.decorator.DecoratorServiceImpl;
 import com.example.designpattern.service.factory.FactoryServiceImpl;
+import com.example.designpattern.service.responsibilityChain.ResponsibilityChainServiceImpl;
 import com.example.designpattern.service.strategy.Cat;
 import com.example.designpattern.service.strategy.CatHeightComparator;
 import com.example.designpattern.service.strategy.CatWeightComparator;
@@ -23,6 +24,9 @@ class DesignPatternApplicationTests {
   @Autowired
   private DecoratorServiceImpl decoratorService;
 
+  @Autowired
+  private ResponsibilityChainServiceImpl responsibilityChainService;
+
 
 
   @Test
@@ -33,7 +37,9 @@ class DesignPatternApplicationTests {
     //工厂模式
 //    factoryTest();
     //装饰模式
-    decoratorTest();
+//    decoratorTest();
+    //责任链模式
+    responsibilityChainTest();
   }
 
 
@@ -56,5 +62,9 @@ class DesignPatternApplicationTests {
 
   public void decoratorTest() {
     decoratorService.decorator();
+  }
+
+  public void responsibilityChainTest() {
+    responsibilityChainService.responsibilityChain();
   }
 }
