@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 public class DecoratorServiceImpl {
 
   public void decorator() {
+    System.out.println("装饰模式 start");
+
     //新建一个实体：车
     Vehicle car = new Car();
     car.run();
@@ -18,6 +20,7 @@ public class DecoratorServiceImpl {
     Vehicle weaponDecorator = new WeaponDecorator(car);
     engineDecorator.run();
     weaponDecorator.run();
+    System.out.println("装饰模式 end");
 
   }
 

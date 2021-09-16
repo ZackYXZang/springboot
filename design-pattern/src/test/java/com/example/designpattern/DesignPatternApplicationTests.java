@@ -8,6 +8,7 @@ import com.example.designpattern.service.strategy.Cat;
 import com.example.designpattern.service.strategy.CatHeightComparator;
 import com.example.designpattern.service.strategy.CatWeightComparator;
 import com.example.designpattern.service.strategy.StrategyServiceImpl;
+import com.example.designpattern.service.templateMethod.TemplateMethodServiceImpl;
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ class DesignPatternApplicationTests {
   @Autowired
   private ProxyServiceImpl proxyService;
 
+  @Autowired
+  private TemplateMethodServiceImpl templateMethodService;
+
 
   @Test
   void contextLoads() {
@@ -44,7 +48,9 @@ class DesignPatternApplicationTests {
     //责任链模式
 //    responsibilityChainTest();
     //代理模式
-    proxyTest();
+//    proxyTest();
+    //模版方法/钩子函数
+    templateMethodTest();
   }
 
 
@@ -73,10 +79,17 @@ class DesignPatternApplicationTests {
     responsibilityChainService.responsibilityChain();
   }
 
+
   public void proxyTest() {
     //静态代理
     proxyService.staticProxy();
+    //JDK动态代理
     proxyService.dynamicJDKProxy();
+    //cglib动态代理
     proxyService.dynamicCGLibProxy();
+  }
+
+  public void templateMethodTest() {
+    templateMethodService.templateMethod();
   }
 }

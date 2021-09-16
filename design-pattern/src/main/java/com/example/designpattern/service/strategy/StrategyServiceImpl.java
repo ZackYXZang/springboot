@@ -17,6 +17,7 @@ public class StrategyServiceImpl<T> {
    * @param comparator
    */
   public void sort(T[] animals, AnimalComparator<T> comparator) {
+    System.out.println("策略模式 start");
     for (int i = 0 ; i < animals.length; i++) {
       int minPos = i;
 
@@ -25,6 +26,7 @@ public class StrategyServiceImpl<T> {
       }
       swap(animals, i, minPos);
     }
+    System.out.println("策略模式 end");
   }
 
   private void swap(T[] animals, int i, int minPos) {

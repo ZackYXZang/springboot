@@ -15,8 +15,9 @@ public class ProxyServiceImpl {
 
   //静态代理
   public void staticProxy() {
-    System.out.println("静态代理");
+    System.out.println("静态代理 start");
     new CarLogStaticProxy(new CarTimeStaticProxy(new Car())).move();
+    System.out.println("静态代理 end");
   }
 
   /**
@@ -28,7 +29,7 @@ public class ProxyServiceImpl {
     //java反射：通过二进制字节码分析类的属性和方法
     //生成动态代理类，且这个类必须实现接口
     // 最终是通过asm包下面的类实现的，直接操作内存里的二进制码文件
-    System.out.println("jdk 动态代理");
+    System.out.println("jdk 动态代理 start");
 
     Car car = new Car();
 
@@ -44,6 +45,7 @@ public class ProxyServiceImpl {
         });
 
     movable.move();
+    System.out.println("jdk 动态代理 end");
 
   }
 
@@ -54,12 +56,14 @@ public class ProxyServiceImpl {
    * 底层也是ASM
    */
   public void dynamicCGLibProxy() {
-    System.out.println("cglib 动态代理");
+    System.out.println("cglib 动态代理 start");
 
     Enhancer enhancer = new Enhancer();
     enhancer.setSuperclass(NewCar.class);
     enhancer.setCallback(new CGLibInterceptor());
     NewCar newCar = (NewCar) enhancer.create();
     newCar.move();
+    System.out.println("cglib 动态代理 end");
+
   }
 }
