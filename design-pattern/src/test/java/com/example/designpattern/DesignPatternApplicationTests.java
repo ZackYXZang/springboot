@@ -1,6 +1,7 @@
 package com.example.designpattern;
 
 import com.example.designpattern.service.bridge.BridgeServiceImpl;
+import com.example.designpattern.service.builder.BuilderServiceImpl;
 import com.example.designpattern.service.command.CommandServiceImpl;
 import com.example.designpattern.service.composite.CompositeServiceImpl;
 import com.example.designpattern.service.decorator.DecoratorServiceImpl;
@@ -59,6 +60,9 @@ class DesignPatternApplicationTests {
   @Autowired
   private FlyWeightServiceImpl flyWeightService;
 
+  @Autowired
+  private BuilderServiceImpl builderService;
+
 
   @Test
   void contextLoads() {
@@ -86,7 +90,9 @@ class DesignPatternApplicationTests {
     //观察者模式
 //    observerTest();
     //享元模式
-    flyWeightTest();
+//    flyWeightTest();
+    //构造模式
+    builderTest();
   }
 
 
@@ -156,5 +162,9 @@ class DesignPatternApplicationTests {
 
   public void flyWeightTest() {
     flyWeightService.flyWeight();
+  }
+
+  public void builderTest() {
+    builderService.builder();
   }
 }
