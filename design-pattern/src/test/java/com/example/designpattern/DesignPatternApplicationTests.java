@@ -12,6 +12,7 @@ import com.example.designpattern.service.observer.ObserverServiceImpl;
 import com.example.designpattern.service.prototype.PrototypeServiceImpl;
 import com.example.designpattern.service.proxy.ProxyServiceImpl;
 import com.example.designpattern.service.responsibilityChain.ResponsibilityChainServiceImpl;
+import com.example.designpattern.service.state.StateServiceImpl;
 import com.example.designpattern.service.strategy.Cat;
 import com.example.designpattern.service.strategy.CatHeightComparator;
 import com.example.designpattern.service.strategy.CatWeightComparator;
@@ -67,6 +68,9 @@ class DesignPatternApplicationTests {
   @Autowired
   private AdapterServiceImpl adapterService;
 
+  @Autowired
+  private StateServiceImpl stateService;
+
 
   @Test
   void contextLoads() {
@@ -98,7 +102,9 @@ class DesignPatternApplicationTests {
     //构造模式
 //    builderTest();
     //适配器模式
-    adapterTest();
+//    adapterTest();
+    //状态模式
+    stateTest();
   }
 
 
@@ -176,5 +182,8 @@ class DesignPatternApplicationTests {
 
   public void adapterTest() {
     adapterService.adapter();
+  }
+  public void stateTest() {
+    stateService.state();
   }
 }
