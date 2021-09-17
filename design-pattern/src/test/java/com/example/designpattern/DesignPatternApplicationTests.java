@@ -5,6 +5,7 @@ import com.example.designpattern.service.command.CommandServiceImpl;
 import com.example.designpattern.service.composite.CompositeServiceImpl;
 import com.example.designpattern.service.decorator.DecoratorServiceImpl;
 import com.example.designpattern.service.factory.FactoryServiceImpl;
+import com.example.designpattern.service.flyweight.FlyWeightServiceImpl;
 import com.example.designpattern.service.observer.ObserverServiceImpl;
 import com.example.designpattern.service.prototype.PrototypeServiceImpl;
 import com.example.designpattern.service.proxy.ProxyServiceImpl;
@@ -55,6 +56,9 @@ class DesignPatternApplicationTests {
   @Autowired
   private ObserverServiceImpl observerService;
 
+  @Autowired
+  private FlyWeightServiceImpl flyWeightService;
+
 
   @Test
   void contextLoads() {
@@ -80,7 +84,9 @@ class DesignPatternApplicationTests {
     //组合模式
 //    compositeTest();
     //观察者模式
-    observerTest();
+//    observerTest();
+    //享元模式
+    flyWeightTest();
   }
 
 
@@ -146,5 +152,9 @@ class DesignPatternApplicationTests {
 
   public void observerTest() {
     observerService.observer();
+  }
+
+  public void flyWeightTest() {
+    flyWeightService.flyWeight();
   }
 }
