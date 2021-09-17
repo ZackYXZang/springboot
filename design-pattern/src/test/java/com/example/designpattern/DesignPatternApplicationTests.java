@@ -1,5 +1,6 @@
 package com.example.designpattern;
 
+import com.example.designpattern.service.adapter.AdapterServiceImpl;
 import com.example.designpattern.service.bridge.BridgeServiceImpl;
 import com.example.designpattern.service.builder.BuilderServiceImpl;
 import com.example.designpattern.service.command.CommandServiceImpl;
@@ -63,6 +64,9 @@ class DesignPatternApplicationTests {
   @Autowired
   private BuilderServiceImpl builderService;
 
+  @Autowired
+  private AdapterServiceImpl adapterService;
+
 
   @Test
   void contextLoads() {
@@ -92,7 +96,9 @@ class DesignPatternApplicationTests {
     //享元模式
 //    flyWeightTest();
     //构造模式
-    builderTest();
+//    builderTest();
+    //适配器模式
+    adapterTest();
   }
 
 
@@ -166,5 +172,9 @@ class DesignPatternApplicationTests {
 
   public void builderTest() {
     builderService.builder();
+  }
+
+  public void adapterTest() {
+    adapterService.adapter();
   }
 }
