@@ -2,6 +2,7 @@ package com.example.designpattern;
 
 import com.example.designpattern.service.bridge.BridgeServiceImpl;
 import com.example.designpattern.service.command.CommandServiceImpl;
+import com.example.designpattern.service.composite.CompositeServiceImpl;
 import com.example.designpattern.service.decorator.DecoratorServiceImpl;
 import com.example.designpattern.service.factory.FactoryServiceImpl;
 import com.example.designpattern.service.prototype.PrototypeServiceImpl;
@@ -47,6 +48,9 @@ class DesignPatternApplicationTests {
   @Autowired
   private BridgeServiceImpl bridgeService;
 
+  @Autowired
+  private CompositeServiceImpl compositeService;
+
 
   @Test
   void contextLoads() {
@@ -68,7 +72,11 @@ class DesignPatternApplicationTests {
     //命令模式
 //    commandTest();
     //桥接模式
-    bridgeTest();
+//    bridgeTest();
+    //组合模式
+    compositeTest();
+    //享元模式
+
   }
 
 
@@ -126,5 +134,9 @@ class DesignPatternApplicationTests {
 
   public void bridgeTest() {
     bridgeService.bridge();
+  }
+
+  public void compositeTest() {
+    compositeService.composite();
   }
 }
