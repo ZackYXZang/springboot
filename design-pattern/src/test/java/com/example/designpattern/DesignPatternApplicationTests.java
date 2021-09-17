@@ -5,6 +5,7 @@ import com.example.designpattern.service.command.CommandServiceImpl;
 import com.example.designpattern.service.composite.CompositeServiceImpl;
 import com.example.designpattern.service.decorator.DecoratorServiceImpl;
 import com.example.designpattern.service.factory.FactoryServiceImpl;
+import com.example.designpattern.service.observer.ObserverServiceImpl;
 import com.example.designpattern.service.prototype.PrototypeServiceImpl;
 import com.example.designpattern.service.proxy.ProxyServiceImpl;
 import com.example.designpattern.service.responsibilityChain.ResponsibilityChainServiceImpl;
@@ -51,6 +52,9 @@ class DesignPatternApplicationTests {
   @Autowired
   private CompositeServiceImpl compositeService;
 
+  @Autowired
+  private ObserverServiceImpl observerService;
+
 
   @Test
   void contextLoads() {
@@ -74,9 +78,9 @@ class DesignPatternApplicationTests {
     //桥接模式
 //    bridgeTest();
     //组合模式
-    compositeTest();
-    //享元模式
-
+//    compositeTest();
+    //观察者模式
+    observerTest();
   }
 
 
@@ -138,5 +142,9 @@ class DesignPatternApplicationTests {
 
   public void compositeTest() {
     compositeService.composite();
+  }
+
+  public void observerTest() {
+    observerService.observer();
   }
 }
