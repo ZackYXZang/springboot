@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Set;
 import java.util.Stack;
 import org.springframework.stereotype.Service;
 
@@ -38,13 +40,13 @@ public class LeetCodeHot100 {
 
   public class ListNode {
 
-    int val;
-    ListNode next;
+    public int val;
+    public ListNode next;
 
-    ListNode() {
+    public ListNode() {
     }
 
-    ListNode(int val) {
+    public ListNode(int val) {
       this.val = val;
     }
 
@@ -128,7 +130,7 @@ public class LeetCodeHot100 {
 
   //4. 寻找两个正序数组的中位数
   //给定两个大小分别为 m 和 n 的正序（从小到大）数组 nums1 和 nums2。请你找出并返回这两个正序数组的 中位数 。
-  //这里使用的二分查找的办法，两个驻足分别取中位数的一半记性比较，小的一半就呗过滤
+  //这里使用的二分查找的办法，两个数组分别取中位数的一半记性比较，小的一半就被过滤
   //时间复杂度：O(log(m+n))O(log(m+n))，空间复杂度：O(1)O(1)
   public double findMedianSortedArrays(int[] nums1, int[] nums2) {
     int length1 = nums1.length;
@@ -164,7 +166,6 @@ public class LeetCodeHot100 {
     //两个数组的起始位置，会随着过滤不满足条件的数组部分而移动
     int index1 = 0;
     int index2 = 0;
-    int kthElement = 0;
 
     while (true) {
       // 边界情况
@@ -205,7 +206,8 @@ public class LeetCodeHot100 {
   public class Palindrome {
 
     /**
-     * 思路一： 动态规划的思路： P(i,j) = P(i+1, j-1) && (Si == Sj) 也就是如果字符串区间在[i，j]是回文传，必须满足在[i+1，j-1]位置是回文传，并且字符串在i和j位置的字符要想等
+     * 思路一： 动态规划的思路： P(i,j) = P(i+1, j-1) && (Si == Sj)
+     * 也就是如果字符串区间在[i，j]是回文传，必须满足在[i+1，j-1]位置是回文传，并且字符串在i和j位置的字符要想等
      * 边界条件：字符传长度为1的时候，是回文传，字符长度为2的时候，两个字符传相等是回文传
      */
 
@@ -296,6 +298,7 @@ public class LeetCodeHot100 {
       if (s == null || s.length() == 0) {
         return "";
       }
+      //考虑奇偶不同的情况，在字符中间加一个无意义的标识符
       char[] charArr = manacherString(s);
       int[] pArr = new int[charArr.length];
 
@@ -1902,8 +1905,10 @@ public class LeetCodeHot100 {
     TreeNode root = new TreeNode(inorder[inorderRoot]);
     //得到左子树的大小
     int leftSize = inorderRoot - inorderStart;
-    root.left = buildTreeSub(inorderMap, preorder, inorder, preorderStart + 1, preorderStart + leftSize, inorderStart, inorderRoot - 1);
-    root.right = buildTreeSub(inorderMap, preorder, inorder, preorderStart + leftSize + 1, preorderEnd, inorderRoot + 1, inorderEnd);
+    root.left = buildTreeSub(inorderMap, preorder, inorder, preorderStart + 1,
+        preorderStart + leftSize, inorderStart, inorderRoot - 1);
+    root.right = buildTreeSub(inorderMap, preorder, inorder, preorderStart + leftSize + 1,
+        preorderEnd, inorderRoot + 1, inorderEnd);
     return root;
   }
 
@@ -1964,7 +1969,7 @@ public class LeetCodeHot100 {
     int curr = 0;
     for (int i = 0; i < helper.length; i++) {
       curr += helper[i];
-      curr = curr >=0 ? curr : 0;
+      curr = curr >= 0 ? curr : 0;
       result = Math.max(result, curr);
     }
     return result;
@@ -1977,6 +1982,7 @@ public class LeetCodeHot100 {
   //给你一个二叉树的根节点 root ，返回其 最大路径和 。
   //时间复杂度O(n)，空间复杂度O(n)
   public Integer maxPathSumMaxValue = Integer.MIN_VALUE;
+
   public int maxPathSum(TreeNode root) {
     if (root == null) {
       return 0;
@@ -2003,6 +2009,1630 @@ public class LeetCodeHot100 {
     return root.value + Math.max(left, right);
   }
 
+  //最长连续序列
+  //给定一个未排序的整数数组 nums ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
+  //请你设计并实现时间复杂度为 O(n) 的算法解决此问题。
+  //时间复杂度O(n)，空间复杂度O(n)
+  public int longestConsecutive(int[] nums) {
+    if (nums == null || nums.length == 0) {
+      return 0;
+    }
+
+    //将所有数组放入hash中储存，这样找某个数字的时间复杂度就是O(1)
+    Set<Integer> set = new HashSet<>();
+    for (int i = 0; i < nums.length; i++) {
+      set.add(nums[i]);
+    }
+
+    int longest = 0;
+    for (int num : nums) {
+      //如果一个数x，他的最长长度是y，那么，从x，到x+y一定都存在hash中
+      //相反，如果一个数是一个区间的开始值，比如是x，那么x - 1一定不在hash中
+      //这样就可以跳过很多个判断，节省时间复杂度
+      if (!set.contains(num - 1)) {
+        int currentNum = num;
+        int currentLength = 1;
+
+        while (set.contains(currentNum + 1)) {
+          currentNum++;
+          currentLength++;
+        }
+        longest = Math.max(longest, currentLength);
+      }
+    }
+    return longest;
+  }
+
+  //只出现一次的数字
+  //给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。
+  public int singleNumber(int[] nums) {
+    if (nums == null || nums.length == 0) {
+      return 0;
+    }
+    //方法一：利用hash，时间复杂度O(n)，空间复杂度O(n)
+//    Map<Integer, Integer> map = new HashMap<>();
+//    for (int num : nums) {
+//      map.put(num, map.getOrDefault(num, 0) + 1);
+//    }
+//
+//    for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+//      if (entry.getValue() == 1) {
+//        return entry.getKey();
+//      }
+//    }
+//    return 0;
+
+    //方法二：位运算，使用异或（二进制位同值则取0，异值则取1），时间复杂度O(n)，空间复杂度O(1)
+    //异或的特点：
+    //1. 任何数和0异或，都等于本身
+    //2. 任何数和本身异或，都等于0
+    //3. 满足交换律和结合律
+    int single = 0;
+    for (int num : nums) {
+      single ^= num;
+    }
+    return single;
+
+  }
+
+  //单词拆分
+  //给定一个非空字符串s和一个包含非空单词的列表 wordDict，判定 s 是否可以被空格拆分为一个或多个在字典中出现的单词。
+  //动态规划，时间复杂度O(n^2)，空间复杂度O(n)
+  public boolean wordBreak(String s, List<String> wordDict) {
+    if (s == null || s.equals("")) {
+      return true;
+    }
+
+    Set<String> wordDictSet = new HashSet<>(wordDict);
+    boolean[] dp = new boolean[s.length() + 1];
+    dp[0] = true;
+
+    //dp[i] = dp[j] && check(s.subString(j, i))
+    //dp[j]表示字符串s中(0, j - 1)位置上的字符分割成单词后，是否都被wordDict包含
+    //同理，dp[i]表示字符串s中(0, i - 1)位置上的字符分割成单词后，是否都被wordDict包含
+    for (int i = 1; i <= s.length(); i++) {
+      for (int j = 0; j < i; j++) {
+        if (dp[j] && wordDictSet.contains(s.substring(j, i))) {
+          dp[i] = true;
+          //跳到最外层循环
+          break;
+        }
+      }
+    }
+    return dp[s.length()];
+  }
+
+
+  //环形链表
+  //给定一个链表，判断链表中是否有环。
+  //如果链表中有某个节点，可以通过连续跟踪 next 指针再次到达，则链表中存在环。
+  //为了表示给定链表中的环，我们使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。 如果 pos 是 -1，则在该链表中没有环。
+  //注意：pos 不作为参数进行传递，仅仅是为了标识链表的实际情况。
+  //如果链表中存在环，则返回 true 。 否则，返回 false 。
+  //双指针，时间复杂度O(n)，空间复杂度O(1)
+  public boolean hasCycle(ListNode head) {
+    if (head == null || head.next == null) {
+      return false;
+    }
+
+    ListNode slow = head;
+    ListNode fast = head.next;
+
+    while (fast != slow) {
+      if (fast == null || fast.next == null) {
+        return false;
+      }
+      fast = fast.next.next;
+      slow = slow.next;
+    }
+
+    return true;
+  }
+
+  //环形链表 II
+  //给定一个链表，返回链表开始入环的第一个节点。 如果链表无环，则返回 null。
+  //为了表示给定链表中的环，我们使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。
+  //如果 pos 是 -1，则在该链表中没有环。注意，pos 仅仅是用于标识环的情况，并不会作为参数传递到函数中。
+  //双指针，时间复杂度O(n)，空间复杂度O(1)
+  public ListNode detectCycle(ListNode head) {
+    if (head == null || head.next == null) {
+      return null;
+    }
+
+    ListNode slow = head;
+    ListNode fast = head.next;
+
+    while (slow != fast) {
+      if (fast == null || fast.next == null) {
+        return null;
+      }
+      slow = slow.next;
+      fast = fast.next.next;
+    }
+
+    while (head != slow.next) {
+      head = head.next;
+      slow = slow.next;
+    }
+    return head;
+  }
+
+  //LRU 缓存机制，less frequency use最近最少使用
+  //运用你所掌握的数据结构，设计和实现一个  LRU (最近最少使用) 缓存机制 。
+  //实现 LRUCache 类：
+  //LRUCache(int capacity) 以正整数作为容量 capacity 初始化 LRU 缓存
+  //int get(int key) 如果关键字 key 存在于缓存中，则返回关键字的值，否则返回 -1 。
+  //void put(int key, int value) 如果关键字已经存在，则变更其数据值；如果关键字不存在，则插入该组「关键字-值」。当缓存容量达到上限时，它应该在写入新数据之前删除最久未使用的数据值，从而为新的数据值留出空间。
+
+  /**
+   * Your LRUCache object will be instantiated and called as such: LRUCache obj = new
+   * LRUCache(capacity); int param_1 = obj.get(key); obj.put(key,value);
+   */
+  class LRUCache {
+
+    //需要自己构建一个双向链表和hash表
+    //时间复杂度：对于put和get都是O(1)。
+    //空间复杂度：O(capacity)
+    class FakeDoubleLinkedListNode {
+
+      int key;
+      int value;
+      FakeDoubleLinkedListNode prev;
+      FakeDoubleLinkedListNode next;
+
+      public FakeDoubleLinkedListNode() {
+      }
+
+      public FakeDoubleLinkedListNode(int key, int value) {
+        this.key = key;
+        this.value = value;
+      }
+    }
+
+    private Map<Integer, FakeDoubleLinkedListNode> map = new HashMap<>();
+    //size 表示当前链表中有多少元素
+    private int size;
+    private int capacity;
+    private FakeDoubleLinkedListNode head;
+    private FakeDoubleLinkedListNode tail;
+
+    public LRUCache(int capacity) {
+      //初始化一个自己构建的双向链表
+      this.size = 0;
+      this.capacity = capacity;
+      head = new FakeDoubleLinkedListNode();
+      tail = new FakeDoubleLinkedListNode();
+      head.next = tail;
+      tail.prev = head;
+    }
+
+    public int get(int key) {
+      FakeDoubleLinkedListNode node = map.get(key);
+      if (node == null) {
+        return -1;
+      }
+      moveToHead(node);
+      return node.value;
+    }
+
+    public void put(int key, int value) {
+      FakeDoubleLinkedListNode node = map.get(key);
+      if (node == null) {
+        //在链表中不存在，需要判断链表的大小是否超过capacity
+        //不超过，就加入，size+1，超过了，需要剔除尾部的节点，在hash表中删除这个尾部的节点，并在链表和hash表中加入这个节点
+        FakeDoubleLinkedListNode newNode = new FakeDoubleLinkedListNode(key, value);
+        map.put(key, newNode);
+        addToHead(newNode);
+        size++;
+        if (size > capacity) {
+          FakeDoubleLinkedListNode tail = removeTail();
+          map.remove(tail.key);
+          size--;
+        }
+        return;
+      }
+
+      //在链表中存在，覆盖值，并将这个node放到头部
+      node.value = value;
+      moveToHead(node);
+    }
+
+    private FakeDoubleLinkedListNode removeTail() {
+      FakeDoubleLinkedListNode prev = tail.prev;
+      deleteNode(prev);
+      return prev;
+    }
+
+    public void moveToHead(FakeDoubleLinkedListNode node) {
+      //分为两步，在链表中把这个node删除
+      //把这个node添加到头部
+      deleteNode(node);
+      addToHead(node);
+    }
+
+    public void deleteNode(FakeDoubleLinkedListNode node) {
+      node.prev.next = node.next;
+      node.next.prev = node.prev;
+    }
+
+    public void addToHead(FakeDoubleLinkedListNode node) {
+      node.prev = head;
+      node.next = head.next;
+      head.next.prev = node;
+      head.next = node;
+    }
+  }
+
+  //排序链表
+  //给你链表的头结点 head ，请将其按 升序 排列并返回 排序后的链表 。
+  //二分+归并，时间复杂度O(n * logn)，空间复杂度O(logn)，这里空间复杂度主要取决于递归调用的栈空间
+  public ListNode sortList(ListNode head) {
+    //看到时间复杂度有logn，首先想到二分法
+    //然后再归并排序，也就是合并两个链表
+    return sortListSub(head);
+  }
+
+  public ListNode sortListSub(ListNode head) {
+    if (head == null || head.next == null) {
+      return head;
+    }
+
+    //找到链表的中点
+    ListNode mid = findMiddle(head);
+    //排序右边的链表
+    ListNode right = sortListSub(mid.next);
+    mid.next = null;
+    //排序左边的链表
+    ListNode left = sortList(head);
+    return merge(left, right);
+  }
+
+  //合并两个链表，升序
+  private ListNode merge(ListNode left, ListNode right) {
+    ListNode dummy = new ListNode(0);
+    ListNode last = dummy;
+
+    while (left != null && right != null) {
+      if (left.val < right.val) {
+        last.next = left;
+        left = left.next;
+      } else {
+        last.next = right;
+        right = right.next;
+      }
+      last = last.next;
+    }
+
+    if (left != null) {
+      last.next = left;
+    }
+
+    if (right != null) {
+      last.next = right;
+    }
+    return dummy.next;
+  }
+
+  //找到当前链表的中点
+  public ListNode findMiddle(ListNode head) {
+    ListNode slow = head;
+    ListNode fast = head.next;
+
+    while (fast != null && fast.next != null) {
+      slow = slow.next;
+      fast = fast.next.next;
+    }
+    return slow;
+  }
+
+  //乘积最大子数组
+  //给你一个整数数组 nums ，请你找出数组中乘积最大的连续子数组（该子数组中至少包含一个数字），并返回该子数组所对应的乘积。
+  //动态规划，时间复杂度O(n)，空间复杂度O(n)
+  public int maxProduct(int[] nums) {
+    if (nums == null || nums.length == 0) {
+      return 0;
+    }
+    //方法一：时间复杂度O(n)，空间复杂度O(n)
+    //方法一：时间复杂度O(n)，空间复杂度O(1)
+    return maxProduct1(nums);
+//    return maxProduct2(nums);
+  }
+
+  //方法一：时间复杂度O(n)，空间复杂度O(n)
+  public int maxProduct1(int[] nums) {
+    int[] max = new int[nums.length];
+    int[] min = new int[nums.length];
+    max[0] = nums[0];
+    min[0] = nums[0];
+    int result = nums[0];
+
+    for (int i = 1; i < nums.length; i++) {
+      max[i] = nums[i];
+      min[i] = nums[i];
+      if (nums[i] >= 0) {
+        max[i] = Math.max(nums[i], max[i - 1] * nums[i]);
+        min[i] = Math.min(nums[i], min[i - 1] * nums[i]);
+      } else {
+        max[i] = Math.max(nums[i], min[i - 1] * nums[i]);
+        min[i] = Math.min(nums[i], max[i - 1] * nums[i]);
+      }
+      result = Math.max(result, max[i]);
+    }
+    return result;
+  }
+
+  //方法一：时间复杂度O(n)，空间复杂度O(1)
+  public int maxProduct2(int[] nums) {
+    //方法二：是方法一的优化，因为位置i上的最大值，之后位置i - 1上有关，所以用一个值来记录i-1位置上的最大值，最小值
+    int max = nums[0];
+    int min = nums[0];
+    int result = nums[0];
+
+    for (int i = 1; i < nums.length; i++) {
+      int maxPre = max;
+      int minPre = min;
+      //Math.max(maxPre * nums[i], minPre * nums[i])，Math.min(minPre * nums[i], maxPre * nums[i])：
+      //表示判断一下在不确定nums[i]是整数还是负数的情况下，看一下那个值大/小
+      //然后和外面的nums[i]，也就是当前的数进行比较，更新出当前位置上的最大值，最小值
+      max = Math.max(nums[i], Math.max(maxPre * nums[i], minPre * nums[i]));
+      min = Math.min(nums[i], Math.min(minPre * nums[i], maxPre * nums[i]));
+      result = Math.max(result, max);
+    }
+    return result;
+  }
+
+  //最小栈
+  //设计一个支持 push ，pop ，top 操作，并能在常数时间内检索到最小元素的栈。
+  class MinStack {
+
+    /**
+     * initialize your data structure here.
+     */
+
+    private Stack<Integer> stackData;
+    private Stack<Integer> stackMin;
+
+    public MinStack() {
+      this.stackData = new Stack<>();
+      this.stackMin = new Stack<>();
+    }
+
+    public void push(int val) {
+      if (this.stackMin.isEmpty()) {
+        stackMin.push(val);
+      } else {
+        if (getMin() >= val) {
+          stackMin.push(val);
+        }
+      }
+      stackData.push(val);
+    }
+
+    public void pop() {
+      if (stackData.isEmpty()) {
+        return;
+      }
+      Integer pop = stackData.pop();
+      if (pop <= getMin()) {
+        stackMin.pop();
+      }
+    }
+
+    public int top() {
+      Integer peek = stackData.peek();
+      return peek;
+    }
+
+    public int getMin() {
+      return stackMin.peek();
+    }
+  }
+
+  /**
+   * Your MinStack object will be instantiated and called as such: MinStack obj = new MinStack();
+   * obj.push(val); obj.pop(); int param_3 = obj.top(); int param_4 = obj.getMin();
+   */
+
+  //相交链表
+  //给你两个单链表的头节点 headA 和 headB ，请你找出并返回两个单链表相交的起始节点。如果两个链表没有交点，返回 null 。
+  //双指针，时间复杂度O(m + n)，空间复杂度O(1)
+  public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+    if (headA == null || headB == null) {
+      return null;
+    }
+
+    //假设headA和headB重合的部分长度c；不重合的地方。headA长a，headB长b
+    //那么headA的长度就是a+c，headB的长度就是b+c
+    //如果有相交的地方，指针pA走过的长度就是a+c+b，指针pB走过的长度就是b+c+a
+    //如果两个没有交点，就是pA=pB=null
+
+    ListNode pA = headA;
+    ListNode pB = headB;
+    while (pA != pB) {
+      pA = pA == null ? headB : pA.next;
+      pB = pB == null ? headA : pB.next;
+    }
+
+    return pA;
+  }
+
+  //多数元素
+  //给定一个大小为 n 的数组，找到其中的多数元素。多数元素是指在数组中出现次数 大于 ⌊ n/2 ⌋ 的元素。
+  //你可以假设数组是非空的，并且给定的数组总是存在多数元素。
+  //摩尔计数法，时间复杂度O(n)，空间复杂度O(1)
+  public int majorityElement(int[] nums) {
+    //摩尔计数法：
+    //假设A是这个大于一半的数，我们碰到他，就让count+1，不是他，就让count-1；
+    //如果count=0了，就证明前面的A出现的次数，被不是A出现的次数抵消了，这样我们重新取当前的数B，在重复上一步
+    //直到最后
+    int count = 0;
+    Integer curr = null;
+    for (int num : nums) {
+      if (count == 0) {
+        curr = num;
+      }
+      count += (num == curr) ? 1 : -1;
+    }
+
+    //如果是[1,2,3]的情况，在leetcode中没有这种例子
+    //这里自己加一个校验
+    count = 0;
+    for (int num : nums) {
+      if (num == curr) {
+        count++;
+      }
+    }
+    curr = count > nums.length / 2 ? curr : null;
+
+    return curr;
+  }
+
+  //求众数2
+  //给定一个大小为 n 的整数数组，找出其中所有出现超过 ⌊ n/3 ⌋ 次的元素。
+  //摩尔计数法，时间复杂度O(n)，空间复杂度O(1)
+  public List<Integer> majorityElement2(int[] nums) {
+    List<Integer> result = new ArrayList<>();
+    if (nums == null || nums.length == 0) {
+      return new ArrayList<>();
+    }
+
+    int countA = 0;
+    int countB = 0;
+    int currA = nums[0];
+    int currB = nums[0];
+
+    for (int num : nums) {
+      if (currA == num) {
+        countA++;
+        continue;
+      }
+
+      if (currB == num) {
+        countB++;
+        continue;
+      }
+
+      if (countA == 0) {
+        currA = num;
+        countA++;
+        continue;
+      }
+
+      if (countB == 0) {
+        currB = num;
+        countB++;
+        continue;
+      }
+
+      countA--;
+      countB--;
+    }
+
+    //double check
+    countA = 0;
+    countB = 0;
+    for (int num : nums) {
+      if (currA == num) {
+        countA++;
+      } else if (currB == num) {
+        countB++;
+      }
+    }
+
+    if (countA > nums.length / 3) {
+      result.add(currA);
+    }
+    if (countB > nums.length / 3) {
+      result.add(currB);
+    }
+    return result;
+
+  }
+
+  //打家劫舍
+  //你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。
+  //给定一个代表每个房屋存放金额的非负整数数组，计算你不触动警报装置的情况下，一夜之内能够偷窃到的最高金额。
+  //动态规划，时间复杂度O(n)，空间复杂度O(n)
+  public int rob(int[] nums) {
+    //dp[i] = Math.max(dp[i - 2] + nums[i], dp[i - 1]);
+    if (nums == null || nums.length == 0) {
+      return 0;
+    }
+    if (nums.length == 1) {
+      return nums[0];
+    }
+
+    int[] dp = new int[nums.length];
+    dp[0] = nums[0];
+    dp[1] = Math.max(nums[0], nums[1]);
+
+    for (int i = 2; i < dp.length; i++) {
+      dp[i] = Math.max(dp[i - 2] + nums[i], dp[i - 1]);
+    }
+
+    return dp[nums.length - 1];
+  }
+
+  //岛屿数量
+  //给你一个由 '1'（陆地）和 '0'（水）组成的的二维网格，请你计算网格中岛屿的数量。
+  //岛屿总是被水包围，并且每座岛屿只能由水平方向和/或竖直方向上相邻的陆地连接形成。
+  //此外，你可以假设该网格的四条边均被水包围。
+  //dfs，时间复杂度O(mn)，空间复杂度O(mn)
+  public int numIslands(char[][] grid) {
+    if (grid == null || grid.length == 0) {
+      return 0;
+    }
+
+    int count = 0;
+    int rowLength = grid.length;
+    int columnLength = grid[0].length;
+    for (int i = 0; i < grid.length; i++) {
+      for (int j = 0; j < grid[0].length; j++) {
+        if (grid[i][j] == '1') {
+          count++;
+          numIslandsDFSSub(grid, i, j, rowLength, columnLength);
+        }
+      }
+    }
+    return count;
+  }
+
+  public void numIslandsDFSSub(char[][] grid, int row, int column, int rowLength,
+      int columnLength) {
+    if (row < 0 || column < 0 || row >= rowLength || column >= columnLength
+        || grid[row][column] == '0') {
+      return;
+    }
+
+    grid[row][column] = '0';
+    numIslandsDFSSub(grid, row - 1, column, rowLength, columnLength);
+    numIslandsDFSSub(grid, row + 1, column, rowLength, columnLength);
+    numIslandsDFSSub(grid, row, column - 1, rowLength, columnLength);
+    numIslandsDFSSub(grid, row, column + 1, rowLength, columnLength);
+
+  }
+
+  //反转链表
+  //给你单链表的头节点 head ，请你反转链表，并返回反转后的链表。
+  //时间复杂度O(n)，空间复杂度O(n)
+  public ListNode reverseList(ListNode head) {
+    if (head == null) {
+      return null;
+    }
+
+    ListNode prev = null;
+    while (head != null) {
+      ListNode temp = head.next;
+      head.next = prev;
+      prev = head;
+      head = temp;
+    }
+
+    //最后的时候head就等于null，而prev在head的前一个，所以返回prev
+    return prev;
+  }
+
+  //课程表
+  //你这个学期必须选修 numCourses 门课程，记为 0 到 numCourses - 1 。
+  //在选修某些课程之前需要一些先修课程。 先修课程按数组 prerequisites 给出，其中 prerequisites[i] = [ai, bi] ，表示如果要学习课程 ai 则 必须 先学习课程  bi 。
+  //例如，先修课程对 [0, 1] 表示：想要学习课程 0 ，你需要先完成课程 1 。
+  //请你判断是否可能完成所有课程的学习？如果可以，返回 true ；否则，返回 false 。
+  //使用拓扑排序，时间复杂度O(n)，空间复杂度O(n)
+  public boolean canFinish(int numCourses, int[][] prerequisites) {
+    if (numCourses == 0) {
+      return true;
+    }
+    if (prerequisites == null || prerequisites.length == 0) {
+      return true;
+    }
+    //记录以每一个位置为课程，需要多少节前置课
+    int[] inDegrees = new int[numCourses];
+    // 记录每一个位置可以作为哪些课的前置课
+    List<List<Integer>> adjacency = new ArrayList<>();
+    for (int i = 0; i < numCourses; i++) {
+      adjacency.add(new ArrayList<>());
+    }
+    for (int[] p : prerequisites) {
+      inDegrees[p[0]]++;
+      adjacency.get(p[1]).add(p[0]);
+    }
+
+    //记录哪些课不需要前置课
+    Queue<Integer> queue = new LinkedList<>();
+    for (int i = 0; i < numCourses; i++) {
+      if (inDegrees[i] == 0) {
+        queue.add(i);
+      }
+    }
+
+    //实际能上多少节课
+    int credit = 0;
+    while (!queue.isEmpty()) {
+      Integer preCourse = queue.poll();
+      for (int course : adjacency.get(preCourse)) {
+        inDegrees[course]--;
+        if (inDegrees[course] == 0) {
+          queue.add(course);
+        }
+      }
+      credit++;
+    }
+    return numCourses == credit;
+  }
+
+
+  //实现 Trie (前缀树)
+  //Trie（发音类似 "try"）或者说 前缀树 是一种树形数据结构，用于高效地存储和检索字符串数据集中的键。这一数据结构有相当多的应用情景，例如自动补完和拼写检查。
+  //请你实现 Trie 类：
+  //Trie() 初始化前缀树对象。
+  //void insert(String word) 向前缀树中插入字符串 word 。
+  //boolean search(String word) 如果字符串 word 在前缀树中，返回 true（即，在检索之前已经插入）；否则，返回 false 。
+  //boolean startsWith(String prefix) 如果之前已经插入的字符串 word 的前缀之一为 prefix ，返回 true ；否则，返回 false 。
+  class Trie {
+
+    private boolean isEnd;
+    private Trie[] nexts;
+
+    /**
+     * Initialize your data structure here.
+     */
+    public Trie() {
+      isEnd = false;
+      nexts = new Trie[26];
+    }
+
+    /**
+     * Inserts a word into the trie.
+     */
+    public void insert(String word) {
+      if (word == null || word.equals("")) {
+        return;
+      }
+
+      char[] wordChar = word.toCharArray();
+      Trie node = this;
+      for (int i = 0; i < wordChar.length; i++) {
+        int index = wordChar[i] - '0';
+        if (node.nexts[index] == null) {
+          node.nexts[index] = new Trie();
+        }
+        node = node.nexts[index];
+      }
+      node.isEnd = true;
+    }
+
+    /**
+     * Returns if the word is in the trie.
+     */
+    public boolean search(String word) {
+      Trie node = searchPrefix(word);
+      return node != null && node.isEnd;
+    }
+
+    /**
+     * Returns if there is any word in the trie that starts with the given prefix.
+     */
+    public boolean startsWith(String prefix) {
+      return searchPrefix(prefix) != null;
+    }
+
+    private Trie searchPrefix(String prefix) {
+      Trie node = this;
+      char[] wordChar = prefix.toCharArray();
+      for (int i = 0; i < wordChar.length; i++) {
+        int index = wordChar[i] - '0';
+        if (node.nexts[index] == null) {
+          return null;
+        }
+        node = node.nexts[index];
+      }
+      return node;
+    }
+  }
+
+  /**
+   * Your Trie object will be instantiated and called as such: Trie obj = new Trie();
+   * obj.insert(word); boolean param_2 = obj.search(word); boolean param_3 =
+   * obj.startsWith(prefix);
+   */
+
+  //数组中的第K个最大元素
+  //给定整数数组 nums 和整数 k，请返回数组中第 k 个最大的元素。
+  //请注意，你需要找的是数组排序后的第 k 个最大的元素，而不是第 k 个不同的元素。
+  public int findKthLargest(int[] nums, int k) {
+    if (nums == null || nums.length < k) {
+      return 0;
+    }
+    return findKthLargestSub(nums, 0, nums.length - 1, nums.length - k);
+  }
+
+  public int findKthLargestSub(int[] nums, int start, int end, int k) {
+    int partition = partition1(nums, start, end);
+    if (partition == k) {
+      return nums[partition];
+    } else {
+      return partition > k ? findKthLargestSub(nums, start, partition - 1, k)
+          : findKthLargestSub(nums, partition + 1, end, k);
+    }
+  }
+
+  public int partition1(int[] arr, int l, int r) {
+    //此时arr[r]就是用来做比较的数（目标数）
+    int less = l - 1;
+    int more = r;
+    while (l < more) {
+      if (arr[l] > arr[r]) {
+        //如果l位置的数，比目标数要大，
+        //那么让more的位置向前移动一位，并且交换l位置和more位置的数，因为more之后（包括more位置）表示比目标数大的数
+        swap(arr, l, --more);
+      } else if (arr[l] < arr[r]) {
+        //如果l位置的数，比目标数要小，
+        //那么先让less向右移动一位，然后交换l位置的数，和右移后的less位的数
+        //因为less位置表示小于目标数（包括less），所以交换的是less下一位的数，这个位置是等于的位置的数
+        //同时l向右移动一 位
+        swap(arr, l++, ++less);
+      } else {
+        //等于区域，l向右移动
+        l++;
+      }
+    }
+
+    //当遍历结束之后，要交换more位置和r位置的数
+    //因为r位置的数是目标数，more位置的数一定是比目标数要大的数，
+    //交换后确保more之后（包括more位置）表示比目标数大的数
+    swap(arr, more, r);
+    //less是小于目标数的位置，less+1是等于目标数的数，或者是大于目标数的数（没有等于区间）
+    //经过上面的交换，more位置一定是目标数
+    return more;
+  }
+
+  //最大正方形
+  //在一个由 '0' 和 '1' 组成的二维矩阵内，找到只包含 '1' 的最大正方形，并返回其面积。
+  //动态规划，时间复杂度O(mn)，空间复杂度O(mn)
+  public int maximalSquare(char[][] matrix) {
+    if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+      return 0;
+    }
+    int maxSize = 0;
+    int row = matrix.length;
+    int column = matrix[0].length;
+    //dp每一个位置，表示以matrix的这个位置为右下角，最大的正方形的变长是多少
+    int[][] dp = new int[row][column];
+    for (int i = 0; i < row; i++) {
+      for (int j = 0; j < column; j++) {
+        if (matrix[i][j] == '1') {
+          if (i == 0 || j == 0) {
+            dp[i][j] = 1;
+          } else {
+            //动态方程
+            dp[i][j] = Math.min(Math.min(dp[i - 1][j], dp[i][j - 1]), dp[i - 1][j - 1]) + 1;
+          }
+          maxSize = Math.max(maxSize, dp[i][j]);
+        }
+      }
+    }
+    return maxSize * maxSize;
+  }
+
+  //翻转二叉树
+  //翻转一棵二叉树。
+  //递归，递归到最底下，然后替换左右
+  //时间复杂度O(n)，空间复杂度O(n)
+  public TreeNode invertTree(TreeNode root) {
+    if (root == null) {
+      return null;
+    }
+
+    TreeNode left = invertTree(root.left);
+    TreeNode right = invertTree(root.right);
+
+    root.right = left;
+    root.left = right;
+    return root;
+
+  }
+
+  //回文链表
+  //给你一个单链表的头节点 head ，请你判断该链表是否为回文链表。如果是，返回 true ；否则，返回 false 。
+  //借助一个栈，借助先进后出的特性，时间复杂度O(n)，空间复杂度O(n)
+  public boolean isPalindrome(ListNode head) {
+    if (head == null) {
+      return false;
+    }
+
+    Stack<ListNode> stack = new Stack<>();
+    ListNode curr = head;
+
+    while (curr != null) {
+      stack.push(curr);
+      curr = curr.next;
+    }
+
+    while (!stack.isEmpty()) {
+      curr = stack.pop();
+      if (curr.val != head.val) {
+        return false;
+      }
+      head = head.next;
+    }
+    return true;
+  }
+
+  //二叉树的最近公共祖先
+  //给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
+  //时间复杂度O(n)，空间复杂度O(n)
+  public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+    //若想找到公共祖先，就是能是下面3种情况的一种：
+    //1。p和q在root的子树中，且分别在root的两侧
+    //2。p是root，q在root的左或者右子树中
+    //3。q是root，p在root的左或者右子树中
+
+    //走到叶节点了，获取当前节点就是p/或q，
+    if (root == null || p == root || q == root) {
+      return root;
+    }
+    TreeNode left = lowestCommonAncestor(root.left, p, q);
+    TreeNode right = lowestCommonAncestor(root.right, p, q);
+
+    //自下而上，所以一定会找到深度最大的
+    //root的左子树和右子树都不包含p，q
+    if (left == null && right == null) {
+      return null;
+    }
+    //root的左子树不包含p，q，可能是p，q在右子树，也有可能是p或者q其中之一在右子树
+    if (left == null) {
+      return right;
+    }
+    //root的右子树不包含p，q，可能是p，q在左子树，也有可能是p或者q其中之一在左子树
+    if (right == null) {
+      return left;
+    }
+    return root;
+  }
+
+  //除自身以外数组的乘积
+  //给你一个长度为 n 的整数数组 nums，其中 n > 1，返回输出数组 output ，其中 output[i] 等于 nums 中除 nums[i] 之外其余各元素的乘积。
+  //时间复杂度O(n)，空间复杂度O(1)
+  public int[] productExceptSelf(int[] nums) {
+    if (nums == null || nums.length == 0) {
+      return nums;
+    }
+
+    int[] result = new int[nums.length];
+    result[0] = 1;
+
+    //现正序算一遍，算出每个位置之前的和
+    //比如[5, 8,   9,     10,           12       ]
+    //得到[1, 5, 5 * 8, 5 * 8 * 9, 5 * 8 * 9 * 10]
+    for (int i = 1; i < nums.length; i++) {
+      result[i] = result[i - 1] * nums[i - 1];
+    }
+
+    //然后再反过来计算，在上面的基础上，让每个数乘以后面的数，这样就跳过自身了
+    //比如[5,                           8,              9,               10,           12       ]
+    //得到[1 * 8 * 9 * 10 * 12, 5 * 9 * 10 * 12, 5 * 8 * 10 * 12, 5 * 8 * 9 * 12, 5 * 8 * 9 * 10]
+    int temp = 1;
+    for (int i = nums.length - 1; i >= 0; i--) {
+      result[i] *= temp;
+      temp *= nums[i];
+    }
+    return result;
+  }
+
+  //滑动窗口最大值
+  //给你一个整数数组 nums，有一个大小为 k 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 k 个数字。滑动窗口每次只向右移动一位。
+  //返回滑动窗口中的最大值。
+  public int[] maxSlidingWindow(int[] nums, int k) {
+    if (nums == null || nums.length < k) {
+      return null;
+    }
+
+    int[] result = new int[nums.length - k + 1];
+    //维护一个从大到小的链表，存的是角标
+    LinkedList<Integer> windowMax = new LinkedList<>();
+    int index = 0;
+
+    for (int i = 0; i < nums.length; i++) {
+
+      while (!windowMax.isEmpty() && nums[windowMax.peekLast()] <= nums[i]) {
+        windowMax.pollLast();
+      }
+
+      windowMax.addLast(i);
+
+      if (windowMax.peekFirst() == i - k) {
+        //左边要出边界了
+        windowMax.pollFirst();
+      }
+      if (i >= k - 1) {
+        result[index] = nums[windowMax.peekFirst()];
+        index++;
+      }
+    }
+    return result;
+  }
+
+  //搜索二维矩阵 II
+  //编写一个高效的算法来搜索 m x n 矩阵 matrix 中的一个目标值 target 。该矩阵具有以下特性：
+  //每行的元素从左到右升序排列。
+  //每列的元素从上到下升序排列。
+  //从左下或者右上开始，时间复杂度O(Math.max(matrix.length, matrix[0].length))，空间复杂度O(1)
+  public boolean searchMatrix(int[][] matrix, int target) {
+    if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+      return false;
+    }
+    int row = matrix.length;
+    int rowStart = 0;
+    int columnStart = matrix[0].length - 1;
+    while (rowStart < row && columnStart >= 0) {
+      if (matrix[rowStart][columnStart] == target) {
+        return true;
+      } else if (matrix[rowStart][columnStart] > target) {
+        columnStart--;
+      } else {
+        rowStart++;
+      }
+    }
+    return false;
+
+  }
+
+  // 完全平方数
+  //给定正整数 n，找到若干个完全平方数（比如 1, 4, 9, 16, ...）使得它们的和等于 n。你需要让组成和的完全平方数的个数最少。
+  //给你一个整数 n ，返回和为 n 的完全平方数的 最少数量 。
+  //完全平方数 是一个整数，其值等于另一个整数的平方；换句话说，其值等于一个整数自乘的积。例如，1、4、9 和 16 都是完全平方数，而 3 和 11 不是。
+  //动态规划，时间复杂度O(n^3/2)，空间复杂度O(n)
+  public int numSquares(int n) {
+    if (n == 0) {
+      return 0;
+    }
+
+    //动态数组，每一个位置表示到当前位置最少需要几个完全平方数的和
+    int[] dp = new int[n + 1];
+    for (int i = 1; i <= n; i++) {
+      int min = Integer.MAX_VALUE;
+      //动态方程：dp[i] = 1 + {min(i - j * j) [j = 1 .... i^1/2]}
+      //假设i = 10，j就等于1，2，3，这样找到当j=3的时候，min最小，dp[10] = dp[10 - 3 * 3] + 1 = dp[1] + 1
+      //也就是10位置，可以由9+1得到，也就是3 * 3 + 1 * 1
+      for (int j = 1; j * j <= i; j++) {
+        min = Math.min(min, dp[i - j * j]);
+      }
+      dp[i] = min + 1;
+    }
+    return dp[n];
+  }
+
+  //移动零
+  //给定一个数组 nums，编写一个函数将所有 0 移动到数组的末尾，同时保持非零元素的相对顺序。
+  //双指针，时间复杂度O(n)，空间复杂度O(1)
+  public void moveZeroes(int[] nums) {
+    if (nums == null || nums.length == 0) {
+      return;
+    }
+
+    int left = 0;
+    int right = 0;
+
+    //left的左边是都已经处理过的
+    //right的右边，包括right都是还没处理过的
+    //每次都是拿right位置上的数和left位置上的数做交换
+    //同时维持：
+    // 1.left，right中间的区域都是0
+    // 2.left的左边都是非0
+    while (left < nums.length && right < nums.length) {
+      if (nums[right] != 0) {
+        swap(nums, left, right);
+        left++;
+      }
+      right++;
+    }
+  }
+
+  //寻找重复数
+  //给定一个包含 n + 1 个整数的数组 nums ，其数字都在 1 到 n 之间（包括 1 和 n），可知至少存在一个重复的整数。
+  //假设 nums 只有 一个重复的整数 ，找出 这个重复的数 。
+  //你设计的解决方案必须不修改数组 nums 且只用常量级 O(1) 的额外空间。
+  //二分查找，时间复杂度O(nlogn)，空间复杂度O(1)
+  public int findDuplicate(int[] nums) {
+    //类似于抽屉问题，比如：10个苹果，放进9个抽屉，那么一定有1个抽屉里面放的是2个苹果
+    //同理，找到中间的数mid，统计小于等于mid的数字的个数count，如果count大于mid，那么重复的数一定在前面这半部分，否则就在后面
+    //比如区间是1～9，那么mid就是5，找到小于等于5的数，如果超过了5个，重复的数就在1～5这个区间，否则就是在6～10这个区间
+    //此时如果超过了5，那么5可能就是那个数
+    int left = 1;
+    int right = nums.length - 1;
+    int result = 0;
+    while (left < right) {
+      int mid = left + (right - left) / 2;
+      int count = 0;
+      for (int num : nums) {
+        if (num <= mid) {
+          count++;
+        }
+      }
+
+      //left = 1, right = 9 => mid = 5, count = 5 => left = 6, right = 9 => mid = 7, count = 8 = > right  = 6
+
+      if (count > mid) {
+        right = mid - 1;
+        result = mid;
+      } else {
+        left = mid + 1;
+      }
+    }
+    return result;
+
+  }
+
+  //二叉树的序列化与反序列化
+  //序列化是将一个数据结构或者对象转换为连续的比特位的操作，进而可以将转换后的数据存储在一个文件或者内存中，同时也可以通过网络传输到另一个计算机环境，采取相反方式重构得到原数据。
+  //请设计一个算法来实现二叉树的序列化与反序列化。这里不限定你的序列 / 反序列化算法执行逻辑，你只需要保证一个二叉树可以被序列化为一个字符串并且将这个字符串反序列化为原始的树结构。
+  //提示: 输入输出格式与 LeetCode 目前使用的方式一致，详情请参阅 LeetCode 序列化二叉树的格式。你并非必须采取这种方式，你也可以采用其他的方法解决这个问题。
+//  public class Codec {
+//
+//    // Encodes a tree to a single string.
+//    public String serialize(TreeNode root) {
+//
+//    }
+//
+//    // Decodes your encoded data to tree.
+//    public TreeNode deserialize(String data) {
+//
+//    }
+//  }
+
+  //最长递增子序列
+  //给你一个整数数组 nums ，找到其中最长严格递增子序列的长度。
+  //子序列是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，[3,6,2,7] 是数组 [0,3,1,6,2,2,7] 的子序列。
+  public int lengthOfLIS(int[] nums) {
+
+    int left = 0;
+    int right = 1;
+
+    //{10,9,2,5,3,7,101,18}
+    int maxLength = 0;
+    while (left <= right && right < nums.length) {
+
+      if (nums[right] > nums[left] && nums[right] != nums[right - 1]) {
+        right++;
+      } else {
+        maxLength = Math.max(maxLength, right - left + 1);
+        left = right;
+        right = left + 1;
+      }
+
+    }
+
+    return maxLength;
+  }
+
+  //删除无效的括号
+  //给你一个由若干括号和字母组成的字符串 s ，删除最小数量的无效括号，使得输入的字符串有效。
+  //返回所有可能的结果。答案可以按 任意顺序 返回。
+//  public List<String> removeInvalidParentheses(String s) {
+//
+//  }
+
+  //最佳买卖股票时机含冷冻期
+  //给定一个整数数组，其中第 i 个元素代表了第 i 天的股票价格 。​
+  //设计一个算法计算出最大利润。在满足以下约束条件下，你可以尽可能地完成更多的交易（多次买卖一支股票）:
+  //你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+  //卖出股票后，你无法在第二天买入股票 (即冷冻期为 1 天)。
+
+  public int maxProfit1(int[] prices) {
+    //具体参考StockServiceImpl
+    return 0;
+  }
+
+  //目标和
+  //给你一个整数数组 nums 和一个整数 target 。
+  //向数组中的每个整数前添加 '+' 或 '-' ，然后串联起所有整数，可以构造一个 表达式 ：
+  //例如，nums = [2, 1] ，可以在 2 之前添加 '+' ，在 1 之前添加 '-' ，然后串联起来得到表达式 "+2-1" 。
+  //返回可以通过上述方法构造的、运算结果等于 target 的不同 表达式 的数目。
+  int findTargetSumWaysCount = 0;
+
+  public int findTargetSumWays(int[] nums, int target) {
+//    return findTargetSumWaysSub(nums, target);
+    return findTargetSumWaysDP(nums, target);
+  }
+
+  //回朔，时间复杂度O(2^n)，空间复杂度O(n)
+  public int findTargetSumWaysSub(int[] nums, int target) {
+    findTargetSumWaysBackTrack(nums, target, 0, 0);
+    return findTargetSumWaysCount;
+  }
+
+  public void findTargetSumWaysBackTrack(int[] nums, int target, int index, int sum) {
+    if (index == nums.length - 1) {
+      if (target == sum) {
+        findTargetSumWaysCount++;
+      }
+      return;
+    }
+
+    findTargetSumWaysBackTrack(nums, target, index + 1, sum + nums[index]);
+    findTargetSumWaysBackTrack(nums, target, index + 1, sum - nums[index]);
+  }
+
+  public int findTargetSumWaysDP(int[] nums, int target) {
+    //动态规划
+    //每一个数都有两个状态：+，-
+    //dp[i][j] = dp[i - 1][j + nums[i]] + dp[i - 1][j - nums[i]]
+    //注意：dp[1][0] = dp[0][0+1] + dp[0][-1];这里表示在初始化的时候要考虑减法的情况
+    int sum = 0;
+    for (Integer num : nums) {
+      sum += num;
+    }
+
+    if (Math.abs(sum) < Math.abs(target)) {
+      return 0;
+    }
+
+    int length = nums.length;
+    //考虑正负的情况
+    int colLength = sum * 2 + 1;
+    int[][] dp = new int[length][colLength];
+
+    //初始化
+    if (nums[0] == 0) {
+      //加，减0，共两种情况
+      dp[0][sum] = 2;
+    }else {
+      dp[0][sum + nums[0]] = 1;
+      dp[0][sum - nums[0]] = 1;
+    }
+
+    for (int i = 1; i < length; i++) {
+      for (int j = 0; j < colLength; j++) {
+        int l = (j - nums[i] >= 0) ? j - nums[i] : 0;
+        int r = (j + nums[i] < colLength) ? j + nums[i] : 0;
+        dp[i][j] = dp[i - 1][l] + dp[i - 1][r];
+      }
+    }
+
+    return dp[length - 1][sum + target];
+  }
+
+
+  //汉明距离
+  //两个整数之间的 汉明距离 指的是这两个数字对应二进制位不同的位置的数目。
+  //给你两个整数 x 和 y，计算并返回它们之间的汉明距离。
+  public int hammingDistance(int x, int y) {
+    //x^y可以得到所有不相同的位置
+    int z = x ^ y;
+    int result = 0;
+    while (z != 0) {
+      //z于1做与运算，如果z最后一位是1，就得到1，如果是0就得到0
+      result += z & 1;
+      //z向右移动一位
+      z >>= 1;
+    }
+    return result;
+  }
+
+  //找到所有数组中消失的数字
+  //给你一个含n个整数的数组nums ，其中 nums[i] 在区间 [1, n] 内。请你找出所有在 [1, n] 范围内但没有出现在 nums 中的数字，并以数组的形式返回结果。
+  public List<Integer> findDisappearedNumbers(int[] nums) {
+    int[] help = new int[nums.length];
+    for (int num : nums) {
+      help[num - 1] = 1;
+    }
+
+    List<Integer> result = new ArrayList<>();
+    for (int i = 0; i < nums.length; i++) {
+      if (help[i] == 0) {
+        result.add(i + 1);
+      }
+    }
+    return result;
+  }
+
+  //找到字符串中所有字母异位词
+  //给定两个字符串 s 和 p，找到 s 中所有 p 的 异位词 的子串，返回这些子串的起始索引。不考虑答案输出的顺序。
+  //异位词 指字母相同，但排列不同的字符串。
+//  public List<Integer> findAnagrams(String s, String p) {
+//    int right = s.length();
+//    int left = s.length();
+//  }
+
+  //路径总和 III
+  //给定一个二叉树的根节点 root ，和一个整数 targetSum ，求该二叉树里节点值之和等于 targetSum 的 路径 的数目。
+  //路径不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。
+//  public int pathSum(TreeNode root, int targetSum) {
+//
+//  }
+
+
+  //把二叉搜索树转换为累加树
+  //给出二叉搜索树的根节点，该树的节点值各不相同，请你将其转换为累加树(Greater Sum Tree)，使每个节点node的新值等于原树中大于或等于node.val的值之和。
+  //提醒一下，二叉搜索树满足下列约束条件：
+  //节点的左子树仅包含键小于节点键的节点。
+  //节点的右子树仅包含键大于节点键的节点。
+  //左右子树也必须是二叉搜索树。
+  //时间复杂度O(n)，空间复杂度O(n)
+  int convertBSTSum = 0;
+
+  public TreeNode convertBST(TreeNode root) {
+    //每一个节点都是该节点右子树的和
+    //中序遍历是左根右，这个的遍历结果是一个递增的数组
+    //反序中序遍历是右左根，这个遍历结果是一个递减的数组
+    //然后把遍历过的节点加和就好
+    if (root == null) {
+      return null;
+    }
+
+    convertBST(root.right);
+    convertBSTSum += root.value;
+    root.value = convertBSTSum;
+    convertBST(root.left);
+    return root;
+  }
+
+  //二叉树的直径
+  //给定一棵二叉树，你需要计算它的直径长度。一棵二叉树的直径长度是任意两个结点路径长度中的最大值。这条路径可能穿过也可能不穿过根结点。
+  //理解成求最长路径的边长
+  public int maxDiameter = 0;
+
+  public int diameterOfBinaryTree(TreeNode root) {
+    maxDiameter = 1;
+    diameterOfBinaryTreeSub(root);
+    return maxDiameter - 1;
+
+  }
+
+  public int diameterOfBinaryTreeSub(TreeNode root) {
+    if (root == null) {
+      return 0;
+    }
+    int left = diameterOfBinaryTreeSub(root.left);
+    int right = diameterOfBinaryTreeSub(root.right);
+    maxDiameter = Math.max(maxDiameter, left + right + 1);
+    return Math.max(left, right) + 1;
+  }
+
+
+  //和为K的子数组
+  //给定一个整数数组和一个整数 k，你需要找到该数组中和为k的连续的子数组的个数。
+  //时间复杂度O(n)，空间复杂度O(n)
+  public int subarraySum(int[] nums, int k) {
+    if (nums == null || nums.length == 0) {
+      return 0;
+    }
+
+    //思路是，有一个只不停来记录到位置i为止，之前的和sum是多少，同时用一个map来记录这个sum值出现的次数
+    //每当到达一个新位置i，求出sum后，检查map中sum-k出现的次数，就是对应的值
+    //理论是:pre[i]表示i之前的和，那么在其中的某个位置j到i这个区间中，k出现的次数，就是pre[i] - k
+
+    int result = 0;
+    //用来记录当前数的和
+    int sum = 0;
+    Map<Integer, Integer> map = new HashMap<>();
+    map.put(0, 1);
+    for (int i = 0; i < nums.length; i++) {
+      sum += nums[i];
+      result += map.getOrDefault(sum - k, 0);
+      map.put(sum, map.getOrDefault(sum, 0) + 1);
+    }
+    return result;
+  }
+
+
+  //最短无序连续子数组
+  //给你一个整数数组nums，你需要找出一个连续子数组 ，如果对这个子数组进行升序排序，那么整个数组都会变为升序排序。
+  //请你找出符合题意的 最短子数组，并输出它的长度。
+  //双指针，时间复杂度O(n)，空间复杂度O(1)
+  public int findUnsortedSubarray(int[] nums) {
+    if (nums == null || nums.length == 0) {
+      return 0;
+    }
+
+    int leftIndex = -1;
+    int rightIndex = -1;
+    int leftMin = Integer.MAX_VALUE;
+    int rightMax = Integer.MIN_VALUE;
+
+    for (int i = 0; i < nums.length; i++) {
+      //从左往右，不断更行遍历过的最大值，如果碰到小于最大值的，那么这里就可能是右边界之一，一直到最右
+      if (rightMax > nums[i]) {
+        rightIndex = i;
+      } else {
+        rightMax = nums[i];
+      }
+
+      //从后往前，只有碰到当前数大于后面最大数的时候，左指针才会更新成当前的数
+      //斗则是更新目前遍历过的数为止，最小的数
+      if (leftMin < nums[nums.length - i - 1]) {
+        leftIndex = nums.length - i - 1;
+      } else {
+        leftMin = nums[nums.length - i - 1];
+      }
+    }
+
+    return rightIndex == -1 ? 0 : rightIndex - leftIndex + 1;
+  }
+
+  //合并二叉树
+  //给定两个二叉树，想象当你将它们中的一个覆盖到另一个上时，两个二叉树的一些节点便会重叠。
+  //你需要将他们合并为一个新的二叉树。合并的规则是如果两个节点重叠，那么将他们的值相加作为节点合并后的新值，否则不为 NULL 的节点将直接作为新二叉树的节点。
+  //递归，时间复杂度O(min(m,n))，空间复杂度O(min(m,n)
+  public TreeNode mergeTrees(TreeNode root1, TreeNode root2) {
+    if (root1 == null && root2 == null) {
+      return null;
+    }
+    if (root1 == null) {
+      return root2;
+    }
+
+    if (root2 == null) {
+      return root1;
+    }
+
+    TreeNode left = mergeTrees(root1.left, root2.left);
+    TreeNode right = mergeTrees(root1.right, root2.right);
+    TreeNode newRoot = new TreeNode(root1.value + root2.value);
+    newRoot.left = left;
+    newRoot.right = right;
+    return newRoot;
+
+  }
+
+
+  // 任务调度器
+  //给你一个用字符数组 tasks 表示的 CPU 需要执行的任务列表。其中每个字母表示一种不同种类的任务。
+  // 任务可以以任意顺序执行，并且每个任务都可以在 1 个单位时间内执行完。在任何一个单位时间，CPU 可以完成一个任务，或者处于待命状态。
+  //然而，两个 相同种类 的任务之间必须有长度为整数 n 的冷却时间，因此至少有连续 n 个单位时间内 CPU 在执行不同的任务，或者在待命状态。
+  //你需要计算完成所有任务所需要的 最短时间 。
+  //时间复杂度O(n)，空间复杂度O(n)
+  public int leastInterval(char[] tasks, int n) {
+    if (tasks == null || tasks.length == 0) {
+      return 0;
+    }
+    if (n == 0) {
+      return tasks.length;
+    }
+
+    //[A, B, C, D, F, G, #]
+    //[A, B, C, D, E, F, #]
+    //[A, B, C, D, E, F, #]
+    //[A, B, C, D, E, F, G]
+    //[A, B, C, D, E, F, G]
+    //[A, B, C]
+    //这里maxLength = 5，maxCount = 3， n = 6
+    //思路是：找到出现次数最多的字符，记录出现的次数，maxLength，这里是6
+    //同时记录出现次数最多的字符的个数，maxCount，这里是3
+    //n=6，也就意味着同一个字符中间需要隔6个，所以数组的宽度是6 + 1 = 7
+    //最终结果就是（6 - 1）* （6 + 1）+ 3 = 38
+
+    int maxLength = 0;
+    Map<Character, Integer> map = new HashMap<>();
+    for (int i = 0; i < tasks.length; i++) {
+      int length = map.getOrDefault(i, 0) + 1;
+      map.put(tasks[i], length);
+      maxLength = Math.max(maxLength, length);
+    }
+
+    int maxCount = 0;
+    for (Map.Entry<Character, Integer> entry : map.entrySet()) {
+      if (entry.getValue() == maxLength) {
+        maxCount++;
+      }
+    }
+
+    return Math.max((maxLength - 1) * (n + 1) + maxCount, tasks.length);
+  }
+
+
+  //回文子串
+  //给定一个字符串，你的任务是计算这个字符串中有多少个回文子串。
+  //具有不同开始位置或结束位置的子串，即使是由相同的字符组成，也会被视作不同的子串。
+  //manacher算法，时间复杂度O(n)，空间复杂度O(n)
+  public int countSubstrings(String s) {
+    if (s == null || s.equals("")) {
+      return 0;
+    }
+
+    //为了考虑奇偶情况，字符之间添加无意义字符
+    char[] chars = manacherStringSub(s);
+    int[] radiusArray = new int[chars.length];
+    //中心点
+    int center = -1;
+    //最右边界
+    int rightBound = -1;
+
+    int result = 0;
+    for (int i = 0; i < chars.length; i++) {
+      radiusArray[i] = rightBound > i ? Math.min(rightBound - i, radiusArray[2 * center - i]) : 1;
+      while (i + radiusArray[i] < chars.length && i - radiusArray[i] > -1) {
+        if (chars[i + radiusArray[i]] == chars[i - radiusArray[i]]) {
+          radiusArray[i]++;
+        } else {
+          break;
+        }
+      }
+
+      if (i + radiusArray[i] > rightBound) {
+        center = i;
+        rightBound = i + radiusArray[i];
+      }
+
+      result += (radiusArray[i] / 2);
+    }
+    return result;
+  }
+
+
+  public char[] manacherStringSub(String s) {
+    char[] chars = s.toCharArray();
+    //ab -> #a#b#
+    char[] result = new char[chars.length * 2 + 1];
+    int charsIndex = 0;
+    for (int i = 0; i < result.length; i++) {
+      result[i] = (i % 2) == 0 ? '#' : chars[charsIndex++];
+    }
+    return result;
+  }
+
+
+  // 每日温度
+  //请根据每日气温列表 temperatures，请计算在每一天需要等几天才会有更高的温度。如果气温在这之后都不会升高，请在该位置用0来代替。
+  //时间复杂度O(n)，空间复杂度O(n)
+  public int[] dailyTemperatures(int[] temperatures) {
+    if (temperatures == null || temperatures.length == 0) {
+      return null;
+    }
+
+    //维护一个递减的栈
+    //如果进来的温度比栈顶的元素要打，那么这个温度就是栈顶位置下一个增高的温度，取差就是栈顶位置对应的结果
+    Stack<Integer> stack = new Stack<>();
+    int[] result = new int[temperatures.length];
+
+    for (int i = 0; i < temperatures.length; i++) {
+      while (!stack.isEmpty() && temperatures[i] > temperatures[stack.peek()]) {
+        int index = stack.pop();
+        result[index] = i - index;
+      }
+      stack.push(i);
+    }
+
+    return result;
+  }
+
+
+  //零钱兑换
+  //给你一个整数数组 coins ，表示不同面额的硬币；以及一个整数 amount ，表示总金额。
+  //计算并返回可以凑成总金额所需的 最少的硬币个数 。如果没有任何一种硬币组合能组成总金额，返回 -1 。
+  //你可以认为每种硬币的数量是无限的。
+  public int coinChange(int[] coins, int amount) {
+
+    //动态规划
+    int max = amount + 1;
+    int[] dp = new int[max];
+    Arrays.fill(dp, max);
+    dp[0] = 0;
+
+    for (int i = 1; i < dp.length; i++) {
+      for (int j = 0; j < coins.length; j++) {
+        if (coins[j] <= i) {
+          dp[i] = Math.min(dp[i], dp[i - coins[j]] + 1);
+        }
+      }
+    }
+
+    return dp[amount] > amount ? -1 : dp[amount];
+
+  }
+
+  //分割等和子集
+  //给你一个 只包含正整数 的 非空 数组 nums 。请你判断是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
+  public boolean canPartition(int[] nums) {
+    //0-1背包问题
+    int sum = 0;
+    for (int num : nums) {
+      sum += num;
+    }
+
+    if (sum % 2 != 0) {
+      return false;
+    }
+    sum = sum / 2;
+    int length = nums.length;
+
+    boolean[][] dp = new boolean[length][sum + 1];
+    for (int i = 0; i < length; i++) {
+      dp[i][0] = true;
+    }
+
+    if (nums[0] <= sum) {
+      dp[0][nums[0]] = true;
+    }
+    for (int i = 1; i < length; i++) {
+      for (int j = 1; j <= sum; j++) {
+        if (nums[i] > j) {
+          dp[i][j] = dp[i - 1][j];
+        } else {
+          dp[i][j] = dp[i - 1][j] || dp[i - 1][j - nums[i]];
+        }
+      }
+    }
+
+    return dp[length - 1][sum];
+  }
+
+  //除法求值
+  //给你一个变量对数组 equations 和一个实数值数组 values 作为已知条件，其中 equations[i] = [Ai, Bi] 和 values[i] 共同表示等式 Ai / Bi = values[i] 。每个 Ai 或 Bi 是一个表示单个变量的字符串。
+  //另有一些以数组 queries 表示的问题，其中 queries[j] = [Cj, Dj] 表示第 j 个问题，请你根据已知条件找出 Cj / Dj = ? 的结果作为答案。
+  //返回 所有问题的答案 。如果存在某个无法确定的答案，则用 -1.0 替代这个答案。如果问题中出现了给定的已知条件中没有出现的字符串，也需要用 -1.0 替代这个答案。
+  //注意：输入总是有效的。你可以假设除法运算中不会出现除数为 0 的情况，且不存在任何矛盾的结果。
+  //输入：equations = [["a","b"],["b","c"]], values = [2.0,3.0], queries = [["a","c"],["b","a"],["a","e"],["a","a"],["x","x"]]
+  //输出：[6.00000,0.50000,-1.00000,1.00000,-1.00000]
+  //输入：equations = [["a","b"],["b","c"],["bc","cd"]], values = [1.5,2.5,5.0], queries = [["a","c"],["c","b"],["bc","cd"],["cd","bc"]]
+  //输出：[3.75000,0.40000,5.00000,0.20000]
+  //a/b=1.5  b/c=2.5  bc/cd=5.0 -> a/c=? c/b=?  bc/cd=?  cd/bc=?
+//  public double[] calcEquation(List<List<String>> equations, double[] values, List<List<String>> queries) {
+//
+//  }
+
+  // 打家劫舍 III
+  //在上次打劫完一条街道之后和一圈房屋后，小偷又发现了一个新的可行窃的地区。
+  // 这个地区只有一个入口，我们称之为“根”。 除了“根”之外，每栋房子有且只有一个“父“房子与之相连。
+  // 一番侦察之后，聪明的小偷意识到“这个地方的所有房屋的排列类似于一棵二叉树”。
+  // 如果两个直接相连的房子在同一天晚上被打劫，房屋将自动报警。
+  //计算在不触动警报的情况下，小偷一晚能够盗取的最高金额。
+  Map<TreeNode, Integer> fFunction = new HashMap<>();
+  Map<TreeNode, Integer> gFunction = new HashMap<>();
+
+  public int rob3(TreeNode root) {
+    //每个节点分成两个状态
+    //1。选取该节点，那么就不能选取他的子节点，所以当前节点的最大值F(O) = node.val + G(L) + G(R)
+    //2。不选取该节点，那么可以选取他的子节点，所以当前节点的最大值F(O) = MAX(F(L),G(L)) + MAX(F(R),G(R))
+    //其中G函数，表示不选这个节点时，他的子树的最大值，L和R表示这个节点左右子节点
+    //其中F函数，表示选这个节点时，这个节点子树的最大值
+    //使用后序遍历，左右根，同时用两个map分别记录每一个节点对应的两个函数的值
+    robSub(root);
+    int result = Math.max(fFunction.getOrDefault(root, 0), gFunction.getOrDefault(root, 0));
+    return result;
+  }
+
+  public void robSub(TreeNode root) {
+    if (root == null) {
+      return;
+    }
+
+    robSub(root.left);
+    robSub(root.right);
+    fFunction.put(root,
+        root.value + gFunction.getOrDefault(root.left, 0) + gFunction.getOrDefault(root.right, 0));
+    gFunction.put(root,
+        Math.max(gFunction.getOrDefault(root.left, 0), fFunction.getOrDefault(root.left, 0)) + Math
+            .max(gFunction.getOrDefault(root.right, 0), fFunction.getOrDefault(root.right, 0)));
+  }
+
+
+  //根据身高重建队列
+  //假设有打乱顺序的一群人站成一个队列，数组 people 表示队列中一些人的属性（不一定按顺序）。每个 people[i] = [hi, ki] 表示第 i 个人的身高为 hi ，前面 正好 有 ki 个身高大于或等于 hi 的人。
+  //请你重新构造并返回输入数组 people 所表示的队列。返回的队列应该格式化为数组 queue ，其中 queue[j] = [hj, kj] 是队列中第 j 个人的属性（queue[0] 是排在队列前面的人）。
+//  public int[][] reconstructQueue(int[][] people) {
+//
+//  }
 }
 
 

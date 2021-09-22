@@ -61,10 +61,7 @@ class LeetcodeApplicationTests {
 
   @Test
   void contextLoads() throws Exception {
-
-    String s = "cbbd";
-    int length = kmpAndManacherAndBFPRTAlgorithm.maxLcpsLength(s);
-    System.out.println(length);
+    int[] array = new int[] {1, 3, 7, 5, 2};
 
     //冒泡
 //    arraySortTwo.BubbleSort(array);
@@ -80,6 +77,7 @@ class LeetcodeApplicationTests {
 
     //快速排序
 //    arraySortTwo.QuickSort(array);
+
 
     //堆排序
 //    arraySort.HeapSort(array);
@@ -99,13 +97,24 @@ class LeetcodeApplicationTests {
     //之子打印矩阵
 //    leetCode.printZigMatrix(matrix);
 
-//    Node head1 = new Node(9);
-//    head1.next = new Node(0);
-//    head1.next.next = new Node(1);
-//    head1.next.next.next = new Node(4);
-//    head1.next.next.next.next = new Node(2);
-//    head1.next.next.next.next.next = new Node(3);
-//    head1.next.next.next.next.next.next = new Node(5);
+    //9->0->1->4->2->3->5
+    //9->0->1->4->2->3->5->8
+    Node head1 = new Node(9);
+    head1.next = new Node(0);
+    head1.next.next = new Node(1);
+    head1.next.next.next = new Node(4);
+    head1.next.next.next.next = new Node(2);
+    head1.next.next.next.next.next = new Node(3);
+    head1.next.next.next.next.next.next = new Node(5);
+//    head1.next.next.next.next.next.next.next = new Node(8);
+
+    Node slow = head1;
+    Node fast = head1.next;
+    while (fast != null && fast.next != null) {
+      slow = slow.next;
+      fast = fast.next.next;
+    }
+    System.out.println(slow.next.value);
 //    Node node = leetCode.reverseNodeList(head1);
 //    printLinkedList(node);
 

@@ -110,7 +110,7 @@ public class ArraySortImplTwo {
     if (start >= end) {
       return;
     }
-    swap(arr, start + (int)(Math.random() * (end - start + 1)), end);
+//    swap(arr, start + (int)(Math.random() * (end - start + 1)), end);
     int[] partition = partition(arr, start, end);
     QuickSortSub(arr, start, partition[0] - 1);
     QuickSortSub(arr, partition[1] + 1, end);

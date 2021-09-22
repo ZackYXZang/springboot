@@ -134,9 +134,9 @@ public class ZuoClassSlidingWindowPractice {
     int[] result = new int[array.length - size + 1];
     int index = 0;
 
-    for (int i = 0; i > array.length; i++) {
+    for (int i = 0; i < array.length; i++) {
       //3、 4
-      while (!windowMax.isEmpty() && array[i] <= windowMax.peekLast()) {
+      while (!windowMax.isEmpty() && array[windowMax.peekLast()] <= array[i]) {
         windowMax.pollLast();
       }
 
@@ -149,7 +149,7 @@ public class ZuoClassSlidingWindowPractice {
 
       //如果i的位置比窗口的位置大的时候，此时开始得到当前窗口的最大值
       if (i >= size - 1) {
-        result[index++] = windowMax.peekFirst();
+        result[index++] = array[windowMax.peekFirst()];
       }
     }
     return result;

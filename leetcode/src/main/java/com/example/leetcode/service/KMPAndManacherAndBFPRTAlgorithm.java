@@ -103,14 +103,17 @@ public class KMPAndManacherAndBFPRTAlgorithm {
     int max = Integer.MIN_VALUE;
 
     String maxStr = "";
+    int result = 0;
     for (int i = 0; i != charArr.length; i++) {
       //通过i`得到i位置的回文半径
       //Math.min(pArr[2 * index - i], pR - i)表示：
-      //如果i`位置的回文半径比i到最右边界大，那么i位置的回文半径就是最右边界 - i的位置(pR - i)，并且此时不用继续往下了，也就是不用进while循环里
+      //首先，pArr[2 * index - i]表示，我们将pArr[2 * index - i]看成j位置的回文半径，pArr[j]，这里我们求的是i位置的回文半径，pArr[i]，同时j < i
+      //假设j和i关于index对称，就会有index - i = j - index -> j = 2 * index - i，也就是pArr[2 * index - i]
+      //如果i`位置的回文半径比i到最右边界大，那么i位置的回文半径就是最右边界pR - i的位置(pR - i)，并且此时不用继续往下了，也就是不用进while循环里
       //如果i`位置的回文半径比i到最右边界小，那么i位置的回文半径就是i`的回文半径，并且此时不用继续往下了，也就是不用进while循环里
       //如果i`位置的回文半径和i到最右边界相等，那么进入while循环，继续判断是不是往外扩
 
-      //整体的意思是如果i在最有回文半径里，通过i`取到回文半径，如果不在就是1
+      //整体的意思是如果i在最右回文半径里，通过i`取到回文半径，如果不在就是1
       pArr[i] = pR > i ? Math.min(pArr[2 * index - i], pR - i) : 1;
       while (i + pArr[i] < charArr.length && i - pArr[i] > -1) {
         if (charArr[i + pArr[i]] == charArr[i - pArr[i]])
@@ -127,9 +130,10 @@ public class KMPAndManacherAndBFPRTAlgorithm {
       if (i + pArr[i] > pR) {
         pR = i + pArr[i];
         index = i;
-
       }
 
+      result += (pArr[i] / 2);
+      System.out.println("result = " + result);
       if (max < pArr[i]) {
         System.out.println("i = " + i);
         System.out.println("max = " + max);
