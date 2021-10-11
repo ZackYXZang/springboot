@@ -1,16 +1,25 @@
 package com.example.bootjedis;
 
+import com.alibaba.fastjson.JSONObject;
 import com.example.bootjedis.Service.UserService;
+import com.example.bootjedis.pojo.KtvRoomFeatureEntity;
+import com.example.bootjedis.pojo.LiveCondition;
 import com.example.bootjedis.utils.StringUtil;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.client.RestTemplate;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.Pipeline;
 
 @SpringBootTest
 class BootJedisApplicationTests {
@@ -28,33 +37,18 @@ class BootJedisApplicationTests {
   @Test
   void contextLoads() {
 
-    Set<String> set = new HashSet<>();
-    set.add("zang");
-    set.add("yu");
-    set.add("xiang");
+    testJedis();
+  }
 
-    List<String> list = new ArrayList<>();
-
-    list.add("zang1");
-    list.add("yu");
-    list.add("xiang1");
-
-    long start = System.currentTimeMillis();
-    boolean b = list.stream().anyMatch(x -> set.contains(x));
-    long end = System.currentTimeMillis();
-    System.out.println(end - start);
+  public void testJedis() {
 
 
-    List<String> list1 = new ArrayList<>();
-    list1.add("zang");
-    list1.add("yu");
-    list1.add("xiang");
 
-    long start1 = System.currentTimeMillis();
-    boolean b1 = list.stream().anyMatch(x -> list.stream().anyMatch(x::equals));
-    long end1 = System.currentTimeMillis();
-    System.out.println(end1 - start1);
+  }
 
+  public List<Integer> testList(List<Integer> list) {
+
+    return list.subList(0,3);
   }
 
 }

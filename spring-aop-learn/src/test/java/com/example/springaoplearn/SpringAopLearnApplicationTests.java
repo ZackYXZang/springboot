@@ -8,6 +8,8 @@ import com.example.springaoplearn.proxy.jdk.MyCalculator;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 @SpringBootTest
 class SpringAopLearnApplicationTests {
@@ -15,9 +17,11 @@ class SpringAopLearnApplicationTests {
   @Test
   void contextLoads() {
     //JDK代理，需要类实现接口
-    testJdkProxy();
+//    testJdkProxy();
     //通过cglib动态代理获取代理对象
-    testCglibProxy();
+//    testCglibProxy();
+    //通过注解启动spring
+    annotationTest();
   }
 
   public void testJdkProxy () {
@@ -50,5 +54,13 @@ class SpringAopLearnApplicationTests {
     //通过代理对象调用目标方法
     myCalculator1.add(1, 2);
     System.out.println(myCalculator1.getClass());
+  }
+
+  public void annotationTest() {
+    //此时已经有了beanFactory，
+    AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext();
+    ac.register(SpringAopLearnApplication.class);
+    ac.refresh();
+
   }
 }
