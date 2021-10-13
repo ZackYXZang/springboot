@@ -42,8 +42,12 @@ class BootJedisApplicationTests {
 
   public void testJedis() {
 
-
-
+    List<Integer> list = new ArrayList<>();
+    list.add(1);
+    list.add(2);
+    list.add(3);
+    String string = JSONObject.toJSONString(list);
+    System.out.println(string);
   }
 
   public List<Integer> testList(List<Integer> list) {

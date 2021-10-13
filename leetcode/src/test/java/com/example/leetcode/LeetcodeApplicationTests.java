@@ -29,396 +29,52 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class LeetcodeApplicationTests {
 
-  @Autowired
-  private ArrayServiceImpl arrayService;
-
-  @Autowired
-  private ArraySortImplTwo arraySortTwo;
-
-  @Autowired
-  private ArraySortImpl arraySort;
-
-  @Autowired
-  private ZuoClassThreePractice leetCode;
-
-  @Autowired
-  private TreeServiceImpl treeService;
-
-  @Autowired
-  private ZuoClassGraphPractice zuoClassGraphPractice;
-
-  @Autowired
-  private ZuoClassDPPractice zuoClassDPPractice;
-
-  @Autowired
-  private ZuoClassSlidingWindowPractice zuoClassSlidingWindowPractice;
-
-  @Autowired
-  private LeetCodeHot100 leetCodeHot;
-
-  @Autowired
-  private KMPAndManacherAndBFPRTAlgorithm kmpAndManacherAndBFPRTAlgorithm;
-
   @Test
   void contextLoads() throws Exception {
-    int[] array = new int[] {1, 3, 7, 5, 2};
-
-    //冒泡
-//    arraySortTwo.BubbleSort(array);
-
-    //选择排序
-//    arraySortTwo.SelectSort(array);
-
-    //插入排序
-//    arraySortTwo.InsertSort(array);
-
-    //归并排序
-//    arraySortTwo.MergeSort(array);
-
-    //快速排序
-//    arraySortTwo.QuickSort(array);
-
-
-    //堆排序
-//    arraySort.HeapSort(array);
-//    System.out.println(array[0]);
-
-    /**
-     * 1,   2,  3,  4
-     * 5,   6,  7,  8
-     * 9,  10, 11, 12
-     * 13, 14, 15, 16
-     */
-
-//    int[][] matrix = {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}};
-//    leetCode.rotateMatrix(matrix);
-//    leetCode.printMatrix(matrix);
-
-    //之子打印矩阵
-//    leetCode.printZigMatrix(matrix);
-
-    //9->0->1->4->2->3->5
-    //9->0->1->4->2->3->5->8
-    Node head1 = new Node(9);
-    head1.next = new Node(0);
-    head1.next.next = new Node(1);
-    head1.next.next.next = new Node(4);
-    head1.next.next.next.next = new Node(2);
-    head1.next.next.next.next.next = new Node(3);
-    head1.next.next.next.next.next.next = new Node(5);
-//    head1.next.next.next.next.next.next.next = new Node(8);
-
-    Node slow = head1;
-    Node fast = head1.next;
-    while (fast != null && fast.next != null) {
-      slow = slow.next;
-      fast = fast.next.next;
-    }
-    System.out.println(slow.next.value);
-//    Node node = leetCode.reverseNodeList(head1);
-//    printLinkedList(node);
-
-//    boolean palindrome = leetCode.isPalindrome(head1);
-
-//    Node node = leetCode.listPartition(head1, 3);
-//    printLinkedList(node);
-
-//    DoubleNode head2 = new DoubleNode(1);
-//    head2.next = new DoubleNode(2);
-//    head2.next.last = head2;
-//    head2.next.next = new DoubleNode(3);
-//    head2.next.next.last = head2.next;
-//    head2.next.next.next = new DoubleNode(4);
-//    head2.next.next.next.last = head2.next.next;
-//
-//    DoubleNode doubleNode = leetCode.reverseDoubleNodeList(head2);
-//    printDoubleLinkedList(doubleNode);
-
-//    RandomNode head = null;
-//
-//    head = new RandomNode(1);
-//    head.next = new RandomNode(2);
-//    head.next.next = new RandomNode(3);
-//    head.next.next.next = new RandomNode(4);
-//    head.next.next.next.next = new RandomNode(5);
-//    head.next.next.next.next.next = new RandomNode(6);
-//
-//    head.rand = head.next.next.next.next.next; // 1 -> 6
-//    head.next.rand = head.next.next.next.next.next; // 2 -> 6
-//    head.next.next.rand = head.next.next.next.next; // 3 -> 5
-//    head.next.next.next.rand = head.next.next; // 4 -> 3
-//    head.next.next.next.next.rand = null; // 5 -> null
-//    head.next.next.next.next.next.rand = head.next.next.next; // 6 -> 4
-//
-//    printRandLinkedList(head);
-//    RandomNode randomNode = leetCode.copyRandomNodeList(head);
-//    printRandLinkedList(randomNode);
-
-    // 1->2->3->4->5->6->7->null
-//    Node head1 = new Node(1);
-//    head1.next = new Node(2);
-//    head1.next.next = new Node(3);
-//    head1.next.next.next = new Node(4);
-//    head1.next.next.next.next = new Node(5);
-//    head1.next.next.next.next.next = new Node(6);
-//    head1.next.next.next.next.next.next = new Node(7);
-//
-//    // 0->9->8->6->7->null
-//    Node head2 = new Node(0);
-//    head2.next = new Node(9);
-//    head2.next.next = new Node(8);
-//    head2.next.next.next = head1.next.next.next.next.next; // 8->6
-//    //2 无环，在6相交
-//    System.out.println(leetCode.getIntersectNode(head1, head2).value);
-//
-//    // 1->2->3->4->5->6->7->4...
-//    head1 = new Node(1);
-//    head1.next = new Node(2);
-//    head1.next.next = new Node(3);
-//    head1.next.next.next = new Node(4);
-//    head1.next.next.next.next = new Node(5);
-//    head1.next.next.next.next.next = new Node(6);
-//    head1.next.next.next.next.next.next = new Node(7);
-//    //head1有环，在4
-//    head1.next.next.next.next.next.next = head1.next.next.next; // 7->4
-//
-//    // 0->9->8->2...
-//    head2 = new Node(0);
-//    head2.next = new Node(9);
-//    head2.next.next = new Node(8);
-//    head2.next.next.next = head1.next; // 8->2
-//    //3。2 head1和head2环外相交，交点在2
-//    System.out.println(leetCode.getIntersectNode(head1, head2).value);
-//
-//    // 0->9->8->6->7->4->5->6..
-//    head2 = new Node(0);
-//    head2.next = new Node(9);
-//    head2.next.next = new Node(8);
-//    head2.next.next.next = head1.next.next.next.next.next; // 8->6
-//    //3。3 head1和head2环上相交， 交点是6或者4
-//    System.out.println(leetCode.getIntersectNode(head1, head2).value);
-
-//    TreeNode head = new TreeNode(1);
-//    head.left = new TreeNode(2);
-//    head.right = new TreeNode(3);
-//    head.left.left = new TreeNode(4);
-//    head.left.right = new TreeNode(5);
-//    head.right.left = new TreeNode(6);
-//    head.right.right = new TreeNode(7);
-//
-//    int nodeNum = treeService.getNodeNum(head);
-//    System.out.println(nodeNum);
-
-//    PrintBinaryTree.printTree(head);
-//    treeService.postOrderUnRecur(head);
-
-//    ParentNode head = new ParentNode(1);
-//    head.left = new ParentNode(2);
-//    head.left.parent = head;
-//    head.right = new ParentNode(3);
-//    head.right.parent = head;
-//
-//    head.left.left = new ParentNode(4);
-//    head.left.left.parent = head.left;
-//    head.left.right = new ParentNode(5);
-//    head.left.right.parent = head.left;
-//
-//    head.right.left = new ParentNode(6);
-//    head.right.left.parent = head.right;
-//    head.right.right = new ParentNode(7);
-//    head.right.right.parent = head.right;
-//    ParentNode successorNode = getSuccessorNode(head.right.left);
-//    System.out.println(successorNode.value);
-//
-//    ParentNode successorNode = treeService.getSuccessorNode(head.right.right);
-//    System.out.println(successorNode == null ? "null" : successorNode.value);
-
-
-    //图
-//    Graph graph = generateGraph();
-//    zuoClassGraphPractice.dfs(graph.nodes.get(1));
-
-//    int[] num = {2,7,9,3,1};
-//    int rob = rob(num);
-//    System.out.println(rob);
-//    String a  = "abcd";
-//    zuoClassDPPractice.printAllPermutations1(a);
-//    zuoClassDPPractice.printAllSubsquence("zang");
-//    int[][] matrix = { { 1, 3, 5, 9 }, { 8, 1, 3, 5 }, { 5, 0, 6, 1 }, { 8, 8, 4, 0 } };
-////    int minPath = zuoClassDPPractice.minPath(matrix);
-//    int[] arr = {1, 2, 3};
-//    int aim = 5;
-//    boolean money = zuoClassDPPractice.money(arr, aim);
-//    System.out.println(money);
-//    int[] array = {3, 1, 2, 4, 1, 2};
-//    int water1 = zuoClassSlidingWindowPractice.getWater1(array);
-//    System.out.println(water1);
-//    int water2 = zuoClassSlidingWindowPractice.getWater2(array);
-//    System.out.println(water2);
-//    int water3 = zuoClassSlidingWindowPractice.getWater3(array);
-//    System.out.println(water3);
 
   }
 
-  class Solution {
-    Map<Character, Integer> ori = new HashMap<Character, Integer>();
-    Map<Character, Integer> cnt = new HashMap<Character, Integer>();
+  /**
+   * 在一个二维数组中（每个一维数组的长度相同），每一行都按照从左到右递增的顺序排序，
+   * 每一列都按照从上到下递增的顺序排序。请完成一个函数，输入这样的一个二维数组和一个整数，判断数组中是否含有该整数。
+   */
+  public boolean Find(int target, int [][] array) {
+    if (array == null || array.length == 0 || array[0] == null || array[0].length == 0) {
+      return false;
+    }
 
-    public String minWindow(String s, String t) {
-      int tLen = t.length();
-      for (int i = 0; i < tLen; i++) {
-        char c = t.charAt(i);
-        ori.put(c, ori.getOrDefault(c, 0) + 1);
+    //选取左下或者右上角
+    int rowStart = 0;
+    int colStart = array[0].length - 1;
+
+    while (rowStart < array.length && colStart >= 0) {
+      if (array[rowStart][colStart] == target) {
+        return true;
       }
-      int l = 0, r = -1;
-      int len = Integer.MAX_VALUE, ansL = -1, ansR = -1;
-      int sLen = s.length();
-      while (r < sLen) {
-        ++r;
-        if (r < sLen && ori.containsKey(s.charAt(r))) {
-          cnt.put(s.charAt(r), cnt.getOrDefault(s.charAt(r), 0) + 1);
-        }
-        while (check() && l <= r) {
-          if (r - l + 1 < len) {
-            len = r - l + 1;
-            ansL = l;
-            ansR = l + len;
-          }
-          if (ori.containsKey(s.charAt(l))) {
-            cnt.put(s.charAt(l), cnt.getOrDefault(s.charAt(l), 0) - 1);
-          }
-          ++l;
-        }
+      if (array[rowStart][colStart] < target) {
+        rowStart++;
+        continue;
       }
-      return ansL == -1 ? "" : s.substring(ansL, ansR);
-    }
-
-    public boolean check() {
-      Iterator iter = ori.entrySet().iterator();
-      while (iter.hasNext()) {
-        Map.Entry entry = (Map.Entry) iter.next();
-        Character key = (Character) entry.getKey();
-        Integer val = (Integer) entry.getValue();
-        if (cnt.getOrDefault(key, 0) < val) {
-          return false;
-        }
+      if (array[rowStart][colStart] == target) {
+        colStart--;
+        continue;
       }
-      return true;
     }
+    return false;
   }
 
+  /**
+   * 请实现一个函数，将一个字符串中的每个空格替换成“%20”。例如，当字符串为We Are Happy.则经过替换之后的字符串为We%20Are%20Happy。
+   */
 
-  public int rob(int[] nums) {
-    if (nums.length == 0) {
-      return 0;
+  public String replaceSpace(StringBuffer str) {
+    if (str == null || str.length() == 0) {
+      return "";
     }
 
-    int length = nums.length;
-    int[] dp = new int[length + 1];
-    dp[0] = 0;
-    dp[1] = nums[0];
-    for (int k = 2; k <= length; k++) {
-      dp[k] = Math.max(dp[k-1], nums[k-1] + dp[k-2]);
-    }
-    return dp[length];
-  }
-
-  public Graph generateGraph() {
-    int[][] matrix = {{0, 1, 2}, {0, 1, 3}, {0, 1, 4}, {0, 2, 3}, {0, 2, 7}, {0, 7, 3}, {0, 3, 5}, {0, 4, 6}};
-    Graph graph = GraphGenerator.createGraph(matrix);
-    return graph;
-  }
-
-  public ParentNode getSuccessorNode(ParentNode node) {
-    if (node == null) {
-      return null;
-    }
-
-    //如果右子树不为空
-    if (node.right != null) {
-      return getLeftMost(node.right);
-    }
-
-    //如果右子树为空
-    ParentNode parent = node.parent;
-    ParentNode curr = node;
-    while (parent != null && parent.left != curr) {
-      curr = parent;
-      parent = curr.parent;
-    }
-
-    return parent;
-
-  }
-
-  public ParentNode getLeftMost(ParentNode node) {
-    if (node == null) {
-      return null;
-    }
-
-    ParentNode curr = node;
-    while (curr.left != null) {
-      curr = curr.left;
-    }
-    return curr;
-  }
-
-  public static void printRandLinkedList(RandomNode head) {
-    RandomNode cur = head;
-    System.out.print("order: ");
-    while (cur != null) {
-      System.out.print(cur.value + " ");
-      cur = cur.next;
-    }
-    System.out.println();
-    cur = head;
-    System.out.print("rand:  ");
-    while (cur != null) {
-      System.out.print(cur.rand == null ? "- " : cur.rand.value + " ");
-      cur = cur.next;
-    }
-    System.out.println();
-  }
-
-
-  public static void printLinkedList(Node head) {
-    System.out.print("Linked List: ");
-    while (head != null) {
-      System.out.print(head.value + " ");
-      head = head.next;
-    }
-  }
-
-  public static void printDoubleLinkedList(DoubleNode head) {
-    System.out.print("Double Linked List: ");
-    DoubleNode end = null;
-    while (head != null) {
-      System.out.print(head.value + " ");
-      end = head;
-      head = head.next;
-    }
-    System.out.print("| ");
-    while (end != null) {
-      System.out.print(end.value + " ");
-      end = end.last;
-    }
-    System.out.println();
-  }
-
-
-  public String printArray(int[] array) {
-    String result = "";
-    for (int i = 0; i < array.length; i++) {
-      result += array[i];
-    }
+    String string = str.toString();
+    String result = string.replaceAll("", "20%");
     return result;
+
   }
-
-  public void swap(int[] array, int first, int second) {
-    int temp = array[first];
-    array[first] = array[second];
-    array[second] = temp;
-  }
-
-
 }
