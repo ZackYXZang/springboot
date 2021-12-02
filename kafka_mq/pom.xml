@@ -50,6 +50,11 @@
       <version>3.9</version>
     </dependency>
     <!--kafka学习 -->
+    <!-- springboot 集成kafka-->
+    <dependency>
+      <groupId>org.springframework.kafka</groupId>
+      <artifactId>spring-kafka</artifactId>
+    </dependency>
 
 
     <dependency>

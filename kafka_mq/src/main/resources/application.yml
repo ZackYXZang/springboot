@@ -1,1 +1,26 @@
+spring:
+  kafka:
+    bootstrap-servers: CentOS:9092
 
+    producer:
+      retries: 5
+      acks: all
+      batch-size: 16384
+      buffer-memory: 33554432
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      transaction-id-prefix: transaction-id-    #这个是配置幂等性的配置，如果加了这个属性，代码中对kafka的调用必须要用上事务
+      properties:
+        enable:
+          idempotence: true
+
+    consumer:
+      group-id: group1
+      auto-offset-reset: earliest
+      enable-auto-commit: true
+      auto-commit-interval: 100
+      key-deserializer: org.apache.kafka.common.serialization.StringSerializer
+      value-deserializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        isolation:
+          level: read_committed
