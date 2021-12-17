@@ -35,7 +35,17 @@ public class StockServiceImpl {
       }
     }
 
-    return maxProfit;
+//    return maxProfit;
+    //贪心算法，找到低的加个入手，然后找到最高的加个卖出
+    int minPrice = Integer.MAX_VALUE;
+    int result = 0;
+    for (int i = 0; i < prices.length; i++) {
+      if (minPrice > prices[i]) {
+        minPrice = prices[i];
+      }
+      result = Math.max(prices[i] - minPrice, result);
+    }
+    return result;
   }
 
 

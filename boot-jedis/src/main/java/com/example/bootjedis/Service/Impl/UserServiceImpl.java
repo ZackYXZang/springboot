@@ -61,27 +61,27 @@ public class UserServiceImpl {
 
   public User selectById(String id) {
     User user = new User();
-    try (Jedis jedis = jedisPool.getResource()) {
-      if (jedis.exists(id)) {
-        logger.info("从redis中取值");
-        Map<String, String> map = jedis.hgetAll(id);
-        user.setId(map.get("id"));
-        user.setName(map.get("name"));
-        user.setAge(Integer.parseInt(map.get("age")));
-      } else {
-        user.setAge(18);
-        user.setName("jedis学习");
-        user.setId(id);
-        logger.info("--->查询数据库，并把值放入redis");
-        Map<String, String> map = new HashMap<>();
-        map.put("id", user.getId());
-        map.put("name", user.getName());
-        map.put("age", user.getAge() + "");
-        jedis.hmset(id, map);
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+//    try (Jedis jedis = jedisPool.getResource()) {
+//      if (jedis.exists(id)) {
+//        logger.info("从redis中取值");
+//        Map<String, String> map = jedis.hgetAll(id);
+//        user.setId(map.get("id"));
+//        user.setName(map.get("name"));
+//        user.setAge(Integer.parseInt(map.get("age")));
+//      } else {
+//        user.setAge(18);
+//        user.setName("jedis学习");
+//        user.setId(id);
+//        logger.info("--->查询数据库，并把值放入redis");
+//        Map<String, String> map = new HashMap<>();
+//        map.put("id", user.getId());
+//        map.put("name", user.getName());
+//        map.put("age", user.getAge() + "");
+//        jedis.hmset(id, map);
+//      }
+//    } catch (Exception e) {
+//      e.printStackTrace();
+//    }
 
     return user;
   }

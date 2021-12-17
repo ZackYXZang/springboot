@@ -1,5 +1,6 @@
 package com.example.leetcode.service;
 
+import com.example.leetcode.utils.Node;
 import com.example.leetcode.utils.TreeNode;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1451,7 +1452,7 @@ public class LeetCodeHot100 {
       }
     }
 
-    //此时最后一位的数是等于区间的，此时more来到了大于的边界，也就是在more位置之后的数都是大于区间的，包括more位置上的数，所以交换more位置上的数和最后一位，交换之后，more就是等于区间的右边界
+    //此时最后一位的数是等于区间的，此时more来到了大于的边界，也就是在more位置之后(包括more)的数都是大于区间的，包括more位置上的数，所以交换more位置上的数和最后一位，交换之后，more就是等于区间的右边界
     //0,1,1,1,2,9,8,2
     swap(nums, more, end);
     //此时less是小于区域的边界，所以等于区域的左边界是less + 1
@@ -2283,7 +2284,7 @@ public class LeetCodeHot100 {
     ListNode right = sortListSub(mid.next);
     mid.next = null;
     //排序左边的链表
-    ListNode left = sortList(head);
+    ListNode left = sortListSub(head);
     return merge(left, right);
   }
 
@@ -2856,26 +2857,79 @@ public class LeetCodeHot100 {
   //给你一个单链表的头节点 head ，请你判断该链表是否为回文链表。如果是，返回 true ；否则，返回 false 。
   //借助一个栈，借助先进后出的特性，时间复杂度O(n)，空间复杂度O(n)
   public boolean isPalindrome(ListNode head) {
-    if (head == null) {
+//    if (head == null) {
+//      return false;
+//    }
+//
+//    Stack<ListNode> stack = new Stack<>();
+//    ListNode curr = head;
+//
+//    while (curr != null) {
+//      stack.push(curr);
+//      curr = curr.next;
+//    }
+//
+//    while (!stack.isEmpty()) {
+//      curr = stack.pop();
+//      if (curr.val != head.val) {
+//        return false;
+//      }
+//      head = head.next;
+//    }
+//    return true;
+    //解法2，时间复杂度为O(N), 空间复杂度为O(1)
+    if (head == null || head.next == null){
       return false;
     }
 
-    Stack<ListNode> stack = new Stack<>();
-    ListNode curr = head;
-
-    while (curr != null) {
-      stack.push(curr);
-      curr = curr.next;
+    //慢指针
+    ListNode node1 = head;
+    //快指针
+    ListNode node2 = head;
+    while (node2.next != null && node2.next.next != null) {
+      node1 = node1.next;
+      node2 = node2.next.next;
     }
 
-    while (!stack.isEmpty()) {
-      curr = stack.pop();
-      if (curr.val != head.val) {
-        return false;
+    //此时快指针改为指向中点，也就是node2的位置是中点的位置
+    //奇数的时候，来到中间，偶数的时候，来到中点的前一个位置
+    node2 = node1.next;
+
+    //让链表中点前面的节点指向null，然后开始翻转后半部分链表
+    node1.next = null;//node1 = pre
+    ListNode node3 = null;//node3 = next
+
+    while (node2 != null) {
+      node3 = node2.next;
+      node2.next = node1;
+      node1 = node2;
+      node2 = node3;
+    }
+
+    node3 = node1; //node3就是最后一个节点
+    node2  = head;
+
+    //check palindrome
+    boolean result = true;
+    while (node2 != null && node1 != null) {
+      if (node1.val != node2.val) {
+        result = false;
+        break;
       }
-      head = head.next;
+      node1 = node1.next;
+      node2 = node2.next;
     }
-    return true;
+
+    //恢复链表后半部分
+    node1 = null;
+    while (node3 != null) {
+      node2 = node3.next;
+      node3.next = node1;
+      node1 = node3;
+      node3 = node2;
+    }
+
+    return result;
   }
 
   //二叉树的最近公共祖先
@@ -3105,24 +3159,51 @@ public class LeetCodeHot100 {
   //子序列是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，[3,6,2,7] 是数组 [0,3,1,6,2,2,7] 的子序列。
   public int lengthOfLIS(int[] nums) {
 
-    int left = 0;
-    int right = 1;
-
-    //{10,9,2,5,3,7,101,18}
-    int maxLength = 0;
-    while (left <= right && right < nums.length) {
-
-      if (nums[right] > nums[left] && nums[right] != nums[right - 1]) {
-        right++;
-      } else {
-        maxLength = Math.max(maxLength, right - left + 1);
-        left = right;
-        right = left + 1;
-      }
-
+    if (nums == null || nums.length == 0) {
+      return 0;
     }
+    //动态规划，时间复杂度O(N*N)
+//    int[] dp = new int[nums.length];
+//    dp[0] = 1;
+//
+//    int max = 1;
+//    //动态方程方程：dp[i] = Math.max(dp[0] ~ dp[i - 1]) + 1，(如果dp[i]大于dp[0] ~ dp[i - 1]中d元素)，否则就是1
+//    for (int i  = 1; i < nums.length; i++) {
+//      for (int j = 1; j < i; j++) {
+//        if (nums[j] > nums[i]) {
+//          dp[i] = Math.max(dp[i], dp[j] + 1);
+//        }
+//        max = Math.max(max, dp[i]);
+//      }
+//
+//    }
+//    return max;
 
-    return maxLength;
+    //动态规划 + 二分查找，时间复杂度O(n)
+    //辅助数组，表示到当前位置位置，增幅最小的，
+    //   比如：[10,9,2,5,3,7,21,18]
+    //辅助数组：[2,3,7,18,0,0,0,0] -> result = 4
+
+    int[] tails = new int[nums.length];
+    int result = 0;
+    for (int num : nums) {
+      int i = 0;
+      int j = result;
+      while (i < j) {
+        //找到
+        int mid = (i + j) /2;
+        if (tails[mid] < num) {
+          i = mid + 1;
+        } else {
+          j = mid;
+        }
+      }
+      tails[i] = num;
+      if (result == j) {
+        result++;
+      }
+    }
+    return result;
   }
 
   //删除无效的括号
@@ -3249,17 +3330,89 @@ public class LeetCodeHot100 {
   //找到字符串中所有字母异位词
   //给定两个字符串 s 和 p，找到 s 中所有 p 的 异位词 的子串，返回这些子串的起始索引。不考虑答案输出的顺序。
   //异位词 指字母相同，但排列不同的字符串。
-//  public List<Integer> findAnagrams(String s, String p) {
-//    int right = s.length();
-//    int left = s.length();
-//  }
+  //时间复杂度O(n)，空间复杂度O(1)
+  public List<Integer> findAnagrams(String s, String p) {
+    int sLength = s.length();
+    int pLength = p.length();
+
+    if (sLength < pLength) {
+      return new ArrayList<>();
+    }
+
+    List<Integer> result = new ArrayList<>();
+    int[] count = new int[26];
+
+    //得到s和p中前几位字母差多少位
+    for (int i = 0; i < pLength; i++) {
+      count[s.charAt(i) - 'a']++;
+      count[p.charAt(i) - 'a']--;
+    }
+    int differ = 0;
+    for (int i = 0; i < 26; i++) {
+      if (count[i] != 0) {
+        differ++;
+      }
+    }
+
+    //如果没有差，说明s的前几位字符和p是异位词
+    if (differ == 0) {
+      result.add(0);
+    }
+
+    for (int i = 0; i < sLength - pLength; i++) {
+      //左边界准备往右移动，也就是要将i位置上的字符去掉
+      if (count[s.charAt(i) - 'a'] == 1) {
+        differ--;
+      } else if (count[s.charAt(i) - 'a'] == 0) {
+        differ++;
+      }
+      count[s.charAt(i) - 'a']--;
+
+      //右边界准备往右移动，
+      if (count[s.charAt(i + pLength) - 'a'] == -1) {
+        differ--;
+      }  else if (count[s.charAt(i + pLength) - 'a'] == 0) {
+        differ++;
+      }
+      count[s.charAt(i + pLength) - 'a']++;
+
+      if (differ == 0) {
+        result.add(i + 1);
+      }
+
+    }
+
+    return result;
+  }
 
   //路径总和 III
   //给定一个二叉树的根节点 root ，和一个整数 targetSum ，求该二叉树里节点值之和等于 targetSum 的 路径 的数目。
   //路径不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。
-//  public int pathSum(TreeNode root, int targetSum) {
-//
-//  }
+  //时间复杂度O(n)，空间复杂度O(n)
+  //map中放的是从跟节点房目前节点位置的路径和
+  public int pathSum(TreeNode root, int targetSum) {
+    if (root == null) {
+      return 0;
+    }
+    Map<Long, Integer> map = new HashMap<>();
+    map.put(0L,1);
+    return dfs(root, map, 0l, targetSum);
+  }
+
+  public int dfs(TreeNode root, Map<Long, Integer> map, Long curr, int targetSum) {
+    if (root == null) {
+      return 0;
+    }
+
+    int ret = 0;
+    curr += root.value;
+    ret = map.getOrDefault(curr - targetSum, 0);
+    map.put(curr, map.getOrDefault(curr, 0) + 1);
+    ret += dfs(root.left, map, curr, targetSum);
+    ret += dfs(root.right, map, curr, targetSum);
+    map.put(curr, map.getOrDefault(curr, 0) - 1);
+    return ret;
+  }
 
 
   //把二叉搜索树转换为累加树
@@ -3359,7 +3512,7 @@ public class LeetCodeHot100 {
       }
 
       //从后往前，只有碰到当前数大于后面最大数的时候，左指针才会更新成当前的数
-      //斗则是更新目前遍历过的数为止，最小的数
+      //否则是更新目前遍历过的数为止，最小的数
       if (leftMin < nums[nums.length - i - 1]) {
         leftIndex = nums.length - i - 1;
       } else {
@@ -3543,6 +3696,7 @@ public class LeetCodeHot100 {
 
   //分割等和子集
   //给你一个 只包含正整数 的 非空 数组 nums 。请你判断是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
+  //时间复杂度O(n)，空间复杂度O(n)
   public boolean canPartition(int[] nums) {
     //0-1背包问题
     int sum = 0;
@@ -3603,7 +3757,7 @@ public class LeetCodeHot100 {
   public int rob3(TreeNode root) {
     //每个节点分成两个状态
     //1。选取该节点，那么就不能选取他的子节点，所以当前节点的最大值F(O) = node.val + G(L) + G(R)
-    //2。不选取该节点，那么可以选取他的子节点，所以当前节点的最大值F(O) = MAX(F(L),G(L)) + MAX(F(R),G(R))
+    //2。不选取该节点，那么可以选取他的子节点，所以当前节点的最大值G(O) = MAX(F(L),G(L)) + MAX(F(R),G(R))
     //其中G函数，表示不选这个节点时，他的子树的最大值，L和R表示这个节点左右子节点
     //其中F函数，表示选这个节点时，这个节点子树的最大值
     //使用后序遍历，左右根，同时用两个map分别记录每一个节点对应的两个函数的值
@@ -3626,13 +3780,157 @@ public class LeetCodeHot100 {
             .max(gFunction.getOrDefault(root.right, 0), fFunction.getOrDefault(root.right, 0)));
   }
 
+  //字符串解码
+  //给定一个经过编码的字符串，返回它解码后的字符串。
+  //编码规则为: k[encoded_string]，表示其中方括号内部的 encoded_string 正好重复 k 次。注意 k 保证为正整数。
+  //你可以认为输入字符串总是有效的；输入字符串中没有额外的空格，且输入的方括号总是符合格式要求的。
+  //此外，你可以认为原始数据不包含数字，所有的数字只表示重复的次数 k ，例如不会出现像 3a 或 2[4] 的输入。
+  public String decodeString(String s) {
+    //方法一：借助栈，时间复杂度O(n)，空间复杂度O(n)
+    StringBuffer sb = new StringBuffer();
+
+    //存放非数字之外的字符
+    Stack<String> stack1 = new Stack<>();
+    //存放数字
+    Stack<Integer> stack2 = new Stack<>();
+    int multi = 0;
+
+    for (int i = 0; i < s.length(); i++) {
+      if (s.charAt(i) == '[') {
+        //将现有的字符串放入栈中，并同步放入对应的数字
+        stack1.add(sb.toString());
+        stack2.add(multi);
+        multi = 0;
+        sb = new StringBuffer();
+      } else if (s.charAt(i) == ']') {
+        //将上次存入的数拿出来，乘以数字
+        StringBuffer temp = new StringBuffer();
+        int currMulti = stack2.pop();
+        for (int j = 0; j < currMulti; j++) {
+          temp.append(sb);
+        }
+        sb = new StringBuffer(stack1.pop() + temp);
+
+      } else if (s.charAt(i) >= '0' && s.charAt(i) <= '9') {
+        //获取一个完整的数
+        multi = multi * 10 + Integer.parseInt(s.charAt(i) + "");
+      } else {
+        //也就是字符
+        sb.append(s.charAt(i));
+      }
+    }
+
+    return sb.toString();
+
+  }
+
+  //递归，时间复杂度O(n)，空间复杂度O(n)
+  public String decodeString1(String s) {
+    return dfs(s, 0)[0];
+  }
+  private String[] dfs(String s, int i) {
+    StringBuilder res = new StringBuilder();
+    int multi = 0;
+    while(i < s.length()) {
+      if(s.charAt(i) >= '0' && s.charAt(i) <= '9')
+        multi = multi * 10 + Integer.parseInt(String.valueOf(s.charAt(i)));
+      else if(s.charAt(i) == '[') {
+        String[] tmp = dfs(s, i + 1);
+        i = Integer.parseInt(tmp[0]);
+        while(multi > 0) {
+          res.append(tmp[1]);
+          multi--;
+        }
+      }
+      else if(s.charAt(i) == ']')
+        return new String[] { String.valueOf(i), res.toString() };
+      else
+        res.append(String.valueOf(s.charAt(i)));
+      i++;
+    }
+    return new String[] { res.toString() };
+  }
+
 
   //根据身高重建队列
   //假设有打乱顺序的一群人站成一个队列，数组 people 表示队列中一些人的属性（不一定按顺序）。每个 people[i] = [hi, ki] 表示第 i 个人的身高为 hi ，前面 正好 有 ki 个身高大于或等于 hi 的人。
   //请你重新构造并返回输入数组 people 所表示的队列。返回的队列应该格式化为数组 queue ，其中 queue[j] = [hj, kj] 是队列中第 j 个人的属性（queue[0] 是排在队列前面的人）。
-//  public int[][] reconstructQueue(int[][] people) {
-//
-//  }
+  public int[][] reconstructQueue(int[][] people) {
+    //输入：people = [[7,0],[4,4],[7,1],[5,0],[6,1],[5,2]]
+    //输出：[[5,0],[7,0],[5,2],[6,1],[4,4],[7,1]]
+    if (people == null || people.length == 0) {
+      return null;
+    }
+
+    Arrays.sort(people, new Comparator<int[]>() {
+      @Override
+      public int compare(int[] o1, int[] o2) {
+        if (o1[0] == o2[0]) {
+          //如果高度相等，按照位置序号递增排序
+          return o1[1] - o2[1];
+        }else {
+          //如果高度不相等，按照按照身高倒叙排列
+          return o2[0] - o1[0];
+        }
+      }
+    });
+    //[[7,0],[7,1],[6,1],[5,0],[5,2],[4,4]]
+
+    List<int[]> list = new LinkedList<>();
+    for (int[] i : people) {
+      list.add(i[1], i);
+    }
+    return list.toArray(new int[list.size()][2]);
+  }
+
+  //K 个一组翻转链表
+  //给你一个链表，每 k 个节点一组进行翻转，请你返回翻转后的链表。
+  //k 是一个正整数，它的值小于或等于链表的长度。
+  //如果节点总数不是 k 的整数倍，那么请将最后剩余的节点保持原有顺序。
+  //时间复杂度O(n)，空间复杂度O(1)
+  public ListNode reverseKGroup(ListNode head, int k) {
+    ListNode dummy = new ListNode(0);
+    dummy.next = head;
+    ListNode pre = dummy;
+
+    while (head != null) {
+      ListNode tail = pre;
+      //此时找到了k个节点之后
+      for (int i = 0; i < k; i++) {
+        tail = tail.next;
+        if (tail == null) {
+          return dummy.next;
+        }
+      }
+
+      ListNode tailNext = tail.next;
+      ListNode[] reverse = myReverse(head, tail);
+      head = reverse[0];
+      tail = reverse[1];
+      pre.next = head;
+      tail.next = tailNext;
+      pre = tail;
+      head = tail.next;
+    }
+
+    return dummy.next;
+
+  }
+
+  public ListNode[] myReverse(ListNode head, ListNode tail) {
+    ListNode prev = tail.next;
+    ListNode p = head;
+    while (prev != tail) {
+      ListNode nex = p.next;
+      p.next = prev;
+      prev = p;
+      p = nex;
+    }
+    return new ListNode[]{tail, head};
+  }
+
+
+
 }
 
 
