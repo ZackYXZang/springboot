@@ -3,6 +3,7 @@ package com.example.bootjedis.pojo;
 import com.alibaba.fastjson.JSONObject;
 import java.io.Serializable;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * @author yuxiangzang
@@ -10,6 +11,8 @@ import lombok.Data;
  * @desc 用户实体
  **/
 @Data
+@EqualsAndHashCode(of = {"id"})
+
 public class User implements Serializable {
 
 

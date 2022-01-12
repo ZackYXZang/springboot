@@ -1,6 +1,5 @@
 package com.example.leetcode.service;
 
-import com.example.leetcode.utils.Node;
 import com.example.leetcode.utils.TreeNode;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -207,8 +206,7 @@ public class LeetCodeHot100 {
   public class Palindrome {
 
     /**
-     * 思路一： 动态规划的思路： P(i,j) = P(i+1, j-1) && (Si == Sj)
-     * 也就是如果字符串区间在[i，j]是回文传，必须满足在[i+1，j-1]位置是回文传，并且字符串在i和j位置的字符要想等
+     * 思路一： 动态规划的思路： P(i,j) = P(i+1, j-1) && (Si == Sj) 也就是如果字符串区间在[i，j]是回文传，必须满足在[i+1，j-1]位置是回文传，并且字符串在i和j位置的字符要想等
      * 边界条件：字符传长度为1的时候，是回文传，字符长度为2的时候，两个字符传相等是回文传
      */
 
@@ -390,49 +388,48 @@ public class LeetCodeHot100 {
   //3.2 因为是不重复的，所以需要判断nums[i]是否和nums[i - 1]重复，重复就跳过
   //3.3 L=i+1， R= length - 1，如果加和大于0，R--；如果加和小于0，L++，同时需要过滤左边界和右边界是否和他的下一位重复
   public List<List<Integer>> threeSum(int[] nums) {
-    if (nums == null || nums.length == 0) {
-      return new ArrayList<>();
-    }
-    //时间复杂度O(NlogN)
+    int n = nums.length;
+    //从小到大的排序，之后好减少时间复杂度，排序时间复杂度O(nlogn)
     Arrays.sort(nums);
-
     List<List<Integer>> result = new ArrayList<>();
-    for (int i = 0; i < nums.length; i++) {
-      if (nums[i] > 0) {
-        return result;
-      }
-      //过滤重复
-      if (i > 0 && nums[i] == nums[i - 1]) {
+
+    for (int first = 0; first < nums.length; first++) {
+      //过滤相同的组合，将相同的数字跳过
+      if (first > 0 && nums[first] == nums[first - 1]) {
         continue;
       }
-      int leftIndex = i + 1;
-      int rightIndex = nums.length - 1;
-      while (leftIndex < rightIndex) {
-        int sum = nums[i] + nums[leftIndex] + nums[rightIndex];
-        if (sum == 0) {
+
+      //因为之前对数组进行了从小到大的排序，所以第三个数的取值可以从右到左，因为first + second在变大，所以third要变小
+      int third = n - 1;
+      int target = -nums[first];
+
+      //第二个数字的取值要从first之后
+      for (int second = first + 1; second < n; second++) {
+        //过滤相同的组合，将相同的数字跳过
+        if (second > first + 1 && nums[second] == nums[second - 1]) {
+          continue;
+        }
+
+        //不断减小第三个数的取值，知道符合条件
+        while (second < third && nums[second] + nums[third] > target) {
+          third--;
+        }
+
+        //如果第二个数的指针和第三个数的指针重合了，就不用继续了
+        //这里的break是跳出了第二个数字的循环，因为随着second的增大，不可能存在着a+b+c = 0
+        if (second == third) {
+          break;
+        }
+        if (nums[second] + nums[third] == target) {
           List<Integer> list = new ArrayList<>();
-          list.add(nums[i]);
-          list.add(nums[leftIndex]);
-          list.add(nums[rightIndex]);
+          list.add(nums[first]);
+          list.add(nums[second]);
+          list.add(nums[third]);
           result.add(list);
-          //过滤重复：过滤左边界和右边界是否和他的下一位重复
-          while (leftIndex < rightIndex && nums[leftIndex] == nums[leftIndex + 1]) {
-            leftIndex++;
-          }
-          while (leftIndex < rightIndex && nums[rightIndex] == nums[rightIndex - 1]) {
-            rightIndex--;
-          }
-          leftIndex++;
-          rightIndex--;
-        } else if (sum < 0) {
-          leftIndex++;
-        } else {
-          rightIndex--;
         }
       }
     }
     return result;
-
   }
 
   //电话号码的字母组合
@@ -706,6 +703,7 @@ public class LeetCodeHot100 {
     }
 
     int left = nums.length - 2;
+    //找到变小的第一个数
     while (left >= 0 && nums[left] >= nums[left + 1]) {
       left--;
     }
@@ -1882,34 +1880,34 @@ public class LeetCodeHot100 {
   //给定一棵树的前序遍历 preorder 与中序遍历  inorder。请构造二叉树并返回其根节点。
   //递归，时间复杂度O(n)，空间复杂度O(n)
   public TreeNode buildTree(int[] preorder, int[] inorder) {
-    //前序遍历：跟左右
+    //前序遍历：根左右
     //中序遍历：左根右
+    //在前序遍历中找到跟节点，然后去前序遍历里分割
     if (preorder == null || preorder.length == 0 || inorder == null || inorder.length == 0) {
       return null;
     }
-    Map<Integer, Integer> inorderMap = new HashMap<>();
+    Map<Integer, Integer> map = new HashMap<>();
+
     for (int i = 0; i < inorder.length; i++) {
-      inorderMap.put(inorder[i], i);
+      map.put(inorder[i], i);
     }
-    return buildTreeSub(inorderMap, preorder, inorder, 0, preorder.length - 1, 0,
-        inorder.length - 1);
+
+    return buildTree(preorder, 0, preorder.length - 1, inorder, 0, inorder.length - 1, map);
   }
 
-  public TreeNode buildTreeSub(Map<Integer, Integer> inorderMap, int[] preorder, int[] inorder,
-      int preorderStart, int preorderEnd, int inorderStart, int inorderEnd) {
-    if (preorderStart > preorderEnd) {
+  public TreeNode buildTree(int[] preorder, int preStart, int preEnd, int[] inorder, int inStart,
+      int inEnd, Map<Integer, Integer> map) {
+    if (preStart > preEnd || inStart > inEnd) {
       return null;
     }
 
-    //此时前序遍历中preorderStart的位置就是某一个子树的根节点，在中序遍历中定位到这个根节点的位置
-    int inorderRoot = inorderMap.get(preorder[preorderStart]);
-    TreeNode root = new TreeNode(inorder[inorderRoot]);
-    //得到左子树的大小
-    int leftSize = inorderRoot - inorderStart;
-    root.left = buildTreeSub(inorderMap, preorder, inorder, preorderStart + 1,
-        preorderStart + leftSize, inorderStart, inorderRoot - 1);
-    root.right = buildTreeSub(inorderMap, preorder, inorder, preorderStart + leftSize + 1,
-        preorderEnd, inorderRoot + 1, inorderEnd);
+    TreeNode root = new TreeNode(preorder[preStart]);
+    int inorderRoot = map.get(preorder[preStart]);
+
+    root.left = buildTree(preorder, preStart + 1, preStart + inorderRoot - inStart, inorder,
+        inStart, inorderRoot - 1, map);
+    root.right = buildTree(preorder, preStart + inorderRoot - inStart + 1, preEnd, inorder,
+        inorderRoot + 1, inEnd, map);
     return root;
   }
 
@@ -2878,7 +2876,7 @@ public class LeetCodeHot100 {
 //    }
 //    return true;
     //解法2，时间复杂度为O(N), 空间复杂度为O(1)
-    if (head == null || head.next == null){
+    if (head == null || head.next == null) {
       return false;
     }
 
@@ -2907,7 +2905,7 @@ public class LeetCodeHot100 {
     }
 
     node3 = node1; //node3就是最后一个节点
-    node2  = head;
+    node2 = head;
 
     //check palindrome
     boolean result = true;
@@ -3106,34 +3104,24 @@ public class LeetCodeHot100 {
   //给定一个包含 n + 1 个整数的数组 nums ，其数字都在 1 到 n 之间（包括 1 和 n），可知至少存在一个重复的整数。
   //假设 nums 只有 一个重复的整数 ，找出 这个重复的数 。
   //你设计的解决方案必须不修改数组 nums 且只用常量级 O(1) 的额外空间。
-  //二分查找，时间复杂度O(nlogn)，空间复杂度O(1)
+  //类似环形链表的解决思路，快慢指针，时间复杂度O(n)，空间复杂度O(1)
   public int findDuplicate(int[] nums) {
-    //类似于抽屉问题，比如：10个苹果，放进9个抽屉，那么一定有1个抽屉里面放的是2个苹果
-    //同理，找到中间的数mid，统计小于等于mid的数字的个数count，如果count大于mid，那么重复的数一定在前面这半部分，否则就在后面
-    //比如区间是1～9，那么mid就是5，找到小于等于5的数，如果超过了5个，重复的数就在1～5这个区间，否则就是在6～10这个区间
-    //此时如果超过了5，那么5可能就是那个数
-    int left = 1;
-    int right = nums.length - 1;
-    int result = 0;
-    while (left < right) {
-      int mid = left + (right - left) / 2;
-      int count = 0;
-      for (int num : nums) {
-        if (num <= mid) {
-          count++;
-        }
-      }
 
-      //left = 1, right = 9 => mid = 5, count = 5 => left = 6, right = 9 => mid = 7, count = 8 = > right  = 6
+    int fast = nums[nums[0]];
+    int slow = nums[0];
 
-      if (count > mid) {
-        right = mid - 1;
-        result = mid;
-      } else {
-        left = mid + 1;
-      }
+    while (slow != fast) {
+      slow = nums[slow];
+      fast = nums[nums[fast]];
     }
-    return result;
+
+    slow = 0;
+    while (slow != fast) {
+      slow = nums[slow];
+      fast = nums[fast];
+    }
+
+    return slow;
 
   }
 
@@ -3182,28 +3170,31 @@ public class LeetCodeHot100 {
     //动态规划 + 二分查找，时间复杂度O(n)
     //辅助数组，表示到当前位置位置，增幅最小的，
     //   比如：[10,9,2,5,3,7,21,18]
+    //   [10] ->[9] -> [2] -> [2,5] -> [2,3] -> [2,3,7] -> [2,3,7,21] -> [2,3,7,18]
     //辅助数组：[2,3,7,18,0,0,0,0] -> result = 4
 
-    int[] tails = new int[nums.length];
-    int result = 0;
-    for (int num : nums) {
-      int i = 0;
-      int j = result;
-      while (i < j) {
-        //找到
-        int mid = (i + j) /2;
-        if (tails[mid] < num) {
-          i = mid + 1;
-        } else {
-          j = mid;
+    int[] dp = new int[nums.length + 1];
+    dp[1] = nums[0];
+    int length = 1;
+    for (int i = 1; i < nums.length; i++) {
+      if (nums[i] > dp[length]) {
+        dp[++length] = nums[i];
+      } else {
+        //二分查找，找到nums[i]合适的位置
+        int left = 1;
+        int right = length;
+        while (left <= right) {
+          int mid = left + (right - left) / 2;
+          if (nums[i] > dp[mid]) {
+            left = mid + 1;
+          } else {
+            right = mid - 1;
+          }
         }
-      }
-      tails[i] = num;
-      if (result == j) {
-        result++;
+        dp[left] = nums[i];
       }
     }
-    return result;
+    return length;
   }
 
   //删除无效的括号
@@ -3277,7 +3268,7 @@ public class LeetCodeHot100 {
     if (nums[0] == 0) {
       //加，减0，共两种情况
       dp[0][sum] = 2;
-    }else {
+    } else {
       dp[0][sum + nums[0]] = 1;
       dp[0][sum - nums[0]] = 1;
     }
@@ -3371,7 +3362,7 @@ public class LeetCodeHot100 {
       //右边界准备往右移动，
       if (count[s.charAt(i + pLength) - 'a'] == -1) {
         differ--;
-      }  else if (count[s.charAt(i + pLength) - 'a'] == 0) {
+      } else if (count[s.charAt(i + pLength) - 'a'] == 0) {
         differ++;
       }
       count[s.charAt(i + pLength) - 'a']++;
@@ -3395,7 +3386,7 @@ public class LeetCodeHot100 {
       return 0;
     }
     Map<Long, Integer> map = new HashMap<>();
-    map.put(0L,1);
+    map.put(0L, 1);
     return dfs(root, map, 0l, targetSum);
   }
 
@@ -3696,7 +3687,7 @@ public class LeetCodeHot100 {
 
   //分割等和子集
   //给你一个 只包含正整数 的 非空 数组 nums 。请你判断是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
-  //时间复杂度O(n)，空间复杂度O(n)
+  //时间复杂度O(n*sum)，空间复杂度O(n*sum)
   public boolean canPartition(int[] nums) {
     //0-1背包问题
     int sum = 0;
@@ -3828,27 +3819,28 @@ public class LeetCodeHot100 {
   public String decodeString1(String s) {
     return dfs(s, 0)[0];
   }
+
   private String[] dfs(String s, int i) {
     StringBuilder res = new StringBuilder();
     int multi = 0;
-    while(i < s.length()) {
-      if(s.charAt(i) >= '0' && s.charAt(i) <= '9')
+    while (i < s.length()) {
+      if (s.charAt(i) >= '0' && s.charAt(i) <= '9') {
         multi = multi * 10 + Integer.parseInt(String.valueOf(s.charAt(i)));
-      else if(s.charAt(i) == '[') {
+      } else if (s.charAt(i) == '[') {
         String[] tmp = dfs(s, i + 1);
         i = Integer.parseInt(tmp[0]);
-        while(multi > 0) {
+        while (multi > 0) {
           res.append(tmp[1]);
           multi--;
         }
-      }
-      else if(s.charAt(i) == ']')
-        return new String[] { String.valueOf(i), res.toString() };
-      else
+      } else if (s.charAt(i) == ']') {
+        return new String[]{String.valueOf(i), res.toString()};
+      } else {
         res.append(String.valueOf(s.charAt(i)));
+      }
       i++;
     }
-    return new String[] { res.toString() };
+    return new String[]{res.toString()};
   }
 
 
@@ -3868,7 +3860,7 @@ public class LeetCodeHot100 {
         if (o1[0] == o2[0]) {
           //如果高度相等，按照位置序号递增排序
           return o1[1] - o2[1];
-        }else {
+        } else {
           //如果高度不相等，按照按照身高倒叙排列
           return o2[0] - o1[0];
         }
@@ -3917,6 +3909,8 @@ public class LeetCodeHot100 {
 
   }
 
+  //前 K 个高频元素
+  //给你一个整数数组 nums 和一个整数 k ，请你返回其中出现频率前 k 高的元素。你可以按 任意顺序 返回答案。
   public ListNode[] myReverse(ListNode head, ListNode tail) {
     ListNode prev = tail.next;
     ListNode p = head;
@@ -3929,6 +3923,35 @@ public class LeetCodeHot100 {
     return new ListNode[]{tail, head};
   }
 
+  public int[] topKFrequent(int[] nums, int k) {
+    Map<Integer, Integer> occurrences = new HashMap<Integer, Integer>();
+    for (int num : nums) {
+      occurrences.put(num, occurrences.getOrDefault(num, 0) + 1);
+    }
+
+    // int[] 的第一个元素代表数组的值，第二个元素代表了该值出现的次数
+    PriorityQueue<int[]> queue = new PriorityQueue<int[]>(new Comparator<int[]>() {
+      public int compare(int[] m, int[] n) {
+        return m[1] - n[1];
+      }
+    });
+    for (Map.Entry<Integer, Integer> entry : occurrences.entrySet()) {
+      int num = entry.getKey(), count = entry.getValue();
+      if (queue.size() == k) {
+        if (queue.peek()[1] < count) {
+          queue.poll();
+          queue.offer(new int[]{num, count});
+        }
+      } else {
+        queue.offer(new int[]{num, count});
+      }
+    }
+    int[] ret = new int[k];
+    for (int i = 0; i < k; ++i) {
+      ret[i] = queue.poll()[0];
+    }
+    return ret;
+  }
 
 
 }

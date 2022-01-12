@@ -2,6 +2,7 @@ package com.example.leetcode;
 
 import com.example.leetcode.service.ArrayServiceImpl;
 import com.example.leetcode.service.ArraySortImpl;
+import com.example.leetcode.service.DuoxianchengService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,9 +26,14 @@ public class SortTests {
   @Autowired
   private ArraySortImpl arraySort;
 
+  @Autowired
+  private DuoxianchengService duoxianchengService;
+
   @Test
   void contextLoads() throws Exception {
-    test();
+
+
+    duoxianchengService.test();
   }
 
   public void test() {

@@ -2,35 +2,33 @@ package com.example.bootjedis;
 
 import com.alibaba.fastjson.JSONObject;
 import com.example.bootjedis.Service.UserService;
-import com.example.bootjedis.pojo.KtvRoomFeatureEntity;
-import com.example.bootjedis.pojo.LiveCondition;
 import com.example.bootjedis.pojo.User;
-import com.example.bootjedis.pojo.UserChild;
-import com.example.bootjedis.utils.MD5Encrypt;
-import com.example.bootjedis.utils.StringUtil;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import com.example.bootjedis.utils.LocalDateUtils;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.TreeMap;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
-import org.yaml.snakeyaml.util.UriEncoder;
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.Pipeline;
 
 @SpringBootTest
 class BootJedisApplicationTests {
@@ -44,43 +42,152 @@ class BootJedisApplicationTests {
   @Autowired
   private RestTemplate restTemplate;
 
+  public String getLiveResult() {
+    String sign = getSign();
+    String sessionListUrl = "http://api.changbalive.com/v2/middleplatform/hourrank/gethourranktop" + sign;
+    try {
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+      HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(null, headers);
+      //  执行HTTP请求
+      ResponseEntity<String> response = restTemplate
+          .exchange(sessionListUrl, HttpMethod.GET, requestEntity, String.class);
+      return response.getBody();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  //生成sign
+  public String getSign() {
+    String secret = "a%f9b4_xq3.13a0/a4fsx.1af94ajf1*";
+    Map<String, String> paramBase = new TreeMap<>(new Comparator<String>() {
+      @Override
+      public int compare(String o1, String o2) {
+        return o1.compareTo(o2);
+      }
+    });
+    long time = LocalDateUtils.getUnixSecondTime(LocalDateTime.now());
+    paramBase.put("appid", "middle_platform");
+    paramBase.put("time", String.valueOf(time));
+    StringBuilder sb = new StringBuilder();
+    for (Map.Entry entry : paramBase.entrySet()) {
+      if (!entry.getKey().equals("sign")) { //拼装参数,排除sign
+        if (!StringUtils.isEmpty(entry.getKey()) && !StringUtils.isEmpty(entry.getValue())) {
+          try {
+            sb.append("&").append(entry.getKey()).append("=").append(URLDecoder.decode((String) entry.getValue(), "UTF-8"));
+          } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+          }
+        }
+      }
+    }
+    String sign = SHA(sb.toString().substring(1) + secret, "SHA-512");
+    String result = "?" + sb.toString().substring(1) + "&sign=" + sign.substring(0, 20) + sign.substring(40, 60);
+    return result;
+  }
+
+
+
+  private String SHA(final String strText, final String strType)
+  {
+    // 返回值
+    String strResult = null;
+
+    // 是否是有效字符串
+    if (strText != null && strText.length() > 0)
+    {
+      try
+      {
+        // SHA 加密开始
+        // 创建加密对象 并傳入加密類型
+        MessageDigest messageDigest = MessageDigest.getInstance(strType);
+        // 传入要加密的字符串
+        messageDigest.update(strText.getBytes());
+        // 得到 byte 類型结果
+        byte byteBuffer[] = messageDigest.digest();
+
+        // 將 byte 轉換爲 string
+        StringBuffer strHexString = new StringBuffer();
+        // 遍歷 byte buffer
+        for (int i = 0; i < byteBuffer.length; i++)
+        {
+          String hex = Integer.toHexString(0xff & byteBuffer[i]);
+          if (hex.length() == 1)
+          {
+            strHexString.append('0');
+          }
+          strHexString.append(hex);
+        }
+        // 得到返回結果
+        strResult = strHexString.toString();
+      }
+      catch (NoSuchAlgorithmException e)
+      {
+        e.printStackTrace();
+      }
+    }
+
+    return strResult;
+  }
+
 
   @Test
   void contextLoads() {
 
-    System.out.println(10 & 9);
-    List<User> list = new ArrayList<>();
+    test();
+  }
+  private static Integer count = 0;
+  final BlockingQueue<Integer> bq = new ArrayBlockingQueue<Integer>(5);//容量为5的阻塞队列
 
-    User user1 = new User();
-    user1.setId(1);
-    user1.setAge(7);
-    User user2 = new User();
-    user2.setId(1);
-    user2.setAge(8);
-    User user3 = new User();
-    user3.setId(2);
-    user3.setAge(8);
-    User user4 = new User();
-    user4.setId(2);
-    user4.setAge(6);
-    User user5 = new User();
-    user5.setId(3);
-    user5.setAge(10);
-    User user6 = new User();
-    user6.setId(3);
-    user6.setAge(12);
+  public void test()  {
+    BootJedisApplicationTests t = new BootJedisApplicationTests();
+    new Thread(t.new Producer()).start();
+    new Thread(t.new Consumer()).start();
+    new Thread(t.new Consumer()).start();
+    new Thread(t.new Producer()).start();
+  }
+  class Producer implements Runnable {
+    @Override
+    public void run() {
+      for (int i = 0; i < 5; i++) {
+        try {
+          Thread.sleep(1000);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+        try {
+          bq.put(1);
+          count++;
+          System.out.println(Thread.currentThread().getName() + "produce:: " + count);
+        } catch (InterruptedException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
+    }
+  }
+  class Consumer implements Runnable {
 
-    list.add(user1);
-    list.add(user2);
-    list.add(user3);
-    list.add(user4);
-    list.add(user5);
-    list.add(user6);
-    System.out.println(JSONObject.toJSONString(list));
-
-    list = list.stream().filter(x -> x.getAge() == 6).collect(Collectors.toList());
-    System.out.println(list.size());
-
+    @Override
+    public void run() {
+      for (int i = 0; i < 5; i++) {
+        try {
+          Thread.sleep(1000);
+        } catch (InterruptedException e1) {
+          e1.printStackTrace();
+        }
+        try {
+          bq.take();
+          count--;
+          System.out.println(Thread.currentThread().getName()+ "consume:: " + count);
+        } catch (Exception e) {
+          // TODO: handle exception
+          e.printStackTrace();
+        }
+      }
+    }
   }
 
   public List<Object> mixData(List<Object> list1,List<Object> list2,int p1,int p2) {
