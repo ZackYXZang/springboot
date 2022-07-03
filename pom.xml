@@ -6,9 +6,9 @@
   <modules>
       <module>boot-jedis</module>
       <module>boot-lettuce</module>
-      <module>easyexcel</module>
       <module>leetcode</module>
       <module>demo</module>
+    <module>thread-learn</module>
   </modules>
   <parent>
         <groupId>org.springframework.boot</groupId>
